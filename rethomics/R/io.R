@@ -18,7 +18,7 @@ NULL
 #'  \item{A character vector. }{In which case, it is assumed that each element is the path to a different file to load.}
 #'  \item{A dataframe. }{The dataframe \emph{must} have a column named `path`. 
 #' Arbitrary column can be added to map experimental condition to file name.
-#' In addition, the dataframe can have a column named `roi_id`. When it is defined, only the specified combinations of file and roi_id
+#' In addition, the dataframe can have a column named `region_id`. When it is defined, only the specified combinations of file and region_id
 #' will be loaded. This allows to map additionnal conditions (data frame columns) to specific ROIs/files.
 #' When additionnal conditions are provided, they will result in creation of custom columns in the output of this function.}
 #' }
@@ -65,9 +65,9 @@ NULL
 #' ###############
 #' # Case 4: load SELECTED ROIS from MULTIPLE FILE WITH CONDITIONS
 #' # Sometimes, different ROIs are for different conditions.
-#' # If the master table contains a column names `roi_id`. only the specified ROIs will be added.
+#' # If the master table contains a column names `region_id`. only the specified ROIs will be added.
 #' # Let us assume that we want to replicate case 3, but now we load only the first 20 rois.
-#' master_table <- data.frame(path=paths, treatment=c("control", "drug_A", "drug_B"), roi_id=rep(1:20,each= 3))
+#' master_table <- data.frame(path=paths, treatment=c("control", "drug_A", "drug_B"), region_id=rep(1:20,each= 3))
 #' # We could also say that every even ROI is a male, and every odd is a male:
 #' master_table$sex <- ifelse(master_table$roi %% 2, "male", "female" )
 #' # Note that we have now two conditions.
@@ -98,11 +98,11 @@ loadPsvData <- function(what,
 	# case 1 what is a file, or a vector of files
 	if(is.character(what)){
 		# todo check whether file exists
-		master_table <- data.table(path=what, file=basename(what))
+		master_table <- data.table(path=what, experiment_id=basename(what))
 		# We load all available ROIs since user did not provide ROI info
 		master_table <- master_table[,list(
-				roi_id=availableROIs(path),
-				file=file),by=path]
+				region_id=availableROIs(path),
+				experiment_id=experiment_id),by=path]
 	}
 	else if(is.data.frame(what)){
 		
@@ -111,12 +111,12 @@ loadPsvData <- function(what,
 		master_table <- as.data.table(what)
 		#fixme check uniqueness of file/use path as key?
 		master_table[,path := as.character(path)]
-		master_table[,file := basename(path)]
+		master_table[,experiment_id := basename(path)]
 		
-		setkey(master_table,file)
+		setkey(master_table,experiment_id)
 		
-		if(!"roi_id" %in% colnames(what)){
-			m <- master_table[,list(roi_id=availableROIs(path)),by=key(master_table)]
+		if(!"region_id" %in% colnames(what)){
+			m <- master_table[,list(region_id=availableROIs(path)),by=key(master_table)]
 			master_table <- m[master_table]
 		}
 
@@ -125,35 +125,42 @@ loadPsvData <- function(what,
 		stop("Unexpected `what` argument!")
 		}
 	
-	setkeyv(master_table,c("file","roi_id"))
-	
+	setkeyv(master_table,c("experiment_id","region_id"))
+
 	l_dt <- lapply(1:nrow(master_table),
 			function(i){
-				roi_id <- master_table[i,roi_id]
-				file <- master_table[i,file]
+			  region_id <- master_table[i,region_id]
+			  experiment_id <- master_table[i,experiment_id]
 				path <- master_table[i,path]
 				if(verbose)
-					print(sprintf("Loading ROI \\#%i from:\n %s",roi_id,path))
+					print(sprintf("Loading ROI \\#%i from:\n %s",region_id,path))
 					
-				out <- loadOneROI(path,	roi_id=roi_id,
+				out <- loadOneROI(path,	region_id=region_id,
 									min_time = min_time,
 									max_time = max_time, 
 									reference_hour=reference_hour)
 				if(nrow(out) == 0){
-					warning(sprintf("No data in ROI %i, from FILE %s. Skipping",roi_id, path))
+					warning(sprintf("No data in ROI %i, from FILE %s. Skipping",region_id, path))
 					return(NULL)
 					}
 					
-				if(!is.null(FUN))
+				if(!is.null(FUN)){
 					out <- FUN(out,...)
-				out[,file:=file]
-				setkeyv(out,c("file","roi_id"))
+					if(is.null(out)){
+					  warning(sprintf("No data in ROI %i after running FUN, from FILE %s. Skipping",region_id, path))
+					  return(NULL)
+					}
+				}
+				
+				out[,experiment_id:=experiment_id]
+				setkeyv(out,c("experiment_id","region_id"))
 				})
 				
 	l_dt <- l_dt[!sapply(l_dt,is.null)]
 	if(length(unique(lapply(l_dt,key))) > 1){
 		stop("Data tables do not have the same keys")
 		}
+ 
 	keys <- key(l_dt[[1]])
 
 	out <- rbindlist(l_dt)
@@ -166,7 +173,7 @@ loadPsvData <- function(what,
 
 loadOneROI <- function(
 		FILE,
-		roi_id, 
+		region_id, 
 		min_time=0, # In  s
 		max_time=Inf,
 		reference_hour=NULL){
@@ -177,9 +184,9 @@ loadOneROI <- function(
 		var_map <- as.data.table(dbGetQuery(con, "SELECT * FROM VAR_MAP"))
 		setkey(var_map, var_name)
 		roi_map <- as.data.table(dbGetQuery(con, "SELECT * FROM ROI_MAP"))
-		roi_row <- roi_map[roi_idx == roi_id,]
+		roi_row <- roi_map[roi_idx == region_id,]
 		if(nrow(roi_row) == 0 ){
-			warning(sprintf("ROI %i does not exist, skipping",roi_id))
+			warning(sprintf("ROI %i does not exist, skipping",region_id))
 			return(NULL)
 		}
 		if(max_time == Inf)
@@ -189,11 +196,11 @@ loadOneROI <- function(
 			
 		min_time <- min_time * 1000 
 		
-		sql_query <- sprintf("SELECT * FROM ROI_%i WHERE t >= %e %s",roi_id,min_time, max_time_condition )
+		sql_query <- sprintf("SELECT * FROM ROI_%i WHERE t >= %e %s",region_id,min_time, max_time_condition )
 		
 		roi_dt <- as.data.table(dbGetQuery(con, sql_query))
 		roi_dt[, id := NULL]
-		roi_dt[, roi_id := roi_id]
+		roi_dt[, region_id := region_id]
 		
 		
 		if(!is.null(reference_hour)){
@@ -361,7 +368,7 @@ NULL
 
 #' @export
 loadSampleData <- function(name="",list=F){
-	db_file <- system.file("data/db_files.tar.xz", package="risonno")
+	db_file <- system.file("data/db_files.tar.xz", package="rethomics")
 	
 	if(list == T){
 		content <- untar(db_file, list=T)
