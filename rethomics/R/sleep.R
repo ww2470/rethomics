@@ -1,8 +1,9 @@
 #@include 
 NULL
-#' TODO
+#' Determine whether an animal is asleep
 #' 
-#' T
+#' This function uses a motion classifier to first define wheather an animal is moving over a given time window.
+#' Then, it defines sleep as contiguous immobility for a defined minimal duration.
 #'
 #' @param data the data (i.e a data.table) from a \emph{single} ROI. It must contain, at least,
 #' the columns `t`, `x` and `y`.
@@ -20,7 +21,7 @@ NULL
 #' # We would like only ROI #2 from this file
 #' map <- data.frame(path=file, roi_id=2)
 #' dt <- loadPsvData(map)
-#' sleep_dt <-  sleepAnalysis(dt)
+#' sleep_dt <-  sleepAnnotation(dt)
 #' # A more liekely scenario, we load ROIs 5 to 10, 
 #' # apply sleep analysis in combination with loadPsvData.
 #' # this means we apply the function to all rois just after they are being loaded.
@@ -29,7 +30,7 @@ NULL
 #' 
 #' @seealso \code{\link{loadPsvData}} to load data and optionnaly apply analysis on the fly.
 #' @export
-sleepAnalysis <- function(data,
+sleepAnnotation <- function(data,
 			time_window_length=10, #s
 			min_time_immobile=60*5, #s
 			motion_classifier_FUN=totalWlkdDistClassif,
@@ -39,7 +40,8 @@ sleepAnalysis <- function(data,
 	ori_keys <- key(d)
 	
 	d <- curateSparseRoiData(d)
-	
+	if(nrow(d) <1)
+    return(NULL)
 	
 	d[, t_round := time_window_length * floor(d[,t] /time_window_length)]
 	setkeyv(d, "t_round")
@@ -51,7 +53,6 @@ sleepAnalysis <- function(data,
 	d_small$t_round <- NULL
 	setkeyv(d_small,"t")
 	
-
 	t_out <- seq(from=d_small[1,t], to=d_small[.N,t], by=time_window_length)
 	
 	
