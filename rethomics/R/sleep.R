@@ -2,16 +2,13 @@
 NULL
 #' Determine whether an animal is asleep
 #' 
-#' This function uses a motion classifier to first define wheather an animal is moving over a given time window.
-#' Then, it defines sleep as contiguous immobility for a defined minimal duration.
+#' This function uses a motion classifier to first define whether an animal is moving during a given time window.
+#' Then, it defines sleep as contiguous immobility for a minimal duration.
 #'
 #' @param data the data (i.e a data.table) from a \emph{single} ROI. It must contain, at least,
 #' the columns `t`, `x` and `y`.
-#' @param fs (in Hz) the frequency to which the data is resampled, prior to analysis.
-#' @param activity_threshold the activity over which an animal is scored as `moving'. 
-#' The activity is the total covered distance in \code{time_window_length} (expressed proportion of the ROI width).
-#' @param time_window_length The number of seconds in which activity threshold is applied.
-#' @param min_time_immobile the minimal duration (in s) after wich an immobile an animal is scored as `asleep'.
+#' @param time_window_length The number of seconds tu use in the motion classifier
+#' @param min_time_immobile the minimal duration (in s) after which an immobile an animal is scored as `asleep'.
 #' @return A data table similar to \code{data} with additionnal variables/annotations (i.e. `activity', `moving', `asleep').
 #' @note The resulting data will only have one data point every \code{time_window_length} seconds.
 
@@ -22,11 +19,12 @@ NULL
 #' map <- data.frame(path=file, roi_id=2)
 #' dt <- loadPsvData(map)
 #' sleep_dt <-  sleepAnnotation(dt)
-#' # A more liekely scenario, we load ROIs 5 to 10, 
+#' # A more likely scenario, we load ROIs 5 to 10, 
 #' # apply sleep analysis in combination with loadPsvData.
 #' # this means we apply the function to all rois just after they are being loaded.
 #' map <- data.frame(path=file, roi_id=5:10)
 #' dt <- loadPsvData(map,FUN=sleepAnalysis)
+#' sleep_dt <- dt[,sleepAnnotation(.SD),by=key(dt)]
 #' 
 #' @seealso \code{\link{loadPsvData}} to load data and optionnaly apply analysis on the fly.
 #' @export
@@ -67,7 +65,12 @@ sleepAnnotation <- function(data,
 	d_small
 	}
 
-
+#@include 
+NULL
+#' Define whether an animal is moving from behavioural data.
+#' 
+#' @seealso \code{\link{sleepAnnotation}} to apply this function to all subsequent time windows.
+#' @export
 totalWlkdDistClassif <- function(data,activity_threshold=.03){
 	d <- copy(data)
 	d[,activity := activity(x,y)]
