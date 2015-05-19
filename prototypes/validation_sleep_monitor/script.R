@@ -4,7 +4,7 @@ library(ggplot2)
 
 # pdf("/tmp/valitation.pdf",w=10,h=5.625)
 FILE <- "/lud/validation_sleep_monitor/validation.db"
-ANNOT_RESULTS <- "/lud/validation_sleep_monitor/rois_t_10s-chunks"
+ANNOT_RESULTS <- "/lud/test"
 ANNOT_LEVELS <- c("walking","spinning","micro-mov.","immobile")
 BEHAVIOUR_MAP <- list(w="walking", r="spinning", g="micro-mov.", i="immobile")
 
@@ -36,9 +36,6 @@ sink()
 map <- data.frame(path=FILE, region_id = unique(ref[,region_id]))
 dt <- loadPsvData(map, FUN=sleepAnnotation)
 
-
-
-
 pos_at_t = dt[t %in% unique(ref[,t]),list(t=t, xt=x, yt=y,
 		region_id=region_id,activity=activity,ar_diff = ar_diff,
 		phi_diff=phi_diff,
@@ -49,12 +46,12 @@ setkeyv(pos_at_t,c('region_id','t'))
 
 setkeyv(ref,c('region_id','t'))
 
-
 pdt <- merge(pos_at_t, ref)
 pdt[,distance := abs((xt + 1i*yt) - (x +1i*y))]
 #todo invert axis -> food?
 
-
+pdt <- pdt[t > 3600,]
+pdt
 pl <- ggplot(pdt,aes(xt,x)) +
 	geom_point(aes(colour=behaviour, shape=behaviour, size=1.5, alpha=.5))+
 	labs(title= "Relationship between ground-truth(gt)\nand inferred(inf) X positions",x=expression(X[inf] (relative_unit)), y=expression(X[gt] (relative_unit)))
