@@ -2,13 +2,44 @@
 % Please edit documentation in R/plots.R
 \name{overviewPlot}
 \alias{overviewPlot}
-\title{TODO}
+\title{Displays, per individual, the temporal average of a variable of interest .}
 \usage{
-overviewPlot(data, var, condition, summary_time_window = 30 * 60,
+overviewPlot(y, data, condition = NULL, summary_time_window = mins(30),
   normalise_var_per_id = TRUE)
 }
+\arguments{
+\item{y}{The variable of interest}
+
+\item{data}{The data.table containing the data. It must have a column with the same name as y.}
+
+\item{condition}{An optionnal grouping factor to order rows.}
+
+\item{summary_time_window}{the width (in seconds) of the time window used to draw each pixel.}
+
+\item{normalise_var_per_id}{whether each row is to be normalised (using new_x = {x - mean(x)}/sd(x)).}
+}
+\value{
+A \code{ggplot} object that can be plotted directly, or modified
+}
 \description{
-TODO
-TODO...... . .............. ... . .. . ......
+This function produces a tiled representation in which every row represents one individual (i.e. from on region and one experiement). The x axis represents time, in days.
+The values of the variable of interest are represented by different colour intensity.
+}
+\examples{
+# Load sample data
+data(sleep_validation)
+my_data <- sleep_validation[,sleepAnnotation(.SD),by=key(sleep_validation)]
+# No condition
+p <- overviewPlot(activity,my_data)
+print(p)
+# We make a dummy condition, males are in every even region
+my_data[,sex:=ifelse(region_id \%\% 2==0,"m","f")]
+p <- overviewPlot(activity,my_data,condition = sex)
+print(p)
+# p is simply a ggplot object, so we can change things:
+print(p + labs(title="MY own title"))
+}
+\seealso{
+\code{\link{ethogramPlot}} To show trend by aggregating individuals over time.
 }
 
