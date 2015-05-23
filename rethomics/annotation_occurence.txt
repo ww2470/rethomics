@@ -1,0 +1,3 @@
+behaviour
+   walking   spinning micro-mov.   immobile 
+       320         15         99        308 

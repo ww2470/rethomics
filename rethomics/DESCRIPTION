@@ -19,11 +19,13 @@ Depends:
     RSQLite,
     data.table,
     pracma,
-    zoo
+    zoo,
+    ggplot2
 LazyLoad: TRUE
 Collate:
     'io.R'
     'interpol.R'
     'plots.R'
     'sleep.R'
+    'utils.R'
 URL: https://github.com/gilestrolab/pySolo-Video
