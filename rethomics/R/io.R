@@ -137,7 +137,7 @@ loadPsvData <- function(what,
 			  experiment_id <- master_table[i,experiment_id]
 				path <- master_table[i,path]
 				if(verbose)
-					print(sprintf("Loading ROI \\#%i from:\n %s",region_id,path))
+					cat(sprintf("Loading ROI number %i from:\n\t%s\n",region_id,path))
 					
 				out <- loadOneROI(path,	region_id=region_id,
 									min_time = min_time,
@@ -374,7 +374,7 @@ NULL
 loadSampleData <- function(names=NULL){
   db_file <- system.file("data/db_files.tar.xz", package="rethomics")
   
-  if(is.null(name)){
+  if(is.null(names)){
 		content <- untar(db_file, list=T)
 		db_files <- content
 		out <- basename(content)[dirname(content) != '.']
@@ -382,7 +382,7 @@ loadSampleData <- function(names=NULL){
 		}
 
 	d <- tempdir()
-	file_name <- file.path("db_files",name)
+	file_name <- file.path("db_files",names)
 	r <- untar(db_file, files=file_name,exdir=d)
 	if(r == 2){
 		unlink(d, recursive=T)
