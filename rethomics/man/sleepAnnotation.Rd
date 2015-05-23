@@ -11,21 +11,16 @@ sleepAnnotation(data, time_window_length = 10, min_time_immobile = 60 * 5,
 \item{data}{the data (i.e a data.table) from a \emph{single} ROI. It must contain, at least,
 the columns `t`, `x` and `y`.}
 
-\item{time_window_length}{The number of seconds in which activity threshold is applied.}
+\item{time_window_length}{The number of seconds tu use in the motion classifier}
 
-\item{min_time_immobile}{the minimal duration (in s) after wich an immobile an animal is scored as `asleep'.}
-
-\item{fs}{(in Hz) the frequency to which the data is resampled, prior to analysis.}
-
-\item{activity_threshold}{the activity over which an animal is scored as `moving'.
-The activity is the total covered distance in \code{time_window_length} (expressed proportion of the ROI width).}
+\item{min_time_immobile}{the minimal duration (in s) after which an immobile an animal is scored as `asleep'.}
 }
 \value{
 A data table similar to \code{data} with additionnal variables/annotations (i.e. `activity', `moving', `asleep').
 }
 \description{
-This function uses a motion classifier to first define wheather an animal is moving over a given time window.
-Then, it defines sleep as contiguous immobility for a defined minimal duration.
+This function uses a motion classifier to first define whether an animal is moving during a given time window.
+Then, it defines sleep as contiguous immobility for a minimal duration.
 }
 \note{
 The resulting data will only have one data point every \code{time_window_length} seconds.
@@ -37,11 +32,12 @@ file <- loadSampleData("validation.db")
 map <- data.frame(path=file, roi_id=2)
 dt <- loadPsvData(map)
 sleep_dt <-  sleepAnnotation(dt)
-# A more liekely scenario, we load ROIs 5 to 10,
+# A more likely scenario, we load ROIs 5 to 10,
 # apply sleep analysis in combination with loadPsvData.
 # this means we apply the function to all rois just after they are being loaded.
 map <- data.frame(path=file, roi_id=5:10)
 dt <- loadPsvData(map,FUN=sleepAnalysis)
+sleep_dt <- dt[,sleepAnnotation(.SD),by=key(dt)]
 }
 \seealso{
 \code{\link{loadPsvData}} to load data and optionnaly apply analysis on the fly.

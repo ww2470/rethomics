@@ -74,22 +74,39 @@ NULL
 totalWlkdDistClassif <- function(data,activity_threshold=.03){
 	d <- copy(data)
 	d[,activity := activity(x,y)]
-	d[,ar := ifelse(w > h, w/h,h/w)]
-	d[,ar_diff := abs(c(NA,diff(ar)))]
-	d[,phi_diff := abs(c(NA,diff(cos(phi/180))))]
+	
+	d[,rel_ar := (w - h)/w]
+	d[,diff_rel_ar := c(0,abs(diff(rel_ar)))]
+	#d[,rel_ar := pmin(rel_ar,c(0,rel_ar[1:(length(rel_ar)-1)]))]
+	
+	d[,vt1 := (w - h)/w]
+	d[,vt2 := c(0,vt1[1:(length(vt1)-1)])]
+  
+	d[,phi_diff := half_angular_distance(phi)]
+	d[ ,angular_activity:=sqrt(vt1^2 + vt2^2
+                              + vt1*vt2*cos(pi*phi_diff/90))]
+  print(d)
+	
+  d[,area_diff:=abs(c(0,diff(w*h)))/(w*h)]
+# 	d[ ,angular_activity:=phi_diff * rel_ar]
+  
 	d_small <- d[,list(
 						activity = sum(activity),
-						ar_diff = sum(ar_diff),
-						phi_diff = sum(phi_diff),
-						max_velocity = max(activity/c(Inf,diff(t)))
+						angular_activity = sum(angular_activity),
+						area_diff = sum(area_diff),
+						ar_diff = sum(diff_rel_ar),
+						ar_mean = sd(rel_ar) / mean(rel_ar),
+						sd_activity = sd(activity),
+						sd_angular_activity = sd(angular_activity),
+						sd_ar_diff = sd(diff_rel_ar),
+						sd_area_diff = sd(area_diff),
+						max_ar_diff = max(diff_rel_ar),
+						max_area_diff = max(area_diff),
+						max_angular_activity = max(angular_activity/c(Inf,diff(t))),
+						max_activity = max(activity/c(Inf,diff(t)))
 						), by="t_round"]
 	
 	d_small[, moving :=  ifelse(activity > activity_threshold, TRUE,FALSE)]
-#'	d$activity <- NULL
-#'	d$ar <- NULL
-#'	d$ar_diff <- NULL
-#'	d$phi_diff <- NULL
-#'	
 	d_small
 	}
 
@@ -98,6 +115,15 @@ activity <- function(x,y){
 	comp = x + 1i*y
 	distance <- c(0, abs(diff(comp)))
 	return(distance)
+}
+
+half_angular_distance <- function(half_angle){
+  half_angle
+  abs_diff <- abs(diff(half_angle))
+  
+  da <- ifelse(abs_diff >=90,180 - abs_diff ,abs_diff)
+  
+  c(0,da)
 }
 
 
