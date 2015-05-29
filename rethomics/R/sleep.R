@@ -42,6 +42,9 @@ sleepAnnotation <- function(data,
     return(NULL)
 	
 	d[, t_round := time_window_length * floor(d[,t] /time_window_length)]
+	
+	
+  
 	setkeyv(d, "t_round")
 
 	d_small <- motion_classifier_FUN(d,...)
@@ -52,16 +55,21 @@ sleepAnnotation <- function(data,
 	setkeyv(d_small,"t")
 	
 	t_out <- seq(from=d_small[1,t], to=d_small[.N,t], by=time_window_length)
-	
-	
+	  
 	d_small <- merge(d_small, data.table(t=t_out,key="t"),all=T)
-	d_small[,moving := ifelse(is.na(moving), F, moving)]
+  
+	d_small[,moving := ifelse(
+    is.na(moving), F, moving)]
+  
 	d_small[,asleep := sleep_contiguous(moving,1/time_window_length)]
 	
+  is_interpolated <- d_small[,is.na(x)]
+  
 	d_small <- d_small[,lapply(.SD,na.locf,na.rm=F)]
+	d_small[,is_interpolated := is_interpolated]
+	
 	
 	setkeyv(d_small, ori_keys)
-	
 	d_small
 	}
 
@@ -71,44 +79,37 @@ NULL
 #' 
 #' @seealso \code{\link{sleepAnnotation}} to apply this function to all subsequent time windows.
 #' @export
-totalWlkdDistClassif <- function(data,activity_threshold=.03){
+totalWlkdDistClassif <- function(data,velocity_threshold=.005){
 	d <- copy(data)
-	d[,activity := activity(x,y)]
-	
-	d[,rel_ar := (w - h)/w]
-	d[,diff_rel_ar := c(0,abs(diff(rel_ar)))]
-	#d[,rel_ar := pmin(rel_ar,c(0,rel_ar[1:(length(rel_ar)-1)]))]
-	
-	d[,vt1 := (w - h)/w]
-	d[,vt2 := c(0,vt1[1:(length(vt1)-1)])]
-  
-	d[,phi_diff := half_angular_distance(phi)]
-	d[ ,angular_activity:=sqrt(vt1^2 + vt2^2
-                              + vt1*vt2*cos(pi*phi_diff/90))]
-  print(d)
-	
-  d[,area_diff:=abs(c(0,diff(w*h)))/(w*h)]
-# 	d[ ,angular_activity:=phi_diff * rel_ar]
-  
+	d[,dt := c(NA,diff(t))]
+	d[,surface_change := xor_dist * 1e-3]
+	d[,max_velocity := 10^(xy_dist_1e6/1000)/dt ]
+
 	d_small <- d[,list(
-						activity = sum(activity),
-						angular_activity = sum(angular_activity),
-						area_diff = sum(area_diff),
-						ar_diff = sum(diff_rel_ar),
-						ar_mean = sd(rel_ar) / mean(rel_ar),
-						sd_activity = sd(activity),
-						sd_angular_activity = sd(angular_activity),
-						sd_ar_diff = sd(diff_rel_ar),
-						sd_area_diff = sd(area_diff),
-						max_ar_diff = max(diff_rel_ar),
-						max_area_diff = max(area_diff),
-						max_angular_activity = max(angular_activity/c(Inf,diff(t))),
-						max_activity = max(activity/c(Inf,diff(t)))
+  	        surface_change = max(surface_change),
+  	        max_velocity = max(max_velocity)
 						), by="t_round"]
-	
-	d_small[, moving :=  ifelse(activity > activity_threshold, TRUE,FALSE)]
+  
+	d_small[, moving :=  ifelse(max_velocity > velocity_threshold, TRUE,FALSE)]
 	d_small
 	}
+
+#@include 
+NULL
+#' Define whether an animal is moving from behavioural data.
+#' 
+#' @seealso \code{\link{sleepAnnotation}} to apply this function to all subsequent time windows.
+#' @export
+virtualBeamCrossClassif <- function(data){
+  
+  d <- copy(data)
+  d[,beam_cross := abs(c(0,diff(sign(.5 - x))))]
+  d[,beam_cross := as.logical(beam_cross)]
+  
+  d_small <- d[,list(moving = any(beam_cross)), by="t_round"]
+  
+  d_small
+}
 
 
 activity <- function(x,y){
