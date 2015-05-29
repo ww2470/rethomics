@@ -135,12 +135,15 @@ ethogramPlot <- function(y,data,
       errBarFun <- sd
     
     if(error_bar == "sem")
-      errBarFun <- function(x){sd(x)/sqrt(length(x))}    
+      errBarFun <- function(x){
+        sd(x)/sqrt(length(x))
+      }    
     
     summary_dt_all_animals <- summary_dt[,list(
       y_var=mean(y_var),
       err_var=errBarFun(y_var)),
       by=.(t_r,c_var)]  
+    
   }
   if(is.null(error_bar))
     summary_dt_all_animals <- summary_dt[,list(y_var=mean(y_var)),by=.(t_r,c_var)] 
@@ -157,14 +160,14 @@ ethogramPlot <- function(y,data,
   
   
   if(!is.null(error_bar)){
-    if(c_var != "NULL"){
+    if(c_var_name != "NULL"){
       p <- p + geom_ribbon(aes(ymin=y_var-err_var, ymax=y_var+err_var,fill=c_var,colour=NULL),alpha=.3)
     }
     else{
       p <- p + geom_ribbon(aes(ymin=y_var-err_var, ymax=y_var+err_var),alpha=.3)
     }
   }
-  p <- p + labs(x="time (day)", y=c_var_name)
+  p <- p + labs(x="time (day)", y=y_var_name)
   p
 }
 
