@@ -9,10 +9,13 @@ mins(x)
 \arguments{
 \item{x}{number of seconds}
 }
+\value{
+the corresponding number of seconds
+}
 \description{
 Trivially converts minutes to seconds
 }
 \seealso{
-\code{\link{hours}} \code{\link{days}}
+\code{\link{days}} \code{\link{hours}}
 }
 

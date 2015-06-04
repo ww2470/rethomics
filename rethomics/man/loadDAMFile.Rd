@@ -2,7 +2,7 @@
 % Please edit documentation in R/io.R
 \name{loadDAMFile}
 \alias{loadDAMFile}
-\title{Read a text file formatted as DAM2 into a single data table}
+\title{Read a text file formatted as DAM2 into a single data table.}
 \usage{
 loadDAMFile(FILE, channels = NULL, min_time = 0, max_time = Inf,
   interval = 60)
@@ -18,7 +18,7 @@ loadDAMFile(FILE, channels = NULL, min_time = 0, max_time = Inf,
 If \code{rois} has only one element, a dataframe. Otherwise, a list of dataframes (one per ROI)
 }
 \description{
-This function is used to conveniently change the format of one file from DAM2 to risonno.
+This function is used to load data from DAM2 devices as a data.table.
 }
 \note{
 Analysis of many long (sevaral days) recording can use a large amount of RAM.

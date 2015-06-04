@@ -2,7 +2,7 @@
 % Please edit documentation in R/plots.R
 \name{overviewPlot}
 \alias{overviewPlot}
-\title{Displays, per individual, the temporal average of a variable of interest .}
+\title{Displays, per individual, the temporal average of a variable of interest.}
 \usage{
 overviewPlot(y, data, condition = NULL, summary_time_window = mins(30),
   normalise_var_per_id = TRUE)
@@ -16,13 +16,14 @@ overviewPlot(y, data, condition = NULL, summary_time_window = mins(30),
 
 \item{summary_time_window}{the width (in seconds) of the time window used to draw each pixel.}
 
-\item{normalise_var_per_id}{whether each row is to be normalised (using new_x = {x - mean(x)}/sd(x)).}
+\item{normalise_var_per_id}{whether each row is to be normalised, using \code{new_y = (y - mean(y))/sd(y)}.}
 }
 \value{
-A \code{ggplot} object that can be plotted directly, or modified
+A \code{ggplot} object that can be plotted directly or modified.
 }
 \description{
-This function produces a tiled representation in which every row represents one individual (i.e. from on region and one experiement). The x axis represents time, in days.
+This function produces a tiled representation in which every row represents one individual (i.e. from a unique combination of region and experiement).
+The x axis represents time in days.
 The values of the variable of interest are represented by different colour intensity.
 }
 \examples{

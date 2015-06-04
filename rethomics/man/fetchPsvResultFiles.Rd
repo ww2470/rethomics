@@ -9,22 +9,23 @@ fetchPsvResultFiles(result_dir, query = NULL)
 \arguments{
 \item{result_dir}{The location of the result directory (i.e. the folder containing all data).}
 
-\item{query}{An optionnal query (see details).}
+\item{query}{An optionnal query formated as a dataframe (see details).}
 }
 \value{
 The query extended with the requested paths. When \code{query} is not specified, the function returns a table with all available files.
 }
 \description{
 This function is designed to list and select experiemental files. In general, end-users will want to retreive path to their experimental files
-according to the date and id of the video monitor without having to undertand the underlying directory structure.
+according to the date and ID of the video monitor without having to undertand the underlying directory structure.
 }
 \details{
 The optionnal argument \code{query} is expected to be a table where every row maps an experiment.
 In many respects, it is similar to the \code{what} argument in \code{\link{loadPsvData}}.
-The only difference is that it does not have a \code{path} column. Instead, it specifies must contain two columns:
+The only difference is that it does not have a \code{path} column. Instead, it must contain two columns:
 \itemize{
- \item{\code{time} }{The date and time formated either as `yyyy-mm-dd' or `yyyy-mm-dd_hh:mm:ss'. In the former case, their may be several matching experiments to a single time (starting the same day).
- Whe this happends, \emph{only the last} is returned, and a warning message is displayed.}
+ \item{\code{time} }{The date and time when the experiment started formated either as `yyyy-mm-dd' or `yyyy-mm-dd_hh:mm:ss'.
+ In the former case, there may be several matching experiments to a single time (starting the same day).
+ When this happends, \emph{only the last} is returned, and a warning message is displayed.}
  \item{\code{machine_name} }{The name of the machine that acquired the data.}
 }
 The result is meant to be used directly, as the \code{what} argument, by \code{\link{loadPsvData}} (see examples).
@@ -34,7 +35,18 @@ PSV stores the data in a hard-coded directory structure\code{/root_dir/machine_i
 \itemize{
  \item{\code{machine_id} }{In principle, a universally unique identifier of the acquisition device.}
  \item{\code{machine_name} }{A human friendly name for acquisition device. In practice, this is expected to be unique within laboratory.}
- \item{\code{datetime} }{The time of the begining of an experiment}
+ \item{\code{datetime} }{The date (and optionnally the time) of the begining of an experiment}
+}
+}
+\examples{
+\dontrun{
+# This is where I store the data on my computer
+MY_DATA_DIR <- "/data/psv_results/"
+
+query <- data.table(date="2015-06-02", machine_name=c("GGSM-001","GGSM-003"),region_id = rep(1:10,each=2))
+print(query)
+map <- fetchPsvResultFiles(MY_DATA_DIR, query)
+dt <- loadPsvData(map)
 }
 }
 
