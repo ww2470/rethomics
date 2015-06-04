@@ -1,0 +1,21 @@
+\documentclass{article}
+
+\begin{document}
+\SweaveOpts{concordance=TRUE}
+\section{Installation}
+
+\section{Loading data}
+\subsection{Data structure}
+\subsection{Loading one file}
+\subsection{Fancier queries}
+\subsection{Loading from network drive}
+\subsection{Analysing data}
+\subsection{Sleep annotation}
+\subsection{Visualisation}
+\subsubsection{Overview plot}
+\subsubsection{Ethograms}
+\subsection{Bout analysis}
+
+
+
+\end{document}
