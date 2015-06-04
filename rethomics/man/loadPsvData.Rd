@@ -46,7 +46,7 @@ When additionnal conditions are provided, they will result in creation of custom
 \examples{
 # First of all, let us load files from the data sample with the package.
 # Most likely, you will already have your own data files.
-sample_files <- c("validation.db", "sample_1.db","sample_2.db")
+sample_files <- c("tube_monitor_validation_subset.db", "monitor_validation_subset.db")
 # Extract the files in your computer
 paths <- sapply(sample_files, loadSampleData)
 # Now, `paths` is just a vector of file names:
@@ -73,7 +73,7 @@ print(dt)
 # We can encode this information in a 'master-table' (data frame) in which a column
 # named `path` maps experiemental condition(s).
 #For instance 3 different treatments:
-master_table <- data.frame(path=paths, treatment=c("control", "drug_A", "drug_B"))
+master_table <- data.frame(path=paths, treatment=c("control", "drug_A"))
 # Let us check our table:
 print(master_table)
 # The table looks OK, we load the actual data
@@ -81,24 +81,27 @@ dt <- loadPsvData(master_table)
 # Note that `dt` now contains a column for your treatment.
 print(colnames(dt))
 # This makes it easier to perform things such as average per treatment.
-print(dt[,list(mean_x = mean(x)),by="treatment"])
+print(dt[,.(mean_x = mean(x)),by="treatment"])
 ###############
 # Case 4: load SELECTED REGIONS from MULTIPLE FILE, WITH CONDITIONS
 # Sometimes, different regions contain for different conditions.
 # If the master table has a column named `region_id`, only the specified regions will be returned.
 # Let us assume that we want to replicate case 3, but, now, we load only the first 20 regions.
-master_table <- data.frame(path=paths, treatment=c("control", "drug_A", "drug_B"), region_id=rep(1:20,each= 3))
+master_table <- data.table(path=paths, treatment=c("control", "drug_A"), region_id=rep(1:20,each= 2))
 # We could also imagine that every even region is a male, and every odd is a female:
-master_table$sex <- ifelse(master_table$roi \%\% 2, "male", "female" )
+master_table[, sex := ifelse(region_id \%\% 2, "male", "female" )]
 # Note that we have now two conditions.
 # Let us check our new table:
 print(master_table)
 # Then we can load our data:
 dt <- loadPsvData(master_table)
+# This is simply a subset of data, so many regions are missing
+# lets display the regions we ended up with
+print(dt[,.(NA),by=key(dt)])
 ####################
 # Case 5: Apply ANALYSIS/function while loading the data.
 # You can also apply a function from this package, or your own function to the data as it is being loaded.
-# For instance, if you wish to peform a "sleep" annotation:
+# For instance, if you wish to peform a "sleep annotation":
 dt <- loadPsvData(paths[1], FUN=sleepAnnotation)
 # You could of course combine this with more conditions/region selection.
 # For most complicated cases, you would have probably generated the

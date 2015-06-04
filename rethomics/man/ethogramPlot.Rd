@@ -30,17 +30,18 @@ The response variable, y,  is grouped by time windows of defined size.
 }
 \examples{
 # Load sample data
-data(sleep_validation)
-my_data <- sleep_validation[,sleepAnnotation(.SD),by=key(sleep_validation)]
+data(monitor_validation)
+my_data <- monitor_validation[,sleepAnnotation(.SD),by=key(monitor_validation)]
 # No condition
-p <- ethogamPlot(activity,my_data)
+p <- ethogramPlot(asleep,my_data)
 print(p)
-# We make a dummy condition, males are in every even region
-my_data[,sex:=ifelse(region_id \%\% 2==0,"m","f")]
-p <- ethogamPlot(activity,my_data,condition = sex)
+# We make a dummy male vs female condition;
+# males could be, for instance, in any even region
+my_data[,sex:=ifelse(region_id \%\% 2==0,"male","female")]
+p <- ethogramPlot(asleep,my_data,condition = sex)
 print(p)
-p <- ethogamPlot(activity,my_data,condition = sex,error_bar="sm")
-
+p <- ethogramPlot(asleep,my_data,condition = sex,error_bar="sem")
+print(p)
 # p is simply a ggplot object, so we can change things:
 print(p + labs(title="MY own title"))
 }
