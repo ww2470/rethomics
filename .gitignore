@@ -19,6 +19,7 @@ vignettes/*.pdf
 *-Ex.R
 
 rethomics/*.pdf
+*.Rcheck/
 *.tar.gz
 
 
