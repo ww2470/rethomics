@@ -11,7 +11,7 @@ Authors@R: c(
     person("Joe", "Gallagher", role = "ctb",email = "boa07jg@sheffield.ac.uk"))
 Author: Quentin Geissmann
 Maintainer: Quentin Geissmann <qgeissmann@gmail.com>
-Description: This package was primarily developed to study sleep and circadian rhythm of fruit flies.
+Description: This package was primarily developed to study sleep and circadian rhythm in fruit flies.
 License: GPL (>=3.0)
 Depends:
     R (>= 2.15.0),

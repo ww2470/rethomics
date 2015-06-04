@@ -25,7 +25,8 @@ A \code{ggplot} object that can be plotted directly, or modified
 }
 \description{
 This function produces a graph where y is the variable of interest and x, the time.
-It can be used to visualise trends per groups of conditions.
+It can be used to visualise temporal trends per groups of conditions.
+The response variable, y,  is grouped by time windows of defined size.
 }
 \examples{
 # Load sample data
