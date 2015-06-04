@@ -30,7 +30,8 @@ NULL
 #'
 #' # First of all, let us load files from the data sample with the package.
 #' # Most likely, you will already have your own data files.
-#' sample_files <- c("tube_monitor_validation_subset.db", "monitor_validation_subset.db")
+#' sample_files <- c("tube_monitor_validation_subset.db",
+#'                   "monitor_validation_subset.db")
 #' # Extract the files in your computer
 #' paths <- sapply(sample_files, loadSampleData)
 #' # Now, `paths` is just a vector of file names:
@@ -54,8 +55,8 @@ NULL
 #' # Case 3: load ALL ROIS from MULTIPLE FILES AND add CONDITIONS
 #' # Let us imagine that each file/experiement
 #' # was acquired under different experiemental condition.
-#' # We can encode this information in a 'master-table' (data frame) in which a column
-#' # named `path` maps experiemental condition(s). 
+#' # We can encode this information in a 'master-table' (i.e a data.frame) 
+#' # in which a column named \code{path} maps experiemental condition(s). 
 #' #For instance 3 different treatments:
 #' master_table <- data.frame(path=paths, treatment=c("control", "drug_A"))
 #' # Let us check our table:
@@ -69,10 +70,15 @@ NULL
 #' ###############
 #' # Case 4: load SELECTED REGIONS from MULTIPLE FILE, WITH CONDITIONS
 #' # Sometimes, different regions contain for different conditions.
-#' # If the master table has a column named `region_id`, only the specified regions will be returned.
-#' # Let us assume that we want to replicate case 3, but, now, we load only the first 20 regions.
-#' master_table <- data.table(path=paths, treatment=c("control", "drug_A"), region_id=rep(1:20,each= 2))
-#' # We could also imagine that every even region is a male, and every odd is a female:
+#' # If the master table has a column named `region_id`, 
+#' # only the specified regions will be returned.
+#' # Let us assume that we want to replicate case 3, 
+#' # but, now, we load only the first 20 regions.
+#' master_table <- data.table(path=paths, 
+#'                            treatment=c("control", "drug_A"), 
+#'                            region_id=rep(1:20,each= 2))
+#' # We could also imagine that every even region is a male,
+#' # and every odd is a female:
 #' master_table[, sex := ifelse(region_id %% 2, "male", "female" )]
 #' # Note that we have now two conditions.
 #' # Let us check our new table:
@@ -84,7 +90,8 @@ NULL
 #' print(dt[,.(NA),by=key(dt)])
 #' ####################
 #' # Case 5: Apply ANALYSIS/function while loading the data.
-#' # You can also apply a function from this package, or your own function to the data as it is being loaded.
+#' # You can also apply a function from this package,
+#' # or your own function to the data as it is being loaded.
 #' # For instance, if you wish to peform a "sleep annotation":
 #' dt <- loadPsvData(paths[1], FUN=sleepAnnotation)
 #' # You could of course combine this with more conditions/region selection.

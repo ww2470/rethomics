@@ -36,9 +36,9 @@ data(tube_monitor_validation)
 dt_region2 <- tube_monitor_validation[region_id==2,]
 sleep_dt <-  sleepAnnotation(dt_region2)
 print(sleep_dt)
-We make a sleep "barecode"
+# We make a sleep "barecode"
 ggplot(sleep_dt, aes(t,region_id,fill=asleep)) + geom_tile()
-A bit of data.table wizardry to apply that to each experiement and region:
+# A bit of data.table wizardry to apply that to each experiement and region:
 sleep_dt <-  tube_monitor_validation[,sleepAnnotation(.SD),by=key(tube_monitor_validation)]
 # The same bare code for all regions
 ggplot(sleep_dt, aes(t,region_id,fill=asleep)) + geom_tile()
