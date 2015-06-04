@@ -15,18 +15,18 @@ NULL
 #' @note The resulting data will only have one data point every \code{time_window_length} seconds.
 
 #' @examples
-#' # We load samples from the package data
-#' file <- loadSampleData("validation.db")
-#' # We would like only ROI #2 from this file
-#' map <- data.frame(path=file, roi_id=2)
-#' dt <- loadPsvData(map)
-#' sleep_dt <-  sleepAnnotation(dt)
-#' # A more likely scenario: we load ROIs 5 to 10 and
-#' # apply sleep analysis in combination with loadPsvData.
-#' # this means we apply the function to all rois immediatly after they are being loaded.
-#' map <- data.frame(path=file, roi_id=5:10)
-#' dt <- loadPsvData(map,FUN=sleepAnnotation)
-#' 
+#' # Let us load some sample data
+#' data(tube_monitor_validation)
+#' # We will start only with region 2:
+#' dt_region2 <- tube_monitor_validation[region_id==2,]
+#' sleep_dt <-  sleepAnnotation(dt_region2)
+#' print(sleep_dt)
+#' We make a sleep "barecode"
+#' ggplot(sleep_dt, aes(t,region_id,fill=asleep)) + geom_tile()
+#' A bit of data.table wizardry to apply that to each experiement and region:
+#' sleep_dt <-  tube_monitor_validation[,sleepAnnotation(.SD),by=key(tube_monitor_validation)]
+#' # The same bare code for all regions
+#' ggplot(sleep_dt, aes(t,region_id,fill=asleep)) + geom_tile()
 #' @seealso \code{\link{loadPsvData}} to load data and optionnaly apply analysis on the fly.
 #' @export
 
@@ -102,7 +102,6 @@ NULL
 #' @seealso \code{\link{maxVelocityClassifier}} to defince movement by maximum velocity, which is more accurate, instead.
 #' @export
 virtualBeamCrossClassif <- function(data){
-  
   d <- copy(data)
   d[,beam_cross := abs(c(0,diff(sign(.5 - x))))]
   d[,beam_cross := as.logical(beam_cross)]

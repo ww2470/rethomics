@@ -28,14 +28,16 @@ The values of the variable of interest are represented by different colour inten
 }
 \examples{
 # Load sample data
-data(sleep_validation)
-my_data <- sleep_validation[,sleepAnnotation(.SD),by=key(sleep_validation)]
-# No condition
-p <- overviewPlot(activity,my_data)
+data(monitor_validation)
+my_data <- monitor_validation[,sleepAnnotation(.SD),by=key(monitor_validation)]
+# let us have a look of the max velocity as a measure of activity
+p <- overviewPlot(max_velocity,my_data)
 print(p)
-# We make a dummy condition, males are in every even region
-my_data[,sex:=ifelse(region_id \%\% 2==0,"m","f")]
-p <- overviewPlot(activity,my_data,condition = sex)
+# Let us make a dummy treatment variable.
+For instance, region > 10 have a treatment named ``Drug_1''
+my_data[,treatment:=ifelse(region_id > 10,"Control","Drug_1")]
+p <- overviewPlot(max_velocity,my_data,condition = treatment)
+See how treatment levels are grouped together:
 print(p)
 # p is simply a ggplot object, so we can change things:
 print(p + labs(title="MY own title"))
