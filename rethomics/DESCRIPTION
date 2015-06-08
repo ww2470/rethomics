@@ -20,7 +20,8 @@ Depends:
     data.table,
     pracma,
     zoo,
-    ggplot2
+    ggplot2,
+    reshape2
 LazyLoad: TRUE
 Collate:
     'io.R'
