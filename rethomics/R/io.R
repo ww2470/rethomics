@@ -275,16 +275,13 @@ loadMetaData <- function(FILE){
 	
 # @include
 NULL
-#' Read a text file formatted as DAM2 into a single data table.
+#' Read a text file formated as DAM2 into a single data table.
 #'
 #' This function is used to load data from DAM2 devices as a data.table.
 #'
 #' @param FILE the name of the input file.
-#' @param min_time exclude data before min_time (in seconds). This time is relative to the start of the experiement.
-#' @param max_time exclude data after max_time (in seconds). This time is relative to the start of the experiement.
-#' @return If \code{rois} has only one element, a dataframe. Otherwise, a list of dataframes (one per ROI)
-#' @note Analysis of many long (sevaral days) recording can use a large amount of RAM.
-#' Therefore, it can sometimes be advantageaous to load an process ROIs one by one.
+#' @param tz the time zone of the computer saving the file. By default, \code{tz} is taken from the computer running this function
+#' @return a data table with an activity (number of beam crosses) variable, a region_id (channel) variable and a posix time stamp.
 #' @examples
 #' \dontrun{
 #' FILE <- "Monitor53.txt"
@@ -301,7 +298,7 @@ NULL
 #' }
 #' @seealso \code{\link{loadMetaData}} To display global informations about the experiment.
 #' @export
-loadDAMFile <- function(FILE, channels = NULL, min_time = 0, max_time = Inf, interval = 60){
+loadDAMFile <- function(FILE, tz = ""){
 	### hardcodded constants
 	DAM_COL_TYPES <- c(
 		"integer", "character", "character",
@@ -314,7 +311,7 @@ loadDAMFile <- function(FILE, channels = NULL, min_time = 0, max_time = Inf, int
 	dt_list <- fread(FILE, drop=4:10, header = FALSE)
 	setnames(dt_list,DAM_COL_NAMES)
 	dt_list[,datetime:=paste(day_month_year,time, sep=":")]
-	dt_list[,t:=as.POSIXct(strptime(datetime,"%d %b %Y:%H:%M:%S"))]
+	dt_list[,t:=as.POSIXct(strptime(datetime,"%d %b %G:%H:%M:%S",tz=tz))]
 	#clean table from unused parameters (idx,time, datetime...)
 	dt_list[,time:=NULL]
 	dt_list[,datetime:=NULL]
@@ -329,50 +326,15 @@ loadDAMFile <- function(FILE, channels = NULL, min_time = 0, max_time = Inf, int
         num <- as.integer(sapply(s,function(x) x[2]))
         return(num)
     }
+  
     #get the values on activity
     dt_risonno[,activity:=value]
-    dt_risonno[,roi_id:=roi_value(as.character(variable))]
+    dt_risonno[,region_id:=roi_value(as.character(variable))]
+	dt_risonno$value <- NULL
+	dt_risonno$variable <- NULL
 	return(dt_risonno)
 }
 
-
-NULL
-
-loadDAMFiles <- function(FILES, channels = NULL, min_time = 0, max_time = Inf, interval = 60){
-	### hardcodded constants
-	DAM_COL_TYPES <- c(
-		c("integer", "character", "character", "character", "character"),
-		rep("NULL", 7), ## these columns are irrelevant, NULL means we will discard them straight away
-		rep("double", 32)
-		)
-
-	DAM_COL_NAMES <- c("idx", "day", "month", "year", "time",rep(NA, 7), sprintf("channel_%02d", 1:32))
-	
-	# todo sort files per actual dates before concat
-	df_list <- lapply(FILES, function(f){
-			read.table(f, colClasses = DAM_COL_TYPES, header = FALSE, col.names=DAM_COL_NAMES)
-		})
-
-	df <- do.call("rbind", df_list)
-	#quick fix
-	df$t <- 1:nrow(df) * interval #(s)
-	df$day <- NULL
-	df$month <- NULL
-	df$year <- NULL
-	df$time <- NULL
-	
-	if(is.null(channels))
-		channels <- 1:32
-	
-	df <- subset(df, t > min_time & t < max_time)
-	chans_to_fecth <- sprintf("channel_%02d", channels)
-	
-	df_l <- lapply(chans_to_fecth, function(x){
-			data.frame(t=df$t,activity=df[,x])
-		})
-	names(df_l) <- chans_to_fecth	
-	return(df_l)
-}	
 
 NULL
 #' Retreive sample/example data contained within in this package.
@@ -511,3 +473,102 @@ fetchPsvResultFiles <- function(result_dir,query=NULL){
   }
   na.omit(out)
 }
+
+
+
+listDailyDAMFiles <- function(result_dir){
+  fs <- list.files( result_dir,pattern="M...*\\.txt",recursive = T)
+  fields <- strsplit(fs,"/")
+  valid_files <- sapply(fields,length) == 4
+  fs <- fs[valid_files]
+  files_info <- do.call("rbind",fields[valid_files])
+  files_info <- as.data.table(files_info)
+  setnames(files_info, c("yyyy", "mm", "mmdd","file"))
+  files_info[, machine_id := substr(file,5,8)]  
+  files_info[, path := paste(result_dir,fs,sep="/")]
+  files_info[, date := paste0(yyyy,mmdd)]
+  files_info[, date:=as.POSIXct(date, "%Y%m%d", tz="GMT")]
+  files_info$mm <- NULL
+  files_info$yyyy<- NULL
+  files_info$mmdd <- NULL
+  files_info$file <- NULL
+  files_info
+}
+
+fetchDAMData <- function(result_dir,query, reference_hour=9.0, tz="BST"){
+  q = copy(query)
+  #files_info[, experiment_id := paste(date,machine_id,sep="_")]
+  files_info <- listDailyDAMFiles(result_dir)
+
+  if(!("region_id" %in% colnames(q)))
+      q <- q[,.(region_id=1:32),by=c(colnames(q))]
+  
+  q[, start_date:=as.POSIXct(start_date, "%Y-%m-%d", tz="GMT")]
+  q[, stop_date:=as.POSIXct(stop_date, "%Y-%m-%d", tz="GMT")]
+  q[, experiment_id := paste(start_date,machine_id,sep="_")]
+  
+  foo <- function(d){
+  
+    t0 <- unique(d[,start_date])
+    t1 <- unique(d[,stop_date])
+    mid <- unique(d[,machine_id])
+    eid <- unique(d[,experiment_id])
+    out <- files_info[date >= t0 & date <= t1 & machine_id == mid, .(path)]
+    
+    out[,experiment_id := eid]
+  }
+  setkeyv(q,c("experiment_id"))
+  
+  uniq_q <- unique(q)
+  uniq_q$region_id <- NULL
+  setkeyv(uniq_q,c("experiment_id"))
+  #setkeyv(uniq_q,c("experiment_id"))
+  day_query <- uniq_q[,
+        foo(.SD)
+    ,by= 1:nrow(uniq_q)]
+  day_query$nrow <- NULL
+  setkeyv(day_query,c("experiment_id"))
+  day_query <- uniq_q[day_query]
+  day_query
+  
+  
+  bar <- function(files){
+    out <- lapply(files, loadDAMFile,tz=tz)
+    rbindlist(out)
+  }
+  
+  all_data <- day_query[, 
+                        bar(path)
+                        ,by="experiment_id"]
+  #all_data[,t:=as.numeric(t - min(t))]
+  setkeyv(q,c("experiment_id","region_id"))
+  setkeyv(all_data,c("experiment_id","region_id"))
+  all_data <- all_data[q]
+  
+  all_data[,t := as.numeric(t  - start_date,units="secs")]
+  all_data[,t := t-hours(reference_hour)]
+  
+}
+
+# query <- data.table(start_date = "2015-05-01",
+#                      stop_date = "2015-05-05",
+#                      machine_id=c("M001","M002"))
+#                     
+# query <- query[,.(region_id=1:10),by=c(colnames(query))]
+# query <- query[,sex:=ifelse(region_id%%2 ==0, "m","f")]
+#query <- fread("~/Desktop//AP-dam-query.csv")
+#query
+# 
+#dt <- fetchDAMData("/data/dailyData",query)
+ 
+#overviewPlot(activity,dt,Genotype)
+# ethogramPlot(activity,dt,Genotype)
+# pdt <- dt[,
+#         .(average_activity = mean(as.logical(activity))),
+#           by=c(key(dt),"Genotype")]
+# ggplot(pdt,aes(Genotype,average_activity))+geom_boxplot()
+# 
+#   
+# dev.off()
+# query[,files_info[date > start_date & date <= stop_date],by=]
+# 

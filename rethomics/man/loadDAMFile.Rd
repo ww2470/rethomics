@@ -2,27 +2,20 @@
 % Please edit documentation in R/io.R
 \name{loadDAMFile}
 \alias{loadDAMFile}
-\title{Read a text file formatted as DAM2 into a single data table.}
+\title{Read a text file formated as DAM2 into a single data table.}
 \usage{
-loadDAMFile(FILE, channels = NULL, min_time = 0, max_time = Inf,
-  interval = 60)
+loadDAMFile(FILE, tz = "")
 }
 \arguments{
 \item{FILE}{the name of the input file.}
 
-\item{min_time}{exclude data before min_time (in seconds). This time is relative to the start of the experiement.}
-
-\item{max_time}{exclude data after max_time (in seconds). This time is relative to the start of the experiement.}
+\item{tz}{the time zone of the computer saving the file. By default, \code{tz} is taken from the computer running this function}
 }
 \value{
-If \code{rois} has only one element, a dataframe. Otherwise, a list of dataframes (one per ROI)
+a data table with an activity (number of beam crosses) variable, a region_id (channel) variable and a posix time stamp.
 }
 \description{
 This function is used to load data from DAM2 devices as a data.table.
-}
-\note{
-Analysis of many long (sevaral days) recording can use a large amount of RAM.
-Therefore, it can sometimes be advantageaous to load an process ROIs one by one.
 }
 \examples{
 \dontrun{
