@@ -494,7 +494,24 @@ listDailyDAMFiles <- function(result_dir){
   files_info$file <- NULL
   files_info
 }
+#' Retreives DAM2 data from data that is saved daily
+#' 
+#' Uses a query mechanism to get data from a DAM2 array. 
+#' This is useful when data has been saved, by day, in individual files for each monitor.
+#' 
+#' @param result_dir the root directory where all daily data are saved
+#' @param query a formated query used to request data (see detail).
+#' @param reference_hour the hour, in the day, to use as t_0 reference. This should be expressed on Greenwich Meridian Time.
+#' @param tz the time zone on which the DAM2 data was saved (e.g. BSM -> British Summer Time)
+#' @note
+#' the daily data should be saved in a hard-coded directory structure \code{root_dir/yyyy/mm/mmdd/mmddMxyz.txt}, where:
+#' \itemize{
+#'  \item{\code{yyyy} }{Is the year (e.g. 2014)}
+#'  \item{\code{mm} and \code{dd}, }{the formated month and day, respectively (e.g. mm=12 and dd=28).}
+#'  \item{\code{xyz}, }{the number of the monitor (e.g 003)}
+#' }
 
+#' @export
 fetchDAMData <- function(result_dir,query, reference_hour=9.0, tz="BST"){
   q = copy(query)
   #files_info[, experiment_id := paste(date,machine_id,sep="_")]
