@@ -2,16 +2,16 @@
 % Please edit documentation in R/sleep.R
 \name{sleepAnnotation}
 \alias{sleepAnnotation}
-\title{Determine whether an animal is asleep}
+\title{Determines whether an animal is asleep}
 \usage{
 sleepAnnotation(data, time_window_length = 10, min_time_immobile = 60 * 5,
   motion_classifier_FUN = maxVelocityClassifier, ...)
 }
 \arguments{
-\item{data}{the data (i.e a data.table) from a \emph{single} ROI. It must contain, at least,
+\item{data}{the data (i.e a data.table) from a \emph{single} region. It must contain, at least,
 the columns `t`, `x` and `y`.}
 
-\item{time_window_length}{The number of seconds to be used by the motion classifier. This corresponds to the period of the output data.}
+\item{time_window_length}{The number of seconds to be used by the motion classifier. This corresponds to the sampling period of the output data.}
 
 \item{min_time_immobile}{the minimal duration (in s) after which an immobile animal is scored as `asleep'.}
 
@@ -36,7 +36,7 @@ data(tube_monitor_validation)
 dt_region2 <- tube_monitor_validation[region_id==2,]
 sleep_dt <-  sleepAnnotation(dt_region2)
 print(sleep_dt)
-# We make a sleep "barecode"
+# We make a sleep `barecode'
 ggplot(sleep_dt, aes(t,region_id,fill=asleep)) + geom_tile()
 # A bit of data.table wizardry to apply that to each experiement and region:
 sleep_dt <-  tube_monitor_validation[,sleepAnnotation(.SD),by=key(tube_monitor_validation)]

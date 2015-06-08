@@ -7,8 +7,8 @@ NULL
 #'
 #' @param what an object describing which file(s) to load and, optionally, associated variables/conditions (see details).
 #' @param min_time exclude data before min_time (in seconds). This time is relative to the start of the experiement.
-#' @param max_time exclude data after max_time (in seconds). Also relative to the start of the experiement.
-#' @param reference_hour the hour, in the day, to use as t_0 reference. When unspecified, time in the output is relative to the start of the experiment.
+#' @param max_time exclude data after max_time (in seconds). It is also relative to the start of the experiment.
+#' @param reference_hour the hour, in the day, to use as t_0 reference. When unspecified, time will be relative to the start of the experiment.
 #' @param verbose whether to print progress (a logical).
 #' @param FUN an optionnal function to transform the data from each `region' (i.e. a data.table) immedidatly after is has been loaded. 
 #' @param ... extra arguments to be passed to \code{FUN}
@@ -18,17 +18,17 @@ NULL
 #' @details \code{what} can be one of two objects:
 #' \itemize{
 #'  \item{A character vector. }{In which case, it is assumed that each element is the path to a different file to load.}
-#'  \item{A dataframe. }{The dataframe \emph{must} have a column named `path`. 
-#'  The path basename will be used as a unique identifier for a specific experiement (\code{experiment_id}).
-#' Arbitrary column can be added to map experimental condition to file name.
+#'  \item{A dataframe. }{The dataframe \emph{must} have a column named `path'. 
+#'  The path basename will be used as a unique identifier for a specific experiment (\code{experiment_id}).
+#' Arbitrary column can be added to map experimental conditions to file name.
 #' In addition, the dataframe can have a column named \code{region_id}. When defined, only the specified combinations of \code{path} and \code{region_id}
-#' will be loaded. This allows to map additionnal conditions (data frame columns) to specific regions/files.
+#' will be loaded. This allows to map additionnal conditions (i.e. data frame columns) to specific regions/files.
 #' When additionnal conditions are provided, they will result in creation of custom columns in the output of this function.}
 #' }
 #'
 #' @examples
 #'
-#' # First of all, let us load files from the data sample with the package.
+#' # First of all, let us load files from the data sample included within this package.
 #' # Most likely, you will already have your own data files.
 #' sample_files <- c("tube_monitor_validation_subset.db",
 #'                   "monitor_validation_subset.db")
@@ -40,28 +40,28 @@ NULL
 #' #################
 #' # Case 1: load ALL REGIONS from a SINGLE FILE
 #' validation_data_file <- paths[1]
-#' # `validation_data_file` is simply the path to the db file in your computer
+#' # `validation_data_file` is simply the path to the .db file in your computer
 #' dt <- loadPsvData(validation_data_file)
 #' print(dt)
 #' ###############
 #' # Case 2: load ALL REGIONS from MULTIPLE FILES
-#' # we pass all the files we want to load as thw `what` argument
+#' # we pass all the files we want to load as the `what` argument
 #' dt <- loadPsvData(paths)
-#' # Note the column `experiment_id` in dt. It tells us which file/experiement 
+#' # Note the column `experiment_id` in dt. It tells us which file/experiment 
 #' # each measurment originates from.
 #' print(dt)
 #'
 #' ###############
-#' # Case 3: load ALL ROIS from MULTIPLE FILES AND add CONDITIONS
+#' # Case 3: load ALL REGIONS from MULTIPLE FILES AND add CONDITIONS
 #' # Let us imagine that each file/experiement
 #' # was acquired under different experiemental condition.
 #' # We can encode this information in a 'master-table' (i.e a data.frame) 
 #' # in which a column named \code{path} maps experiemental condition(s). 
-#' #For instance 3 different treatments:
+#' # For instance, 2 different treatments:
 #' master_table <- data.frame(path=paths, treatment=c("control", "drug_A"))
 #' # Let us check our table:
 #' print(master_table)
-#' # The table looks OK, we load the actual data
+#' # The table looks OK, so we load the actual data
 #' dt <- loadPsvData(master_table)
 #' # Note that `dt` now contains a column for your treatment.
 #' print(colnames(dt))
@@ -69,7 +69,7 @@ NULL
 #' print(dt[,.(mean_x = mean(x)),by="treatment"])
 #' ###############
 #' # Case 4: load SELECTED REGIONS from MULTIPLE FILE, WITH CONDITIONS
-#' # Sometimes, different regions contain for different conditions.
+#' # Sometimes, different regions contain different conditions.
 #' # If the master table has a column named `region_id`, 
 #' # only the specified regions will be returned.
 #' # Let us assume that we want to replicate case 3, 
@@ -77,8 +77,8 @@ NULL
 #' master_table <- data.table(path=paths, 
 #'                            treatment=c("control", "drug_A"), 
 #'                            region_id=rep(1:20,each= 2))
-#' # We could also imagine that every even region is a male,
-#' # and every odd is a female:
+#' # We could also imagine that every even region contains a male,
+#' # whilst every odd one has a female:
 #' master_table[, sex := ifelse(region_id %% 2, "male", "female" )]
 #' # Note that we have now two conditions.
 #' # Let us check our new table:
@@ -89,13 +89,13 @@ NULL
 #' # lets display the regions we ended up with
 #' print(dt[,.(NA),by=key(dt)])
 #' ####################
-#' # Case 5: Apply ANALYSIS/function while loading the data.
+#' # Case 5: Apply ANALYSIS/function whist loading the data.
 #' # You can also apply a function from this package,
 #' # or your own function to the data as it is being loaded.
-#' # For instance, if you wish to peform a "sleep annotation":
+#' # For instance, if you wish to peform a `sleep annotation':
 #' dt <- loadPsvData(paths[1], FUN=sleepAnnotation)
 #' # You could of course combine this with more conditions/region selection.
-#' # For most complicated cases, you would have probably generated the 
+#' # For most complicated cases, you would probably have pre-generated the 
 #' # master-table (e.g. as a csv file) before analysing the results.
 
 #' @seealso \code{\link{loadMetaData}} To display global informations about a specific file. 
@@ -375,10 +375,10 @@ loadDAMFiles <- function(FILES, channels = NULL, min_time = 0, max_time = Inf, i
 }	
 
 NULL
-#' Retreive sample/example data contained in this package.
+#' Retreive sample/example data contained within in this package.
 #' 
-#' This function is intended to be used in order to try and test this package with a reproducible set of raw db data.
-#' @param names The name of the samples to be loaded. When \code{names} is \code{NULL}, the function returns the list of available samples.
+#' This function is only for testing (and trying) purposes.  It provides a way to access raw data  (e.g. db files) contained within this package.
+#' @param names The name of the samples to be loaded. When \code{names} is \code{NULL}, the function returns the list of all available samples.
 #' @seealso \code{\link{loadPsvData}} to obtain raw experimental data. 
 #' @export
 loadSampleData <- function(names=NULL){
@@ -417,7 +417,7 @@ NULL
 #' 
 #' This function is designed to list and select experiemental files. In general, end-users will want to retreive path to their experimental files
 #' according to the date and ID of the video monitor without having to undertand the underlying directory structure.
-#' @param result_dir The location of the result directory (i.e. the folder containing all data).
+#' @param result_dir The location of the result directory (i.e. the folder containing all the data).
 #' @param query An optionnal query formated as a dataframe (see details).
 #' @return
 #' The query extended with the requested paths. When \code{query} is not specified, the function returns a table with all available files.
@@ -433,18 +433,20 @@ NULL
 #'}
 #' The result is meant to be used directly, as the \code{what} argument, by \code{\link{loadPsvData}} (see examples).
 #' @note
-#' PSV stores the data in a hard-coded directory structure\code{/root_dir/machine_id/machine_name/datetime/file.db}:
+#' PSV stores data in a hard-coded directory structure \code{/root_dir/machine_id/machine_name/datetime/file.db}, where:
 #' \itemize{
-#'  \item{\code{machine_id} }{In principle, a universally unique identifier of the acquisition device.}
-#'  \item{\code{machine_name} }{A human friendly name for acquisition device. In practice, this is expected to be unique within laboratory.}
-#'  \item{\code{datetime} }{The date (and optionnally the time) of the begining of an experiment}
+#'  \item{\code{machine_id} }{Is, in principle, a universally unique identifier of the acquisition device.}
+#'  \item{\code{machine_name}, }{a human friendly name for acquisition device. In practice, this is expected to be unique within laboratory.}
+#'  \item{\code{datetime}, }{the date and time of the start of the experiment}
 #' }
 #' @examples
 #' \dontrun{
 #' # This is where I store the data on my computer
 #' MY_DATA_DIR <- "/data/psv_results/"
 #' 
-#' query <- data.table(date="2015-06-02", machine_name=c("GGSM-001","GGSM-003"),region_id = rep(1:10,each=2))
+#' query <- data.table(date="2015-06-02",
+#'                     machine_name=c("GGSM-001","GGSM-003"),
+#'                     region_id = rep(1:10,each=2))
 #' print(query)
 #' map <- fetchPsvResultFiles(MY_DATA_DIR, query)
 #' dt <- loadPsvData(map)
