@@ -7,7 +7,7 @@
 fetchPsvResultFiles(result_dir, query = NULL)
 }
 \arguments{
-\item{result_dir}{The location of the result directory (i.e. the folder containing all data).}
+\item{result_dir}{The location of the result directory (i.e. the folder containing all the data).}
 
 \item{query}{An optionnal query formated as a dataframe (see details).}
 }
@@ -31,11 +31,11 @@ The only difference is that it does not have a \code{path} column. Instead, it m
 The result is meant to be used directly, as the \code{what} argument, by \code{\link{loadPsvData}} (see examples).
 }
 \note{
-PSV stores the data in a hard-coded directory structure\code{/root_dir/machine_id/machine_name/datetime/file.db}:
+PSV stores data in a hard-coded directory structure \code{/root_dir/machine_id/machine_name/datetime/file.db}, where:
 \itemize{
- \item{\code{machine_id} }{In principle, a universally unique identifier of the acquisition device.}
- \item{\code{machine_name} }{A human friendly name for acquisition device. In practice, this is expected to be unique within laboratory.}
- \item{\code{datetime} }{The date (and optionnally the time) of the begining of an experiment}
+ \item{\code{machine_id} }{Is, in principle, a universally unique identifier of the acquisition device.}
+ \item{\code{machine_name}, }{a human friendly name for acquisition device. In practice, this is expected to be unique within laboratory.}
+ \item{\code{datetime}, }{the date and time of the start of the experiment}
 }
 }
 \examples{
@@ -43,7 +43,9 @@ PSV stores the data in a hard-coded directory structure\code{/root_dir/machine_i
 # This is where I store the data on my computer
 MY_DATA_DIR <- "/data/psv_results/"
 
-query <- data.table(date="2015-06-02", machine_name=c("GGSM-001","GGSM-003"),region_id = rep(1:10,each=2))
+query <- data.table(date="2015-06-02",
+                    machine_name=c("GGSM-001","GGSM-003"),
+                    region_id = rep(1:10,each=2))
 print(query)
 map <- fetchPsvResultFiles(MY_DATA_DIR, query)
 dt <- loadPsvData(map)

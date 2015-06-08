@@ -4,7 +4,7 @@ NULL
 #' 
 #' This function produces a tiled representation in which every row represents one individual (i.e. from a unique combination of region and experiement).
 #' The x axis represents time in days.
-#' The values of the variable of interest are represented by different colour intensity.
+#' The values of the variable of interest are represented by different colour intensities.
 #'
 #' @param y The variable of interest
 #' @param data The data.table containing the data. It must have a column with the same name as y.
@@ -16,6 +16,7 @@ NULL
 #' @examples
 #' # Load sample data
 #' data(monitor_validation)
+#' # We perform sleep annotation on all animals
 #' my_data <- monitor_validation[,sleepAnnotation(.SD),by=key(monitor_validation)]
 #' # let us have a look of the max velocity as a measure of activity
 #' p <- overviewPlot(max_velocity,my_data)
@@ -73,21 +74,22 @@ NULL
 #@include
 #' Displays the temporal and inter-individual average of a variable of interest.
 #' 
-#' This function produces a graph where y is the variable of interest and x, the time. 
+#' This function produces a graph where the variable of interest and time are on the y and x axes, respectively. 
 #' It can be used to visualise temporal trends per groups of conditions. 
 #' The response variable, y,  is grouped by time windows of defined size.
 #'
-#' @param y The variable of interest
+#' @param y The variable of interest.
 #' @param data The data.table containing the data. It must have a column with the same name as y.
 #' @param condition An optionnal grouping factor to order rows.
-#' @param summary_time_window the width (in seconds) of the time window used to draw each pixel.
-#' @param normalise_var_per_id whether each row is to be normalised (using new_x = {x - mean(x)}/sd(x)).
-#' @param error_bar what type of error bar should be used. It should be one of \code{NULL},`sem' or `sd').
-#' @return A \code{ggplot} object that can be plotted directly, or modified
+#' @param summary_time_window the width (in seconds) of the time window used to draw each ``pixel''.
+#' @param normalise_var_per_id whether each row is to be normalised (using \code{new_x = (x - mean(x))/sd(x)}).
+#' @param error_bar what type of error bar should be used. It should be one of \code{NULL},`sem' or `sd'.
+#' @return A \code{ggplot} object that can be plotted directly, or modified.
 
 #' @examples
 #' # Load sample data
 #' data(monitor_validation)
+#' # We perform sleep annotation on all animals
 #' my_data <- monitor_validation[,sleepAnnotation(.SD),by=key(monitor_validation)]
 #' # No condition
 #' p <- ethogramPlot(asleep,my_data)
@@ -101,7 +103,7 @@ NULL
 #' print(p)
 #' # p is simply a ggplot object, so we can change things:
 #' print(p + labs(title="MY own title"))
-#' @seealso \code{\link{oveviewPlot}} To show per-individual patterns
+#' @seealso \code{\link{oveviewPlot}} to show per-individual patterns
 #' @export
 ethogramPlot <- function(y,data,
                           condition=NULL,

@@ -2,18 +2,17 @@
 % Please edit documentation in R/sleep.R
 \name{maxVelocityClassifier}
 \alias{maxVelocityClassifier}
-\title{Define whether an animal is moving according to its subpixel velocity.
-It requieres a variable named \code{xy_dist_log10x1000} in the .db file.}
+\title{Motion classifier based on maximum velocity.}
 \usage{
 maxVelocityClassifier(data, velocity_threshold = 0.005)
 }
 \arguments{
 \item{data}{the data.table containing behavioural features used for movement classification.}
 
-\item{velocity_threshold}{}
+\item{velocity_threshold}{velocity above which an animal is classified as `moving'.}
 }
 \description{
-Define whether an animal is moving according to its subpixel velocity.
+Defines whether an animal is moving according to its subpixel velocity.
 It requieres a variable named \code{xy_dist_log10x1000} in the .db file.
 }
 \seealso{

@@ -24,11 +24,12 @@ A \code{ggplot} object that can be plotted directly or modified.
 \description{
 This function produces a tiled representation in which every row represents one individual (i.e. from a unique combination of region and experiement).
 The x axis represents time in days.
-The values of the variable of interest are represented by different colour intensity.
+The values of the variable of interest are represented by different colour intensities.
 }
 \examples{
 # Load sample data
 data(monitor_validation)
+# We perform sleep annotation on all animals
 my_data <- monitor_validation[,sleepAnnotation(.SD),by=key(monitor_validation)]
 # let us have a look of the max velocity as a measure of activity
 p <- overviewPlot(max_velocity,my_data)

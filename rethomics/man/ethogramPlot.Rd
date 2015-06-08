@@ -8,29 +8,30 @@ ethogramPlot(y, data, condition = NULL, summary_time_window = mins(30),
   normalise_var_per_id = FALSE, error_bar = NULL)
 }
 \arguments{
-\item{y}{The variable of interest}
+\item{y}{The variable of interest.}
 
 \item{data}{The data.table containing the data. It must have a column with the same name as y.}
 
 \item{condition}{An optionnal grouping factor to order rows.}
 
-\item{summary_time_window}{the width (in seconds) of the time window used to draw each pixel.}
+\item{summary_time_window}{the width (in seconds) of the time window used to draw each ``pixel''.}
 
-\item{normalise_var_per_id}{whether each row is to be normalised (using new_x = {x - mean(x)}/sd(x)).}
+\item{normalise_var_per_id}{whether each row is to be normalised (using \code{new_x = (x - mean(x))/sd(x)}).}
 
-\item{error_bar}{what type of error bar should be used. It should be one of \code{NULL},`sem' or `sd').}
+\item{error_bar}{what type of error bar should be used. It should be one of \code{NULL},`sem' or `sd'.}
 }
 \value{
-A \code{ggplot} object that can be plotted directly, or modified
+A \code{ggplot} object that can be plotted directly, or modified.
 }
 \description{
-This function produces a graph where y is the variable of interest and x, the time.
+This function produces a graph where the variable of interest and time are on the y and x axes, respectively.
 It can be used to visualise temporal trends per groups of conditions.
 The response variable, y,  is grouped by time windows of defined size.
 }
 \examples{
 # Load sample data
 data(monitor_validation)
+# We perform sleep annotation on all animals
 my_data <- monitor_validation[,sleepAnnotation(.SD),by=key(monitor_validation)]
 # No condition
 p <- ethogramPlot(asleep,my_data)
@@ -46,6 +47,6 @@ print(p)
 print(p + labs(title="MY own title"))
 }
 \seealso{
-\code{\link{oveviewPlot}} To show per-individual patterns
+\code{\link{oveviewPlot}} to show per-individual patterns
 }
 

@@ -2,15 +2,15 @@
 % Please edit documentation in R/io.R
 \name{loadSampleData}
 \alias{loadSampleData}
-\title{Retreive sample/example data contained in this package.}
+\title{Retreive sample/example data contained within in this package.}
 \usage{
 loadSampleData(names = NULL)
 }
 \arguments{
-\item{names}{The name of the samples to be loaded. When \code{names} is \code{NULL}, the function returns the list of available samples.}
+\item{names}{The name of the samples to be loaded. When \code{names} is \code{NULL}, the function returns the list of all available samples.}
 }
 \description{
-This function is intended to be used in order to try and test this package with a reproducible set of raw db data.
+This function is only for testing (and trying) purposes.  It provides a way to access raw data  (e.g. db files) contained within this package.
 }
 \seealso{
 \code{\link{loadPsvData}} to obtain raw experimental data.
