@@ -511,7 +511,7 @@ listDailyDAMFiles <- function(result_dir){
 #' Conceptually, each row of the query describes the conditions in one channel (when \code{region_id} is specified), or in each monitor (when it is not).
 #' It should have  the following columns:
 #' \itemize{
-#'  \item{\code{machine_id} }{ the name of the machine used (e.g. `M002').
+#'  \item{\code{machine_id} }{ the name of the machine used (e.g. `M002').}
 #'  \item{\code{start_date} }{ the first day of the requested experiement (e.g. `2014-12-28').}
 #'  \item{\code{stop_date} }{ the last day of the requested experiement (e.g. `2014-12-30').}
 #'  \item{\code{region_id} }{ the channel (between 1 and 32) in what the animal was in (e.g. `20'). This is an optionnal column. If not povided, all 32 channels are loaded with the same conditions.}
