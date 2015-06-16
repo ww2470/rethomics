@@ -3,20 +3,7 @@
 \usepackage{fullpage}
 
 \begin{document}
-
-<<include=FALSE>>=
-library(knitr)
-options(width=90)
-opts_chunk$set(
-concordance=TRUE,
-size="footnotesize",
-tidy.opts=list(blank=FALSE, width.cutoff=90),
-fig.width=12, fig.height=6, fig.align='center',
-warning=FALSE
-)
-
-@
-
+\SweaveOpts{concordance=TRUE}
 \section{Installation}
 \texttt{rethomics} is still under heavy development, so it cannot be uploaded to the CRAN (Comprehensive R Archive Network) -- where most stable packages are -- yet. Instead, we can install R using Hadley Wickham's popular \texttt{devtools}\footnote{installation instructions are available \href{https://github.com/hadley/devtools/blob/master/R/run-examples.r}{here}}.
 Once you have \texttt{devtools} installed, it should be straightforward to install \texttt{rethomics}
@@ -44,7 +31,8 @@ By convention:
 
 For a single \textbf{experiment}, and when tracking a single animal (i.e. in a single \textbf{region}),
 your data table could look like:
-<<cache=TRUE>>=
+<<>>=
+library(rethomics)
 data(multiple_iterative_y_mazes)
 single_animal <- multiple_iterative_y_mazes[
               experiment_id == "female_FALSE_11.db"]
@@ -61,7 +49,8 @@ From simply looking at this table, you should be able to answer:
 }
 
 In order to understand the need for additional columns, we can load data from multiple experiments:
-<<cache=TRUE>>=
+<<>>=
+library(rethomics)
 data(multiple_iterative_y_mazes)
 print(multiple_iterative_y_mazes)
 @
@@ -73,7 +62,8 @@ This makes it very easy and efficient to work with large amount of behavioural d
 Common operation could involve filtering data and computing variable per condition or per individual.
 
 Let us go through several examples:
-<<cache=TRUE>>=
+<<>>=
+library(rethomics)
 data(multiple_iterative_y_mazes)
 #We can simply call this data table `dt'
 dt <- multiple_iterative_y_mazes
@@ -87,7 +77,6 @@ summary_dt =  dt[,
                  by=key(dt)]
 print(summary_dt)
 @
-
 Much more can be achieved using \texttt{data.table}, so I would strongly recommend to, at least, read the package introduction\footnote{\url{http://cran.r-project.org/web/packages/data.table/vignettes/datatable-intro.pdf}}.
 
 
@@ -97,7 +86,7 @@ In other words, we would like to load the data contained within a \texttt{.db} f
 The function to load these data is called \texttt{loadPsvData}. It has many options, so it may be useful to read the documentation at some stage, but for now, we will just learn how to send a `query' to obtain some data.
 I do not expect you to have already acquired any sort of data, so we will work with some of my samples, which I have enclosed within \texttt{rethomics}:
 
-<<cache=TRUE>>=
+<<>>=
 # let us unpack these couple of files
 sample_files <- c("tube_monitor_validation_subset.db",
                    "monitor_validation_subset.db")
@@ -116,7 +105,7 @@ In real life, each file will have a unique name containing the date and time as 
 Often, each file will correspond for a different condition (or combination of variables)
 that you would like to include in the resulting data table. In order to do that, we can pass a \emph{query} to \texttt{loadPsvData}. A query is simply a table that has a column named \texttt{path}, and other columns for arbitrary conditions:
 
-<<cache=TRUE>>=
+<<>>=
 query <- data.table(path=paths,
                     treatment=c("control", "drug_A"))
 print(query)
@@ -125,7 +114,7 @@ print(query)
 When working with a large number of files/conditions, it would be more common to load query from a spreadsheet or a CSV file.
 Once the query is prepared, we can simply load all the associated data:
 
-<<cache=TRUE>>=
+<<>>=
 dt <- loadPsvData(query,verbose=F)
 print(dt)
 @
@@ -136,14 +125,13 @@ You could imagine a scenario where you have done 50 experiments where you have c
 \subsection{Fancier queries}
 In some cases, you may want to load only specific regions, and that may have different conditions, within the same experiment.
 If you add a column in your query called \texttt{region\_id}, only specified regions will be loaded (as opposed to all regions in the previous example).
-
-<<cache=TRUE>>=
+<<>>=
 query <- data.table(path=paths, 
                     treatment=c("control", "drug_A"), 
                     region_id=rep(1:20,each= 2))
 
-# We make a dummy query where we imagine that 
-# every other region contains a female individual
+# We make a dummy query where  we imagine that 
+# every other reagion contains a female individual
 query[, sex := ifelse(region_id %% 2, "male", "female" )]                    
 
 # Note that we load only regions lower than twenty
@@ -152,14 +140,13 @@ print(query)
 dt <- loadPsvData(query,verbose=F)
 print(dt)
 @
-
 Note that there were some warnings, this is because some of the requested regions are not in the example data. 
 Indeed, I only provided a small subset of available regions in order to reduce the size of the samples.
 Also, as before, our data table(\texttt{dt}) has additional columns for the conditions we added.
 
 As a heads-up, lets see how one would use data table syntax to compute median x position per sex and treatment:
 
-<<cache=TRUE>>=
+<<>>=
 summary <- dt[, .(median_x = median(x)),
                 by=c("sex","treatment")]
 print(summary)
@@ -171,7 +158,7 @@ What you do know, is when (i.e. at what date) you started your experiment, and w
 Using the function \texttt{fetchPsvResultFiles}, you can retrieve data from the directory structure.
 If you want to list/retrieve all available experiments/files, you can do:
 
-<<eval=TRUE, echo=TRUE,cache=TRUE>>=
+<<eval=TRUE, echo=TRUE>>=
 # You will need to change this
 YOUR_RESULT_DIR <- '/data/psv_results'
 all_files <- fetchPsvResultFiles(YOUR_RESULT_DIR)
@@ -222,7 +209,7 @@ The \texttt{tube\_monitor\_validation} data set is one experiement with 20 regio
 \subsubsection{Overview plot}
 We would like to have an overview of the activity in each region as a graphical quality control.
 
-<<>>=
+<<fig=TRUE,width=11>>=
 data(tube_monitor_validation)
 # We make a sleep annotation, for ach animal. 
 # This will also compute maximal velocity for every chunk of 10s
@@ -234,7 +221,7 @@ print(pl)
 
 The colour intensity is proportional to the value of \texttt{max\_velocity}, but you may like to represent another variable:
 
-<<>>=
+<<fig=TRUE,width=11>>=
 data(tube_monitor_validation)
 pl <- overviewPlot(asleep,my_data)
 print(pl)
@@ -242,7 +229,7 @@ print(pl)
 
 All built in visualisation functions decribed here will produce a ggplot\footnote{\url{http://ggplot2.org/book/}} object, which you can easyly modify. for instance, drawing a doted line at 12h (0.5 days).
 
-<<>>=
+<<fig=TRUE,width=11>>=
 pl <- pl + geom_vline(aes(xintercept=c(0.5)),linetype=2,size=3)
 print(pl)
 @
@@ -258,19 +245,20 @@ Many other options such as grouping are available for \texttt{overviewPlot}.
 Most of the time you will want to see difference between population overtime.
 Ethograms will represent a chosen y variable over time. In addition, it will group data by time window(the default is 30min):
 
-<<>>=
+<<fig=TRUE,width=11>>=
 pl <- ethogramPlot(max_velocity, my_data)
 print(pl)
 @
 
 Let us add some error bar:
 
-<<>>=
+<<fig=TRUE,width=11>>=
 pl <- ethogramPlot(max_velocity,my_data,error_bar="sem")
 print(pl)
 @
 
 %\subsection{Bout analysis}
 % 
+
 
 \end{document}
