@@ -494,7 +494,39 @@ listDailyDAMFiles <- function(result_dir){
   files_info$file <- NULL
   files_info
 }
+#' Retreives DAM2 data from data that is saved daily
+#' 
+#' Uses a query mechanism to get data from a DAM2 array. 
+#' This is useful when data has been saved, by day, in individual files for each monitor.
+#' 
+#' @param result_dir the root directory where all daily data are saved
+#' @param query a formated query used to request data (see detail).
+#' @param reference_hour the hour, in the day, to use as t_0 reference. This should be expressed on Greenwich Meridian Time.
+#' @param tz the time zone on which the DAM2 data was saved (e.g. BSM -> British Summer Time)
+#' @return A data.table where every row is an individual measurment. That is an activity at a unique time (\code{t}) in a 
+#' unique channel (\code{region_id}), and from a unique result date/experiment (\code{experiment_id}).
+#' The time is expressed in seconds. For each different combination of \code{start_date} and \code{machine_id} in the query, an
+#' individual \code{experiment_id} is generated.
+#' @details \code{query} must be a data.table.
+#' Conceptually, each row of the query describes the conditions in one channel (when \code{region_id} is specified), or in each monitor (when it is not).
+#' It should have  the following columns:
+#' \itemize{
+#'  \item{\code{machine_id} }{ the name of the machine used (e.g. `M002').}
+#'  \item{\code{start_date} }{ the first day of the requested experiement (e.g. `2014-12-28').}
+#'  \item{\code{stop_date} }{ the last day of the requested experiement (e.g. `2014-12-30').}
+#'  \item{\code{region_id} }{ the channel (between 1 and 32) in what the animal was in (e.g. `20'). This is an optionnal column. If not povided, all 32 channels are loaded with the same conditions.}
+#'  \item{\code{...} }{ arbitrary columns to assotiate conditions/treatments/genotypes/... to the previous columns}
+#' }
+#'
+#' @note
+#' the daily data should be saved in a hard-coded directory structure \code{root_dir/yyyy/mm/mmdd/mmddMxyz.txt}, where:
+#' \itemize{
+#'  \item{\code{yyyy} }{Is the year (e.g. 2014)}
+#'  \item{\code{mm} and \code{dd}, }{the formated month and day, respectively (e.g. mm=12 and dd=28).}
+#'  \item{\code{xyz}, }{the number of the monitor (e.g 003)}
+#' }
 
+#' @export
 fetchDAMData <- function(result_dir,query, reference_hour=9.0, tz="BST"){
   q = copy(query)
   #files_info[, experiment_id := paste(date,machine_id,sep="_")]
