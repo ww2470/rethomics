@@ -4,6 +4,22 @@
 
 \begin{document}
 
+
+\title{Analyse your behavioural data with \texttt{rethomics}}
+\author{Quentin Geissmann\\
+\href{mailto:quentin.geissmann13@imperial.ac.uk}{quentin.geissmann13@imperial.ac.uk}\\
+\\
+\\
+\\
+\\
+\\
+\\
+}
+
+\maketitle
+
+\newpage{}
+
 <<include=FALSE>>=
 library(knitr)
 options(width=90)
