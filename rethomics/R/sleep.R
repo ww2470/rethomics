@@ -159,11 +159,18 @@ curateSparseRoiData <- function(
 	
 
 
+#' set.seed(1)
+#' bout_length <- round(runif(100,1,100))
+#'bout_val <- rep(c(T,F),length.out=length(bout_length))
+#' x <- rep(bout_val,bout_length)
+#' test_dt  <- data.table(x=x,
+#'   t=1:length(x) + 50)
+#' makeBoutDt(x,test_dt)
 
 makeBoutDt <- function(x,sub_data){
   sdt <- copy(sub_data)
   sdt[,delta_t:= c(0,diff(sub_data[,t]))]
-  
+  print(sdt)  
   r <- rle(x)
   vals <-r$values
   r$values <- 1:length(r$values)
@@ -175,12 +182,13 @@ makeBoutDt <- function(x,sub_data){
   out <- data.table(
     x = vals,
     length = bout_times[,length],
-    start_time = cumsum(bout_times[,length]) + sdt[1,t]
+    start_time = cumsum(c(0,bout_times[1:.N-1,length])) + sdt[1,t]
   ) 
   var_name <- deparse(substitute(var))
   setnames(out,"x",var_name)
   out
 }
+
 NULL
 #' Todo 
 #' @export
