@@ -169,8 +169,7 @@ curateSparseRoiData <- function(
 
 makeBoutDt <- function(x,sub_data){
   sdt <- copy(sub_data)
-  sdt[,delta_t:= c(0,diff(sub_data[,t]))]
-  print(sdt)  
+  sdt[,delta_t:= c(0,diff(sub_data[,t]))] 
   r <- rle(x)
   vals <-r$values
   r$values <- 1:length(r$values)
