@@ -156,8 +156,7 @@ ethogramPlot <- function(y,data,
   summary_dt_all_animals[,t_d:=t_r/days(1)]
   
   if(c_var_name != "NULL"){
-    p <- ggplot(summary_dt_all_animals, aes(t_d,y_var,colour=c_var)) + geom_line() 
-    p <- p + guides(fill=guide_legend(title=c_var_name))
+    p <- ggplot(summary_dt_all_animals, aes(t_d,y_var,colour=c_var,fill=c_var)) + geom_line() 
   }
   else{
     p <- ggplot(summary_dt_all_animals, aes(t_d,y_var)) + geom_line() 
@@ -166,13 +165,16 @@ ethogramPlot <- function(y,data,
   
   if(!is.null(error_bar)){
     if(c_var_name != "NULL"){
-      p <- p + geom_ribbon(aes(ymin=y_var-err_var, ymax=y_var+err_var,fill=c_var,colour=NULL),alpha=.3)
+      p <- p + geom_ribbon(aes(ymin=y_var-err_var, ymax=y_var+err_var,colour=NULL),alpha=.3)
     }
     else{
       p <- p + geom_ribbon(aes(ymin=y_var-err_var, ymax=y_var+err_var),alpha=.3)
     }
   }
-  p <- p + labs(x="time (day)", y=y_var_name)
+  
+  p <- p + labs(title= sprintf("Average '%s' over time",y_var_name),x="time (day)", y=y_var_name)
+  p <- p + guides(fill=guide_legend(title=c_var_name),
+                  colour=guide_legend(title=c_var_name))
   p
 }
 
