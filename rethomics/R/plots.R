@@ -14,18 +14,17 @@ NULL
 #' @return A \code{ggplot} object that can be plotted directly or modified.
 
 #' @examples
-#' # Load sample data
-#' data(monitor_validation)
-#' # We perform sleep annotation on all animals
-#' my_data <- monitor_validation[,sleepAnnotation(.SD),by=key(monitor_validation)]
+#' # Load sample data, it is already annotated for sleep, has sex=='male' or sex=="female"
+#' data(sleep_male_vs_females)
+#' my_data <- sleep_male_vs_females
 #' # let us have a look of the max velocity as a measure of activity
 #' p <- overviewPlot(max_velocity,my_data)
 #' print(p)
-#' # Let us make a dummy treatment variable. 
-#' # For instance, region > 10 have a treatment named ``Drug_1''
-#' my_data[,treatment:=ifelse(region_id > 10,"Control","Drug_1")]
-#' p <- overviewPlot(max_velocity,my_data,condition = treatment)
-#' # See how treatment levels are grouped together:
+#' # what about sleep amount?
+#' p <- overviewPlot(asleep,my_data)
+#' print(p)
+#' # we can also group by condition. For instance by sex:
+#' p <- overviewPlot(asleep,my_data,condition = sex)
 #' print(p)
 #' # p is simply a ggplot object, so we can change things:
 #' print(p + labs(title="MY own title"))
@@ -87,19 +86,15 @@ NULL
 #' @return A \code{ggplot} object that can be plotted directly, or modified.
 
 #' @examples
-#' # Load sample data
-#' data(monitor_validation)
-#' # We perform sleep annotation on all animals
-#' my_data <- monitor_validation[,sleepAnnotation(.SD),by=key(monitor_validation)]
-#' # No condition
+#' data(sleep_male_vs_females)
+#' my_data <- sleep_male_vs_females
+#' # Fraction of animal asleep over time:
 #' p <- ethogramPlot(asleep,my_data)
+#' # We would like to show that per group:
+#' p <- ethogramPlot(asleep,my_data,condition=sex)
 #' print(p)
-#' # We make a dummy male vs female condition;
-#' # males could be, for instance, in any even region
-#' my_data[,sex:=ifelse(region_id %% 2==0,"male","female")]
-#' p <- ethogramPlot(asleep,my_data,condition = sex)
-#' print(p)
-#' p <- ethogramPlot(asleep,my_data,condition = sex,error_bar="sem")
+#' # We can also put error bars:
+#' p <- ethogramPlot(asleep,my_data,condition=sex,error_bar="sem")
 #' print(p)
 #' # p is simply a ggplot object, so we can change things:
 #' print(p + labs(title="MY own title"))
