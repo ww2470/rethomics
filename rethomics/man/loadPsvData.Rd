@@ -5,7 +5,7 @@
 \title{Read data from a result file.}
 \usage{
 loadPsvData(what, min_time = 0, max_time = Inf, reference_hour = NULL,
-  verbose = TRUE, FUN = NULL, ...)
+  verbose = TRUE, cache_files = TRUE, n_cores = 1, FUN = NULL, ...)
 }
 \arguments{
 \item{what}{an object describing which file(s) to load and, optionally, associated variables/conditions (see details).}
@@ -17,6 +17,10 @@ loadPsvData(what, min_time = 0, max_time = Inf, reference_hour = NULL,
 \item{reference_hour}{the hour, in the day, to use as t_0 reference. When unspecified, time will be relative to the start of the experiment.}
 
 \item{verbose}{whether to print progress (a logical).}
+
+\item{cache_files}{whether SQL files should be cached in a tmp dir for faster reading}
+
+\item{n_cores}{how many cores should be used to read/convert data}
 
 \item{FUN}{an optionnal function to transform the data from each `region' (i.e. a data.table) immedidatly after is has been loaded.}
 
