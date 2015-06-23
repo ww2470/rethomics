@@ -31,6 +31,42 @@ NULL
 #' @export
 
 sleepAnnotation <- function(data,
+                                 time_window_length=10, #s
+                                 min_time_immobile=60*5, #s
+                                 motion_classifier_FUN=maxVelocityClassifier,
+                                 ...
+){ 
+  d <- copy(data)
+  ori_keys <- key(d)
+  d <- curateSparseRoiData(d)
+  if(nrow(d) <1)
+    return(NULL)
+  
+  d[, t_round := time_window_length * floor(d[,t] /time_window_length)]  
+  setkeyv(d, "t_round")
+  
+  d_small <- motion_classifier_FUN(d,...)
+  if(key(d_small) != "t_round")
+    stop("Key in output of motion_classifier_FUN MUST be `t_round'")
+  setnames(d_small,"t_round", "t")
+  
+  d_small <- d_small[unique(d)]
+  t_out <- seq(from=d_small[1,t], to=d_small[.N,t], by=time_window_length)
+  
+  time_map <- data.table(t=t_out,key="t")
+  missing_val <- time_map[!d_small]
+  d_small <- d_small[time_map,roll=T]
+  d_small[,is_interpolated := FALSE]
+  d_small[missing_val,is_interpolated:=TRUE] 
+  d_small
+  d_small[is_interpolated == T, moving := FALSE]
+  d_small[,asleep := sleep_contiguous(moving,1/time_window_length)]
+  setkeyv(d_small, ori_keys)
+  d_small
+}
+NULL
+
+sleepAnnotationOld <- function(data,
 			time_window_length=10, #s
 			min_time_immobile=60*5, #s
 			motion_classifier_FUN=maxVelocityClassifier,
@@ -47,6 +83,7 @@ sleepAnnotation <- function(data,
 	setkeyv(d, "t_round")
 
 	d_small <- motion_classifier_FUN(d,...)
+
 	d_small <- unique(d_small[d])
 	
 	d_small[,t:=t_round]
@@ -60,8 +97,6 @@ sleepAnnotation <- function(data,
 	d_small[,moving := ifelse(
     is.na(moving), F, moving)]
   
-	
-	
   is_interpolated <- d_small[,is.na(x)]
   
 	d_small <- d_small[,lapply(.SD,na.locf,na.rm=F)]
@@ -72,6 +107,8 @@ sleepAnnotation <- function(data,
 	setkeyv(d_small, ori_keys)
 	d_small
 	}
+
+
 NULL
 #' Motion classifier based on maximum velocity.
 #' 
@@ -86,7 +123,6 @@ maxVelocityClassifier <- function(data,velocity_threshold=.005){
 	d[,dt := c(NA,diff(t))]
 	d[,max_velocity := 10^(xy_dist_log10x1000/1000)/dt ]
 	#d[,max_velocity := 10^(xy_dist_log10x1000/1000)/dt ]
-
 	d_small <- d[,.(
   	        max_velocity = max(max_velocity)
 						), by="t_round"]

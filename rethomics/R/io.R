@@ -11,6 +11,7 @@ NULL
 #' @param reference_hour the hour, in the day, to use as t_0 reference. When unspecified, time will be relative to the start of the experiment.
 #' @param verbose whether to print progress (a logical).
 #' @param cache_files whether SQL files should be cached in a tmp dir for faster reading
+#' @param n_cores how many cores should be used to read/convert data
 #' @param FUN an optionnal function to transform the data from each `region' (i.e. a data.table) immedidatly after is has been loaded. 
 #' @param ... extra arguments to be passed to \code{FUN}
 #' @return A data.table where every row is an individual measurment. That is a position at a unique time (\code{t}) in a 
@@ -107,6 +108,7 @@ loadPsvData <- function(what,
 				reference_hour=NULL,
 				verbose=TRUE,
 				cache_files=TRUE,
+				n_cores=1,
 				FUN=NULL,
 				...){
 	
@@ -146,36 +148,14 @@ loadPsvData <- function(what,
   
 	setkeyv(master_table,c("experiment_id","region_id"))
   
-	
-	l_dt <- lapply(1:nrow(master_table),
-			function(i){
-			  region_id <- master_table[i,region_id]
-			  experiment_id <- master_table[i,experiment_id]
-				path <- master_table[i,path]
-				if(verbose)
-					cat(sprintf("Loading ROI number %i from:\n\t%s\n",region_id,path))
-					
-				out <- loadOneROI(path,	region_id=region_id,
-									min_time = min_time,
-									max_time = max_time, 
-									reference_hour=reference_hour)
-				
-				if(is.null(out) || nrow(out) == 0){
-					warning(sprintf("No data in ROI %i, from FILE %s. Skipping",region_id, path))
-					return(NULL)
-					}
-					
-				if(!is.null(FUN)){
-					out <- FUN(out,...)
-					if(is.null(out)){
-					  warning(sprintf("No data in ROI %i after running FUN, from FILE %s. Skipping",region_id, path))
-					  return(NULL)
-					}
-				}
-				
-				out[,experiment_id:=experiment_id]
-				setkeyv(out,c("experiment_id","region_id"))
-				})
+	if(n_cores == 1)
+	  l_dt <- lapply(1:nrow(master_table),parseOneROI, master_table,min_time, max_time, reference_hour,verbose,FUN,...)
+	else{
+	  require(parallel)
+	  #cl <- makeCluster(n_cores)
+	  l_dt <- mclapply(1:nrow(master_table),parseOneROI, master_table,min_time, max_time, reference_hour,verbose,FUN,...,mc.cores = getOption("mc.cores", n_cores))
+	  # stopCluster(cl)
+	}
 				
 	l_dt <- l_dt[!sapply(l_dt,is.null)]
 	if(length(unique(lapply(l_dt,key))) > 1){
@@ -189,6 +169,35 @@ loadPsvData <- function(what,
 	
 	setkeyv(out, keys)
 	master_table[out]
+}
+
+parseOneROI <- function(i, master_table,min_time, max_time, reference_hour,verbose,FUN,...){
+  region_id <- master_table[i,region_id]
+  experiment_id <- master_table[i,experiment_id]
+  path <- master_table[i,path]
+  if(verbose)
+    cat(sprintf("Loading ROI number %i from:\n\t%s\n",region_id,path))
+  
+  out <- loadOneROI(path,	region_id=region_id,
+                    min_time = min_time,
+                    max_time = max_time, 
+                    reference_hour=reference_hour)
+  
+  if(is.null(out) || nrow(out) == 0){
+    warning(sprintf("No data in ROI %i, from FILE %s. Skipping",region_id, path))
+    return(NULL)
+  }
+  
+  if(!is.null(FUN)){
+    out <- FUN(out,...)
+    if(is.null(out)){
+      warning(sprintf("No data in ROI %i after running FUN, from FILE %s. Skipping",region_id, path))
+      return(NULL)
+    }
+  }
+  
+  out[,experiment_id:=experiment_id]
+setkeyv(out,c("experiment_id","region_id"))
 }
 
 # a helper function to laod data from a single region
@@ -603,4 +612,5 @@ cacheResultFile <- function(all_paths,subdir="rethomic_file_cache"){
   path_map <- data.table(src=all_paths)
   return(map[path_map][,dst])
 }
+
 
