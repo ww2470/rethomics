@@ -10,6 +10,7 @@ NULL
 #' @param max_time exclude data after max_time (in seconds). It is also relative to the start of the experiment.
 #' @param reference_hour the hour, in the day, to use as t_0 reference. When unspecified, time will be relative to the start of the experiment.
 #' @param verbose whether to print progress (a logical).
+#' @param cache_files whether SQL files should be cached in a tmp dir for faster reading
 #' @param FUN an optionnal function to transform the data from each `region' (i.e. a data.table) immedidatly after is has been loaded. 
 #' @param ... extra arguments to be passed to \code{FUN}
 #' @return A data.table where every row is an individual measurment. That is a position at a unique time (\code{t}) in a 
@@ -105,6 +106,7 @@ loadPsvData <- function(what,
 				max_time = Inf, 
 				reference_hour=NULL,
 				verbose=TRUE,
+				cache_files=TRUE,
 				FUN=NULL,
 				...){
 	
@@ -120,10 +122,9 @@ loadPsvData <- function(what,
 				experiment_id=experiment_id),by=path]
 	}
 	else if(is.data.frame(what)){
-		
 		if(!"path" %in% colnames(what))
 			stop("When `what` is a data.frame, it MUST have a column named 'path'")
-		master_table <- as.data.table(what)
+		master_table <- copy(as.data.table(what))
 		#fixme check uniqueness of file/use path as key?
 		master_table[,path := as.character(path)]
 		master_table[,experiment_id := basename(path)]
@@ -140,8 +141,12 @@ loadPsvData <- function(what,
 		stop("Unexpected `what` argument!")
 		}
 	
+  if(cache_files)
+    master_table[, path:= cacheResultFile(master_table[,path])]
+  
 	setkeyv(master_table,c("experiment_id","region_id"))
-
+  
+	
 	l_dt <- lapply(1:nrow(master_table),
 			function(i){
 			  region_id <- master_table[i,region_id]
@@ -215,7 +220,7 @@ loadOneROI <- function(
 		sql_query <- sprintf("SELECT * FROM ROI_%i WHERE t >= %e %s",region_id,min_time, max_time_condition )
 		
 		roi_dt <- as.data.table(dbGetQuery(con, sql_query))
-		roi_dt[, id := NULL]
+		roi_dt$id <- NULL
 		roi_dt[, region_id := region_id]
 		
 		
@@ -582,25 +587,20 @@ fetchDAMData <- function(result_dir,query, reference_hour=9.0, tz="BST"){
   
 }
 
-# query <- data.table(start_date = "2015-05-01",
-#                      stop_date = "2015-05-05",
-#                      machine_id=c("M001","M002"))
-#                     
-# query <- query[,.(region_id=1:10),by=c(colnames(query))]
-# query <- query[,sex:=ifelse(region_id%%2 ==0, "m","f")]
-#query <- fread("~/Desktop//AP-dam-query.csv")
-#query
-# 
-#dt <- fetchDAMData("/data/dailyData",query)
- 
-#overviewPlot(activity,dt,Genotype)
-# ethogramPlot(activity,dt,Genotype)
-# pdt <- dt[,
-#         .(average_activity = mean(as.logical(activity))),
-#           by=c(key(dt),"Genotype")]
-# ggplot(pdt,aes(Genotype,average_activity))+geom_boxplot()
-# 
-#   
-# dev.off()
-# query[,files_info[date > start_date & date <= stop_date],by=]
-# 
+
+cacheResultFile <- function(all_paths,subdir="rethomic_file_cache"){
+  src <- unique(all_paths)
+
+  dst_dir <- paste(tempdir(),subdir,sep="/")
+  if(!dir.exists(dst_dir))
+    dir.create(dst_dir)
+  dst <- paste(dst_dir,basename(src),sep="/")
+  map <- data.table(src,dst,key="src")
+  
+  lapply(1:nrow(map),function(i){
+    file.copy(map[i,src],map[i,dst],overwrite = F)
+  })
+  path_map <- data.table(src=all_paths)
+  return(map[path_map][,dst])
+}
+
