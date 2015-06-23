@@ -3,6 +3,7 @@
 export(boutAnalysis)
 export(days)
 export(ethogramPlot)
+export(fetchDAMData)
 export(fetchPsvResultFiles)
 export(hours)
 export(loadDAMFile)

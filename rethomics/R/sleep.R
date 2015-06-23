@@ -60,14 +60,15 @@ sleepAnnotation <- function(data,
 	d_small[,moving := ifelse(
     is.na(moving), F, moving)]
   
-	d_small[,asleep := sleep_contiguous(moving,1/time_window_length)]
+	
 	
   is_interpolated <- d_small[,is.na(x)]
   
 	d_small <- d_small[,lapply(.SD,na.locf,na.rm=F)]
 	d_small[,is_interpolated := is_interpolated]
+	d_small[is_interpolated == T, moving := FALSE]
 	
-	
+	d_small[,asleep := sleep_contiguous(moving,1/time_window_length)]
 	setkeyv(d_small, ori_keys)
 	d_small
 	}
@@ -83,12 +84,10 @@ NULL
 maxVelocityClassifier <- function(data,velocity_threshold=.005){
 	d <- copy(data)
 	d[,dt := c(NA,diff(t))]
-	d[,surface_change := xor_dist * 1e-3]
 	d[,max_velocity := 10^(xy_dist_log10x1000/1000)/dt ]
 	#d[,max_velocity := 10^(xy_dist_log10x1000/1000)/dt ]
 
-	d_small <- d[,list(
-  	        surface_change = max(surface_change),
+	d_small <- d[,.(
   	        max_velocity = max(max_velocity)
 						), by="t_round"]
   
@@ -140,16 +139,16 @@ sleep_contiguous <- function(moving,fs,min_valid_time=5*60){
 	inverse.rle(r_sleep)
 }
 
-#remove data points when the time serie is too sparse
+#remove data points when the time series is too sparse
 curateSparseRoiData <- function(
 	data,
 	window=60,#s
 	min_points=20#
 	){
+  
 	d <- copy(data)
 	d[, t_w := window * floor(t/window)]
 	sparsity <- d[, t_w := window * floor(t/window)]
-	d[,sparsity := .N,by=t_w]
 	d[,sparsity := .N,by=t_w]
 	d <- d[sparsity >min_points,]
 	d$t_w <- NULL
