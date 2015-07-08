@@ -30,3 +30,8 @@ mins <- function(x){
   x * 60
 }
 NULL
+
+dir.exists <- function(d) {
+  de <- file.info(d)$isdir
+  ifelse(is.na(de), FALSE, de)
+}
