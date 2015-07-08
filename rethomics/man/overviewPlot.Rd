@@ -12,7 +12,7 @@ overviewPlot(y, data, condition = NULL, summary_time_window = mins(30),
 
 \item{data}{The data.table containing the data. It must have a column with the same name as y.}
 
-\item{condition}{An optionnal grouping factor to order rows.}
+\item{condition}{An optional grouping factor to order rows.}
 
 \item{summary_time_window}{the width (in seconds) of the time window used to draw each pixel.}
 
@@ -22,7 +22,7 @@ overviewPlot(y, data, condition = NULL, summary_time_window = mins(30),
 A \code{ggplot} object that can be plotted directly or modified.
 }
 \description{
-This function produces a tiled representation in which every row represents one individual (i.e. from a unique combination of region and experiement).
+This function produces a tiled representation in which every row represents one individual (i.e. from a unique combination of region and experiment).
 The x axis represents time in days.
 The values of the variable of interest are represented by different colour intensities.
 }

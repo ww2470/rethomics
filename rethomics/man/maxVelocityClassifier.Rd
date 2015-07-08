@@ -11,9 +11,12 @@ maxVelocityClassifier(data, velocity_threshold = 0.005)
 
 \item{velocity_threshold}{velocity above which an animal is classified as `moving'.}
 }
+\value{
+a data table with the columns \code{moving} (logical, TRUE iff. motion was detected) and \code{t_round} (the `rounded' time). There is one row per rounded time point.
+}
 \description{
 Defines whether an animal is moving according to its subpixel velocity.
-It requieres a variable named \code{xy_dist_log10x1000} in the .db file.
+It requires a variable named \code{xy_dist_log10x1000} in the .db file.
 }
 \seealso{
 \code{\link{sleepAnnotation}} to apply this function to all subsequent time windows.

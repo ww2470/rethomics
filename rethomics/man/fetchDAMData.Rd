@@ -2,21 +2,21 @@
 % Please edit documentation in R/io.R
 \name{fetchDAMData}
 \alias{fetchDAMData}
-\title{Retreives DAM2 data from data that is saved daily}
+\title{Retrieves DAM2 data from data that is saved daily}
 \usage{
 fetchDAMData(result_dir, query, reference_hour = 9, tz = "BST")
 }
 \arguments{
 \item{result_dir}{the root directory where all daily data are saved}
 
-\item{query}{a formated query used to request data (see detail).}
+\item{query}{a formatted query used to request data (see detail).}
 
 \item{reference_hour}{the hour, in the day, to use as t_0 reference. This should be expressed on Greenwich Meridian Time.}
 
 \item{tz}{the time zone on which the DAM2 data was saved (e.g. BSM -> British Summer Time)}
 }
 \value{
-A data.table where every row is an individual measurment. That is an activity at a unique time (\code{t}) in a
+A data.table where every row is an individual measurement. That is an activity at a unique time (\code{t}) in a
 unique channel (\code{region_id}), and from a unique result date/experiment (\code{experiment_id}).
 The time is expressed in seconds. For each different combination of \code{start_date} and \code{machine_id} in the query, an
 individual \code{experiment_id} is generated.
@@ -31,17 +31,17 @@ Conceptually, each row of the query describes the conditions in one channel (whe
 It should have  the following columns:
 \itemize{
  \item{\code{machine_id} }{ the name of the machine used (e.g. `M002').}
- \item{\code{start_date} }{ the first day of the requested experiement (e.g. `2014-12-28').}
- \item{\code{stop_date} }{ the last day of the requested experiement (e.g. `2014-12-30').}
- \item{\code{region_id} }{ the channel (between 1 and 32) in what the animal was in (e.g. `20'). This is an optionnal column. If not povided, all 32 channels are loaded with the same conditions.}
- \item{\code{...} }{ arbitrary columns to assotiate conditions/treatments/genotypes/... to the previous columns}
+ \item{\code{start_date} }{ the first day of the requested experiment (e.g. `2014-12-28').}
+ \item{\code{stop_date} }{ the last day of the requested experiment (e.g. `2014-12-30').}
+ \item{\code{region_id} }{ the channel (between 1 and 32) in what the animal was in (e.g. `20'). This is an optional column. If not provided, all 32 channels are loaded with the same conditions.}
+ \item{\code{...} }{ arbitrary columns to associate conditions/treatments/genotypes/... to the previous columns}
 }
 }
 \note{
 the daily data should be saved in a hard-coded directory structure \code{root_dir/yyyy/mm/mmdd/mmddMxyz.txt}, where:
 \itemize{
  \item{\code{yyyy} }{Is the year (e.g. 2014)}
- \item{\code{mm} and \code{dd}, }{the formated month and day, respectively (e.g. mm=12 and dd=28).}
+ \item{\code{mm} and \code{dd}, }{the formatted month and day, respectively (e.g. mm=12 and dd=28).}
  \item{\code{xyz}, }{the number of the monitor (e.g 003)}
 }
 }

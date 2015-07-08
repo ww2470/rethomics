@@ -2,7 +2,7 @@
 % Please edit documentation in R/io.R
 \name{loadDAMFile}
 \alias{loadDAMFile}
-\title{Read a text file formated as DAM2 into a single data table.}
+\title{Read a text file formatted as DAM2 into a single data table.}
 \usage{
 loadDAMFile(FILE, tz = "")
 }
@@ -25,7 +25,7 @@ out <- loadDAMFile(FILE)
 hist(out[roi_id == 1, x], nclass=100)
 }
 \dontrun{
-# More realistec example where we have experiemental conditions, and
+# More realistic example where we have experimental conditions, and
 we want to resample data at 1.0Hz.
 # First, the conditions:
 conditions <- cbind(roi_id=1:32, expand.grid(treatment=c(T,F), genotype=LETTERS[1:4]))

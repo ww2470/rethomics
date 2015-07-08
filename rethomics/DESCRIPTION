@@ -1,6 +1,6 @@
 Package: rethomics
 Type: Package
-Title: Rethomics, a package to analyse high-throuput animal behaviour data.
+Title: Rethomics, a package to analyse high-throughput animal behaviour data.
 Version: 0.1
 Date: 2015-01-29
 Authors@R: c(

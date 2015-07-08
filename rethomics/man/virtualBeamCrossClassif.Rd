@@ -9,6 +9,9 @@ virtualBeamCrossClassif(data)
 \arguments{
 \item{data}{the data.table containing behavioural features used for movement classification.}
 }
+\value{
+a data table with the columns \code{moving} (logical, TRUE iff. motion was detected) and \code{t_round} (the `rounded' time). There is one row per rounded time point.
+}
 \description{
 Defines whether an animal is moving. This is achieved by computing the number of crossed of
 a "virtual beam" in the middle of its region (i.e. at x=0.5).

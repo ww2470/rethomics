@@ -20,7 +20,7 @@ the columns `t`, `x` and `y`.}
 \item{...}{extra arguments to be passed to \code{motion_classifier_FUN}}
 }
 \value{
-A data table similar to \code{data} with additionnal variables/annotations (i.e. `moving', `asleep').
+A data table similar to \code{data} with additional variables/annotations (i.e. `moving', `asleep').
 }
 \description{
 This function uses a motion classifier to first decide whether an animal is moving during a given time window.
@@ -44,6 +44,6 @@ sleep_dt <-  tube_monitor_validation[,sleepAnnotation(.SD),by=key(tube_monitor_v
 ggplot(sleep_dt, aes(t,region_id,fill=asleep)) + geom_tile()
 }
 \seealso{
-\code{\link{loadPsvData}} to load data and optionnaly apply analysis on the fly.
+\code{\link{loadPsvData}} to load data and optionaly apply analysis on the fly.
 }
 
