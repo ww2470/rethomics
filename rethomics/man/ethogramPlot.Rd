@@ -12,7 +12,7 @@ ethogramPlot(y, data, condition = NULL, summary_time_window = mins(30),
 
 \item{data}{The data.table containing the data. It must have a column with the same name as y.}
 
-\item{condition}{An optionnal grouping factor to order rows.}
+\item{condition}{An optional grouping factor to order rows.}
 
 \item{summary_time_window}{the width (in seconds) of the time window used to draw each ``pixel''.}
 

@@ -9,23 +9,23 @@ fetchPsvResultFiles(result_dir, query = NULL)
 \arguments{
 \item{result_dir}{The location of the result directory (i.e. the folder containing all the data).}
 
-\item{query}{An optionnal query formated as a dataframe (see details).}
+\item{query}{An optional query formatted as a dataframe (see details).}
 }
 \value{
 The query extended with the requested paths. When \code{query} is not specified, the function returns a table with all available files.
 }
 \description{
-This function is designed to list and select experiemental files. In general, end-users will want to retreive path to their experimental files
-according to the date and ID of the video monitor without having to undertand the underlying directory structure.
+This function is designed to list and select experimental files. In general, end-users will want to retrieve  path to their experimental files
+according to the date and ID of the video monitor without having to understand the underlying directory structure.
 }
 \details{
-The optionnal argument \code{query} is expected to be a table where every row maps an experiment.
+The optional argument \code{query} is expected to be a table where every row maps an experiment.
 In many respects, it is similar to the \code{what} argument in \code{\link{loadPsvData}}.
 The only difference is that it does not have a \code{path} column. Instead, it must contain two columns:
 \itemize{
- \item{\code{time} }{The date and time when the experiment started formated either as `yyyy-mm-dd' or `yyyy-mm-dd_hh:mm:ss'.
+ \item{\code{time} }{The date and time when the experiment started formatted either as `yyyy-mm-dd' or `yyyy-mm-dd_hh:mm:ss'.
  In the former case, there may be several matching experiments to a single time (starting the same day).
- When this happends, \emph{only the last} is returned, and a warning message is displayed.}
+ When this happens, \emph{only the last} is returned, and a warning message is displayed.}
  \item{\code{machine_name} }{The name of the machine that acquired the data.}
 }
 The result is meant to be used directly, as the \code{what} argument, by \code{\link{loadPsvData}} (see examples).

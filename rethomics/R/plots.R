@@ -2,13 +2,13 @@ NULL
 #@include
 #' Displays, per individual, the temporal average of a variable of interest.
 #' 
-#' This function produces a tiled representation in which every row represents one individual (i.e. from a unique combination of region and experiement).
+#' This function produces a tiled representation in which every row represents one individual (i.e. from a unique combination of region and experiment).
 #' The x axis represents time in days.
 #' The values of the variable of interest are represented by different colour intensities.
 #'
 #' @param y The variable of interest
 #' @param data The data.table containing the data. It must have a column with the same name as y.
-#' @param condition An optionnal grouping factor to order rows.
+#' @param condition An optional grouping factor to order rows.
 #' @param summary_time_window the width (in seconds) of the time window used to draw each pixel.
 #' @param normalise_var_per_id whether each row is to be normalised, using \code{new_y = (y - mean(y))/sd(y)}.
 #' @return A \code{ggplot} object that can be plotted directly or modified.
@@ -79,7 +79,7 @@ NULL
 #'
 #' @param y The variable of interest.
 #' @param data The data.table containing the data. It must have a column with the same name as y.
-#' @param condition An optionnal grouping factor to order rows.
+#' @param condition An optional grouping factor to order rows.
 #' @param summary_time_window the width (in seconds) of the time window used to draw each ``pixel''.
 #' @param normalise_var_per_id whether each row is to be normalised (using \code{new_x = (x - mean(x))/sd(x)}).
 #' @param error_bar what type of error bar should be used. It should be one of \code{NULL},`sem' or `sd'.

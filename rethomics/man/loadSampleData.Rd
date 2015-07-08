@@ -2,7 +2,7 @@
 % Please edit documentation in R/io.R
 \name{loadSampleData}
 \alias{loadSampleData}
-\title{Retreive sample/example data contained within in this package.}
+\title{Retrieves sample/example data contained within in this package.}
 \usage{
 loadSampleData(names = NULL)
 }
