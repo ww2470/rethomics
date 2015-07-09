@@ -402,7 +402,7 @@ NULL
 #' In many respects, it is similar to the \code{what} argument in \code{\link{loadPsvData}}.
 #' The only difference is that it does not have a \code{path} column. Instead, it must contain two columns:
 #' \itemize{
-#'  \item{\code{time} }{The date and time when the experiment started formatted either as `yyyy-mm-dd' or `yyyy-mm-dd_hh:mm:ss'.
+#'  \item{\code{date} }{The date and time when the experiment started formatted either as `yyyy-mm-dd' or `yyyy-mm-dd_hh:mm:ss'.
 #'  In the former case, there may be several matching experiments to a single time (starting the same day).
 #'  When this happens, \emph{only the last} is returned, and a warning message is displayed.}
 #'  \item{\code{machine_name} }{The name of the machine that acquired the data.}
