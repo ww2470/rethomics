@@ -63,7 +63,7 @@ sleepAnnotation <- function(data,
   d_small[missing_val,is_interpolated:=TRUE] 
   
   d_small[is_interpolated == T, moving := FALSE]
-  d_small[,asleep := sleep_contiguous(moving,1/time_window_length)]
+  d_small[,asleep := sleep_contiguous(moving,1/time_window_length,min_valid_time = min_time_immobile)]
   setkeyv(d_small, ori_keys)
   na.omit(d_small)
 }
@@ -220,4 +220,20 @@ boutAnalysis <- function(var,data){
   
   setnames(out,"var",var_name)
   out
+}
+
+
+#' @export
+sleepDAMAnnotation <- function(
+  data,
+  time_window_length=60, #s
+  min_time_immobile=60*5 # s
+){
+  d <- copy(data)
+  if(nrow(d) <1)
+    return(NULL)
+  
+  d[, moving:= activity > 0]
+  d[, asleep := sleep_contiguous(moving, 1/time_window_length, min_time_immobile)]
+  d
 }

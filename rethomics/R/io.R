@@ -517,6 +517,8 @@ listDailyDAMFiles <- function(result_dir){
 #' @param query a formatted query used to request data (see detail).
 #' @param reference_hour the hour, in the day, to use as t_0 reference. This should be expressed on Greenwich Meridian Time.
 #' @param tz the time zone on which the DAM2 data was saved (e.g. BSM -> British Summer Time)
+#' @param FUN an optional function to transform the data from each `region' (i.e. a data.table) immediately after is has been loaded. 
+#' @param ... extra arguments to be passed to \code{FUN}
 #' @return A data.table where every row is an individual measurement. That is an activity at a unique time (\code{t}) in a 
 #' unique channel (\code{region_id}), and from a unique result date/experiment (\code{experiment_id}).
 #' The time is expressed in seconds. For each different combination of \code{start_date} and \code{machine_id} in the query, an
@@ -541,20 +543,20 @@ listDailyDAMFiles <- function(result_dir){
 #' }
 
 #' @export
-fetchDAMData <- function(result_dir,query, reference_hour=9.0, tz="BST"){
+fetchDAMData <- function(result_dir,query, reference_hour=9.0, tz="BST", FUN=NULL, ...){
   q = copy(query)
   #files_info[, experiment_id := paste(date,machine_id,sep="_")]
   files_info <- listDailyDAMFiles(result_dir)
-
+  
   if(!("region_id" %in% colnames(q)))
-      q <- q[,.(region_id=1:32),by=c(colnames(q))]
+    q <- q[,.(region_id=1:32),by=c(colnames(q))]
   
   q[, start_date:=as.POSIXct(start_date, "%Y-%m-%d", tz="GMT")]
   q[, stop_date:=as.POSIXct(stop_date, "%Y-%m-%d", tz="GMT")]
   q[, experiment_id := paste(start_date,machine_id,sep="_")]
   
   foo <- function(d){
-  
+    
     t0 <- unique(d[,start_date])
     t1 <- unique(d[,stop_date])
     mid <- unique(d[,machine_id])
@@ -570,8 +572,8 @@ fetchDAMData <- function(result_dir,query, reference_hour=9.0, tz="BST"){
   setkeyv(uniq_q,c("experiment_id"))
   #setkeyv(uniq_q,c("experiment_id"))
   day_query <- uniq_q[,
-        foo(.SD)
-    ,by= 1:nrow(uniq_q)]
+                      foo(.SD)
+                      ,by= 1:nrow(uniq_q)]
   day_query$nrow <- NULL
   setkeyv(day_query,c("experiment_id"))
   day_query <- uniq_q[day_query]
@@ -593,6 +595,10 @@ fetchDAMData <- function(result_dir,query, reference_hour=9.0, tz="BST"){
   
   all_data[,t := as.numeric(t  - start_date,units="secs")]
   all_data[,t := t-hours(reference_hour)]
+  
+  if(!is.null(FUN)){
+    all_data <- all_data[, FUN(.SD,...),by=key(all_data)]
+  }
   
 }
 
