@@ -4,8 +4,9 @@
 \alias{ethogramPlot}
 \title{Displays the temporal and inter-individual average of a variable of interest.}
 \usage{
-ethogramPlot(y, data, condition = NULL, summary_time_window = mins(30),
-  normalise_var_per_id = FALSE, error_bar = NULL)
+ethogramPlot(y, data, condition = NULL, facet_var = NULL,
+  summary_time_window = mins(30), normalise_var_per_id = FALSE,
+  error_bar = NULL)
 }
 \arguments{
 \item{y}{The variable of interest.}
@@ -38,6 +39,9 @@ p <- ethogramPlot(asleep,my_data,condition=sex)
 print(p)
 # We can also put error bars:
 p <- ethogramPlot(asleep,my_data,condition=sex,error_bar="sem")
+print(p)
+# we can also use a condition to split data per row (ggplot faceting):
+p <- ethogramPlot(asleep,my_data,condition=sex,facet_var=experiment_id,error_bar="sem")
 print(p)
 # p is simply a ggplot object, so we can change things:
 print(p + labs(title="MY own title"))

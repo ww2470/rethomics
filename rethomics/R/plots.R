@@ -96,12 +96,16 @@ NULL
 #' # We can also put error bars:
 #' p <- ethogramPlot(asleep,my_data,condition=sex,error_bar="sem")
 #' print(p)
+#' # we can also use a condition to split data per row (ggplot faceting):
+#' p <- ethogramPlot(asleep,my_data,condition=sex,facet_var=experiment_id,error_bar="sem")
+#' print(p)
 #' # p is simply a ggplot object, so we can change things:
 #' print(p + labs(title="MY own title"))
 #' @seealso \code{\link{oveviewPlot}} to show per-individual patterns
 #' @export
 ethogramPlot <- function(y,data,
                           condition=NULL,
+                          facet_var=NULL,
                           summary_time_window=mins(30),
                           normalise_var_per_id=FALSE,
                           error_bar=NULL){
@@ -112,17 +116,23 @@ ethogramPlot <- function(y,data,
   dt[,t_r := floor(t/summary_time_window) * summary_time_window]
   dt[,y_var:=as.numeric(y_var)]
   c_var_name <- deparse(substitute(condition))
+  f_var_name <- deparse(substitute(facet_var))
   
   if(c_var_name == "NULL")
     dt[,c_var:=TRUE]
   else
     setnames(dt, c_var_name,"c_var")
   
+  if(f_var_name == "NULL")
+    dt[,f_var:=TRUE]
+  else
+    setnames(dt, f_var_name,"f_var")
+  
   if(normalise_var_per_id)
     dt <- na.omit(dt[,y_var:=as.vector(scale(y_var)),by=key(dt)])
   
   summary_dt <- dt[,list(y_var=mean(y_var)),
-                   by=c("t_r","c_var",key(dt))]
+                   by=c("t_r","c_var","f_var",key(dt))]
   
   
   summary_dt[,t_d:=t_r/days(1)]
@@ -142,11 +152,11 @@ ethogramPlot <- function(y,data,
     summary_dt_all_animals <- summary_dt[,list(
       y_var=mean(y_var),
       err_var=errBarFun(y_var)),
-      by=.(t_r,c_var)]  
+      by=.(t_r,c_var,f_var)]  
     
   }
   if(is.null(error_bar))
-    summary_dt_all_animals <- summary_dt[,list(y_var=mean(y_var)),by=.(t_r,c_var)] 
+    summary_dt_all_animals <- summary_dt[,list(y_var=mean(y_var)),by=.(t_r,c_var,f_var)] 
   
   summary_dt_all_animals[,t_d:=t_r/days(1)]
   
@@ -170,28 +180,9 @@ ethogramPlot <- function(y,data,
   p <- p + labs(title= sprintf("Average '%s' over time",y_var_name),x="time (day)", y=y_var_name)
   p <- p + guides(fill=guide_legend(title=c_var_name),
                   colour=guide_legend(title=c_var_name))
+  
+  if(f_var_name != "NULL"){
+    p <- p + facet_grid(f_var ~ .)
+  }
   p
 }
-
-# 
-# A simple pipeline to d
-# 
-# TODO
-# TODO...... . .............. ... . .. . ...... 
-# 
-# @export
-# sleepPlotPipeLine <- function(output,what, condition,summary_time_window=30*60,reference_hour=9.0,...){
-#   pdf(output,w=16,h=9)
-#   dev.off()
-#   
-#   dt <- loadPsvData(what, reference_hour=reference_hour, FUN=sleepAnnotation,...)  
-#   out <- list()
-#   out[[1]] <- overviewPlot(dt,"asleep", condition, summary_time_window)
-#   out[[2]] <- overviewPlot(dt,"activity", condition, summary_time_window)
-#   out[[3]] <- ethogramPlot(dt,"asleep", condition, summary_time_window)
-#   out[[4]] <- ethogramPlot(dt,"activity", condition, summary_time_window)
-#   pdf(output,w=16,h=9)
-#   lapply(out, print)
-#   dev.off()
-#   return(dt)
-# }
