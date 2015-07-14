@@ -79,7 +79,7 @@ NULL
 #' @return a data table with the columns \code{moving} (logical, TRUE iff. motion was detected) and \code{t_round} (the `rounded' time). There is one row per rounded time point.
 #' @seealso \code{\link{sleepAnnotation}} to apply this function to all subsequent time windows.
 #' @export
-maxVelocityClassifier <- function(data,velocity_threshold=.005){
+maxVelocityClassifier <- function(data,velocity_threshold=.006){
 	d <- copy(data)
 	d[,dt := c(NA,diff(t))]
 	d[,max_velocity := 10^(xy_dist_log10x1000/1000)/dt ]

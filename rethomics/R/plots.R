@@ -15,8 +15,8 @@ NULL
 
 #' @examples
 #' # Load sample data, it is already annotated for sleep, has sex=='male' or sex=="female"
-#' data(sleep_male_vs_females)
-#' my_data <- sleep_male_vs_females
+#' data(sleep_sexual_dimorphism)
+#' my_data <- sleep_sexual_dimorphism
 #' # let us have a look of the max velocity as a measure of activity
 #' p <- overviewPlot(max_velocity,my_data)
 #' print(p)
@@ -80,14 +80,15 @@ NULL
 #' @param y The variable of interest.
 #' @param data The data.table containing the data. It must have a column with the same name as y.
 #' @param condition An optional grouping factor to order rows.
+#' @param facet_var An optional grouping factor to draw group in each row of a faceted plot
 #' @param summary_time_window the width (in seconds) of the time window used to draw each ``pixel''.
 #' @param normalise_var_per_id whether each row is to be normalised (using \code{new_x = (x - mean(x))/sd(x)}).
 #' @param error_bar what type of error bar should be used. It should be one of \code{NULL},`sem' or `sd'.
 #' @return A \code{ggplot} object that can be plotted directly, or modified.
 
 #' @examples
-#' data(sleep_male_vs_females)
-#' my_data <- sleep_male_vs_females
+#' data(sleep_sexual_dimorphism)
+#' my_data <- sleep_sexual_dimorphism
 #' # Fraction of animal asleep over time:
 #' p <- ethogramPlot(asleep,my_data)
 #' # We would like to show that per group:
@@ -101,7 +102,7 @@ NULL
 #' print(p)
 #' # p is simply a ggplot object, so we can change things:
 #' print(p + labs(title="MY own title"))
-#' @seealso \code{\link{oveviewPlot}} to show per-individual patterns
+#' @seealso \code{\link{overviewPlot}} to show per-individual patterns
 #' @export
 ethogramPlot <- function(y,data,
                           condition=NULL,
