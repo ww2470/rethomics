@@ -15,6 +15,8 @@ ethogramPlot(y, data, condition = NULL, facet_var = NULL,
 
 \item{condition}{An optional grouping factor to order rows.}
 
+\item{facet_var}{An optional grouping factor to draw group in each row of a faceted plot}
+
 \item{summary_time_window}{the width (in seconds) of the time window used to draw each ``pixel''.}
 
 \item{normalise_var_per_id}{whether each row is to be normalised (using \code{new_x = (x - mean(x))/sd(x)}).}
@@ -30,8 +32,8 @@ It can be used to visualise temporal trends per groups of conditions.
 The response variable, y,  is grouped by time windows of defined size.
 }
 \examples{
-data(sleep_male_vs_females)
-my_data <- sleep_male_vs_females
+data(sleep_sexual_dimorphism)
+my_data <- sleep_sexual_dimorphism
 # Fraction of animal asleep over time:
 p <- ethogramPlot(asleep,my_data)
 # We would like to show that per group:
@@ -47,6 +49,6 @@ print(p)
 print(p + labs(title="MY own title"))
 }
 \seealso{
-\code{\link{oveviewPlot}} to show per-individual patterns
+\code{\link{overviewPlot}} to show per-individual patterns
 }
 

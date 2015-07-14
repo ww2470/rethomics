@@ -4,7 +4,7 @@
 \alias{maxVelocityClassifier}
 \title{Motion classifier based on maximum velocity.}
 \usage{
-maxVelocityClassifier(data, velocity_threshold = 0.005)
+maxVelocityClassifier(data, velocity_threshold = 0.006)
 }
 \arguments{
 \item{data}{the data.table containing behavioural features used for movement classification.}

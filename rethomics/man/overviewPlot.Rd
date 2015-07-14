@@ -28,8 +28,8 @@ The values of the variable of interest are represented by different colour inten
 }
 \examples{
 # Load sample data, it is already annotated for sleep, has sex=='male' or sex=="female"
-data(sleep_male_vs_females)
-my_data <- sleep_male_vs_females
+data(sleep_sexual_dimorphism)
+my_data <- sleep_sexual_dimorphism
 # let us have a look of the max velocity as a measure of activity
 p <- overviewPlot(max_velocity,my_data)
 print(p)
