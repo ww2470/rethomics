@@ -168,10 +168,16 @@ loadPsvData <- function(what,
 	rm(l_dt)
 	
 	setkeyv(out, keys)
-	master_table[out]
+	out <- master_table[out]
+	out$path <-NULL
+	master_table$path <-NULL
+	master_table
+	setkeyv(out, colnames(master_table))
+	out
 }
 
 parseOneROI <- function(i, master_table,min_time, max_time, reference_hour,verbose,FUN,...){
+  
   region_id <- master_table[i,region_id]
   experiment_id <- master_table[i,experiment_id]
   path <- master_table[i,path]
@@ -197,7 +203,7 @@ parseOneROI <- function(i, master_table,min_time, max_time, reference_hour,verbo
   }
   
   out[,experiment_id:=experiment_id]
-setkeyv(out,c("experiment_id","region_id"))
+  setkeyv(out,c("experiment_id","region_id"))
 }
 
 # a helper function to laod data from a single region
