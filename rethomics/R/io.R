@@ -428,8 +428,11 @@ NULL
 #' dt <- loadPsvData(map)
 #' }
 #' @export
-
 fetchPsvResultFiles <- function(result_dir,query=NULL){
+  if(!dir.exists(result_dir)){
+    stop("result_dir not found. Ensure you use the correct path")
+  }
+  
   key <- c("date","machine_name")
   use_date <- F
   if(!is.null(query)){
@@ -439,18 +442,24 @@ fetchPsvResultFiles <- function(result_dir,query=NULL){
     
     t <- q[,as.POSIXct(date, "%Y-%m-%d_%H-%M-%S", tz="GMT")]
     if(any(is.na(t)))
-    t <- q[,as.POSIXct(date, "%Y-%m-%d", tz="GMT")]
+      t <- q[,as.POSIXct(date, "%Y-%m-%d", tz="GMT")]
     use_date <- T
     
     q[,date :=t]
     setkeyv(q,key)
   }
-  all_db_files <- list.files(result_dir,recursive=T, pattern="*.db")
+  all_db_files <- list.files(result_dir,recursive=T, pattern="*\\.db$")
+  
   
   fields <- strsplit(all_db_files,"/")
   valid_files <- sapply(fields,length) == 4
   
   all_db_files <- all_db_files[valid_files]
+  
+  if(length(all_db_files) == 0){
+    stop(sprintf("No .db files detected in the directory '%s'. Ensure it is not empty.",result_dir))
+  }
+  
   files_info <- do.call("rbind",fields[valid_files])
   files_info <- as.data.table(files_info)
   setnames(files_info, c("machine_id", "machine_name", "date","file"))
@@ -464,19 +473,16 @@ fetchPsvResultFiles <- function(result_dir,query=NULL){
   
   if(is.null(query))
     return(files_info)
-  out <- files_info[q]
-  setkeyv(out,colnames(q))
-  dups_i <- duplicated(out,fromLast=T)
-  dups <- out[dups_i]
-
-  if(nrow(dups) > 0){
-    str <- "Duplicated queries. Excluding the following files:"
-    str_v <- sprintf("%s, %s",dups[,machine_name],dups[,date])
-    str_e <- "The LATEST files were kept"
-    warning(paste(c(str, str_v, str_e), sep="\n"))
+  files_info[,n:=.N,by=key(files_info)]
+  unique_fi = unique(files_info,fromLast = T)
+  out <- unique_fi[q]
+  duplicated_queries <- unique(ldt[n>1,.(date,machine_name)])
+  
+  for( i in 1:nrow(duplicated_queries)){
+    str <- "Duplicated queries. Excluding {%s, %s}"        
+    str <- sprintf(str,duplicated_queries[i,machine_name],duplicated_queries[i,date])
+    warning(str)
   }
-  cols <- unique(c("path",key(out),colnames(q)))
-  out <- out[!dups_i,cols,with=F]
   
   nas <- is.na(out[,path]) 
   if(any(nas)){
@@ -488,8 +494,7 @@ fetchPsvResultFiles <- function(result_dir,query=NULL){
   na.omit(out)
 }
 
-
-
+NULL
 listDailyDAMFiles <- function(result_dir){
   fs <- list.files( result_dir,pattern="M...*\\.txt",recursive = T)
   fields <- strsplit(fs,"/")
