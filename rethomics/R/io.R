@@ -319,42 +319,40 @@ NULL
 #' @seealso \code{\link{loadMetaData}} To display global informations about the experiment.
 #' @export
 loadDAMFile <- function(FILE, tz = ""){
-	### hardcodded constants
-	DAM_COL_TYPES <- c(
-		"integer", "character", "character",
-		#rep(NULL, 7), ## these columns are irrelevant, NULL means we will discard them straight away
-		rep("double", 32)
-		)
-
-	DAM_COL_NAMES <- c("idx", "day_month_year", "time", sprintf("channel_%02d", 1:32))
-
-	dt_list <- fread(FILE, drop=4:10, header = FALSE)
-	setnames(dt_list,DAM_COL_NAMES)
-	dt_list[,datetime:=paste(day_month_year,time, sep=":")]
-	dt_list[,t:=as.POSIXct(strptime(datetime,"%d %b %G:%H:%M:%S",tz=tz))]
-	#clean table from unused parameters (idx,time, datetime...)
-	dt_list[,time:=NULL]
-	dt_list[,datetime:=NULL]
-	dt_list[,idx:=NULL]
-	dt_list[,day_month_year:=NULL]
-	#for (i in seq(1,7,1) dt_list[,not_in_use_+i]
-	#melting using pacakage reshape
-	dt_risonno <- as.data.table(melt(dt_list,id="t"))
-
-    roi_value <- function(channel_string){
-        s <- strsplit(channel_string,"_")
-        num <- as.integer(sapply(s,function(x) x[2]))
-        return(num)
-    }
+  ### hardcodded constants
+  DAM_COL_TYPES <- c(
+    "integer", "character", "character",
+    #rep(NULL, 7), ## these columns are irrelevant, NULL means we will discard them straight away
+    rep("double", 32)
+  )
   
-    #get the values on activity
-    dt_risonno[,activity:=value]
-    dt_risonno[,region_id:=roi_value(as.character(variable))]
-	dt_risonno$value <- NULL
-	dt_risonno$variable <- NULL
-	return(dt_risonno)
+  DAM_COL_NAMES <- c("idx", "day_month_year", "time", sprintf("channel_%02d", 1:32))
+  
+  dt_list <- fread(FILE, drop=4:10, header = FALSE)
+  setnames(dt_list,DAM_COL_NAMES)
+  dt_list[,datetime:=paste(day_month_year,time, sep=" ")]
+  dt_list[,t:=as.POSIXct(strptime(datetime,"%d %b %y %H:%M:%S",tz=tz))]
+  #clean table from unused variables (idx,time, datetime...)
+  dt_list[,time:=NULL]
+  dt_list[,datetime:=NULL]
+  dt_list[,idx:=NULL]
+  dt_list[,day_month_year:=NULL]
+  
+  out <- as.data.table(melt(dt_list,id="t"))
+  
+  roi_value <- function(channel_string){
+    s <- strsplit(channel_string,"_")
+    num <- as.integer(sapply(s,function(x) x[2]))
+    return(num)
+  }
+  
+  #get the values on activity
+  out[,activity:=value]
+  out[,region_id:=roi_value(as.character(variable))]
+  out$value <- NULL
+  out$variable <- NULL
+  return(out)
 }
-
 
 NULL
 #' Retrieves sample/example data contained within in this package.
@@ -610,7 +608,7 @@ fetchDAMData <- function(result_dir,query, reference_hour=9.0, tz="BST", FUN=NUL
   if(!is.null(FUN)){
     all_data <- all_data[, FUN(.SD,...),by=key(all_data)]
   }
-  
+  all_data
 }
 
 
