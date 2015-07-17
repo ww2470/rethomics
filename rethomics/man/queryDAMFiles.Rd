@@ -4,7 +4,7 @@
 \alias{queryDAMFiles}
 \title{Retrieves DAM2 data from continuous file recording}
 \usage{
-queryDAMFiles(query, FUN, ...)
+queryDAMFiles(query, FUN = NULL, ...)
 }
 \arguments{
 \item{query}{a formatted query used to request data (see detail).}

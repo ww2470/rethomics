@@ -129,6 +129,18 @@ ethogramPlot <- function(y,data,
   else
     setnames(dt, f_var_name,"f_var")
   
+  if(is.numeric(dt[,c_var])){
+    dt[,c_var = as.character(c_var)] 
+    warning("Condition variable is a number.
+             Converting it to a factor")
+  }
+   
+  if(is.numeric(dt[,f_var])){
+    dt[,c_var = as.character(f_var)] 
+    warning("Faceting variable is a number. 
+             Converting it to a factor")
+  }
+  
   if(normalise_var_per_id)
     dt <- na.omit(dt[,y_var:=as.vector(scale(y_var)),by=key(dt)])
   

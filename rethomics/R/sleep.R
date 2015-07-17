@@ -233,7 +233,11 @@ NULL
 #' @note The resulting data will only have one data point every \code{time_window_length} seconds.
 #' @examples
 #' # Let us load some sample data
-#' #TODO data(dam_data)
+#' data(dam_data)
+#' dam_data[,
+#'            sleepDAMAnnotation(.SD),
+#'            by=key(dam_data)]
+#'            
 #' @seealso \code{\link{queryDAMData}} to load data in and apply this function directly
 #' @export
 sleepDAMAnnotation <- function(

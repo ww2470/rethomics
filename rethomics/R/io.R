@@ -702,7 +702,7 @@ NULL
 #' ethogramPlot(asleep,dt,condition) + scale_x_continuous(breaks=0:10/2)
 #' @seealso \code{\link{fetchDAMData}} to load DAM data that is saved by day
 #' @export
-queryDAMFiles <- function(query, FUN, ...){
+queryDAMFiles <- function(query, FUN=NULL, ...){
   tz=""
   q <- copy(as.data.table(query))
   cn <- colnames(q)
