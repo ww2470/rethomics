@@ -29,7 +29,6 @@ NULL
 #' ggplot(sleep_dt, aes(t,region_id,fill=asleep)) + geom_tile()
 #' @seealso \code{\link{loadPsvData}} to load data and optionaly apply analysis on the fly.
 #' @export
-
 sleepAnnotation <- function(data,
                             time_window_length=10, #s
                             min_time_immobile=60*5, #s
@@ -221,8 +220,21 @@ boutAnalysis <- function(var,data){
   setnames(out,"var",var_name)
   out
 }
-
-
+NULL
+#' Determines whether an animal is asleep using beam crossing activity
+#' 
+#' Sleep as contiguous inactivity (absence of beam crossing) for a minimal duration.
+#'
+#' @param data the data (i.e a data.table) from a \emph{single} region. It must contain, at least,
+#' the columns `t`, `x` and `y`.
+#' @param time_window_length The number of seconds to be used by the motion classifier. This corresponds to the sampling period of the output data.
+#' @param min_time_immobile the minimal duration (in s) after which an immobile animal is scored as `asleep'.
+#' @return A data table similar to \code{data} with additional variables/annotations (i.e. `moving', `asleep').
+#' @note The resulting data will only have one data point every \code{time_window_length} seconds.
+#' @examples
+#' # Let us load some sample data
+#' #TODO data(dam_data)
+#' @seealso \code{\link{queryDAMData}} to load data in and apply this function directly
 #' @export
 sleepDAMAnnotation <- function(
   data,
@@ -232,7 +244,6 @@ sleepDAMAnnotation <- function(
   d <- copy(data)
   if(nrow(d) <1)
     return(NULL)
-  
   d[, moving:= activity > 0]
   d[, asleep := sleep_contiguous(moving, 1/time_window_length, min_time_immobile)]
   d
