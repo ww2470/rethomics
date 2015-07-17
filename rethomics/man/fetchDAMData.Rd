@@ -2,7 +2,7 @@
 % Please edit documentation in R/io.R
 \name{fetchDAMData}
 \alias{fetchDAMData}
-\title{Retrieves DAM2 data from data that is saved daily}
+\title{Retrieves DAM2 data from daily saved files}
 \usage{
 fetchDAMData(result_dir, query, reference_hour = 9, tz = "BST",
   FUN = NULL, ...)
@@ -49,5 +49,8 @@ the daily data should be saved in a hard-coded directory structure \code{root_di
  \item{\code{mm} and \code{dd}, }{the formatted month and day, respectively (e.g. mm=12 and dd=28).}
  \item{\code{xyz}, }{the number of the monitor (e.g 003)}
 }
+}
+\seealso{
+\code{\link{queryDAMData}} to load data from a regular DAM2 file
 }
 
