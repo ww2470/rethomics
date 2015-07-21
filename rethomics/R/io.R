@@ -469,15 +469,16 @@ NULL
 #' dt <- loadPsvData(map)
 #' }
 #' @export
+
 fetchPsvResultFiles <- function(result_dir,query=NULL){
   if(!dir.exists(result_dir)){
     stop("result_dir not found. Ensure you use the correct path")
   }
-  
   key <- c("date","machine_name")
   use_date <- F
   if(!is.null(query)){
-    q <- copy(query)  
+    q <- copy(as.data.table(query))
+    q[, date:=as.character(date)]
     if(!("date" %in% colnames(q)))
       stop("Query MUST have a `date` column")
     
@@ -504,6 +505,7 @@ fetchPsvResultFiles <- function(result_dir,query=NULL){
   files_info <- do.call("rbind",fields[valid_files])
   files_info <- as.data.table(files_info)
   setnames(files_info, c("machine_id", "machine_name", "date","file"))
+  
   if(use_date)
     files_info[,date:=as.POSIXct(date, "%Y-%m-%d", tz="GMT")]
   else
@@ -517,14 +519,14 @@ fetchPsvResultFiles <- function(result_dir,query=NULL){
   files_info[,n:=.N,by=key(files_info)]
   unique_fi = unique(files_info,fromLast = T)
   out <- unique_fi[q]
-  duplicated_queries <- unique(ldt[n>1,.(date,machine_name)])
-  
-  for( i in 1:nrow(duplicated_queries)){
-    str <- "Duplicated queries. Excluding {%s, %s}"        
-    str <- sprintf(str,duplicated_queries[i,machine_name],duplicated_queries[i,date])
-    warning(str)
+  duplicated_queries <- unique(out[n>1,.(date,machine_name)])
+  if(nrow(duplicated_queries) > 0){
+    for( i in 1:nrow(duplicated_queries)){
+      str <- "Duplicated queries. Excluding {%s, %s}"        
+      str <- sprintf(str,duplicated_queries[i,machine_name],duplicated_queries[i,date])
+      warning(str)
+    }
   }
-  
   nas <- is.na(out[,path]) 
   if(any(nas)){
     out_nas <- out[nas,]
@@ -534,7 +536,6 @@ fetchPsvResultFiles <- function(result_dir,query=NULL){
   }
   na.omit(out)
 }
-
 NULL
 listDailyDAMFiles <- function(result_dir){
   fs <- list.files( result_dir,pattern="M...*\\.txt",recursive = T)
@@ -786,7 +787,7 @@ parseDateStr <- function(str, tz=''){
 dateStrToPosix <- function(date,tz="GMT"){
   if(is.infinite(date))
     return(date)
-  parseDateStr(date,tz)$date
+  parseDateStr(as.character(date),tz)$date
 }
 
 # invalid_dates <- c('2015-05-04_25-00-00', '2015-05-34',
