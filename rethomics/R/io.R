@@ -326,8 +326,11 @@ loadDAMFile <- function(FILE, start_date=-Inf, stop_date=+Inf, tz = ""){
   dt[,t:=as.POSIXct(strptime(datetime,"%d %b %y %H:%M:%S",tz=tz))]
   min_date <- dateStrToPosix(start_date,tz)
   max_date <- dateStrToPosix(stop_date,tz)
+  
   # if time is not in date, we add a day
-  ifelse(parseDateStr(stop_date)$has_time, max_date,max_date +hours(24))
+  # TODO
+  # ifelse(parseDateStr(stop_date)$has_time, max_date,max_date +hours(24))
+  
   if(max_date < min_date)
     stop("`max_date` MUST BE greater than `min_date`")
   valid_dt <- dt[,.(
