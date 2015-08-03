@@ -303,6 +303,7 @@ NULL
 #' @param start_date the starting date formated as "yyyy-mm-dd" or "yyyy-mm-dd_hh-mm-ss"
 #' @param stop_date the last day of the experiment. Same format as \code{start_date}
 #' @param tz the time zone of the computer saving the file. By default, \code{tz} is taken from the computer running this function
+#' @param verbose whether to print progress (a logical).
 #' @return a data table with an activity (number of beam crosses) variable, a region_id (channel) variable and a posix time stamp.
 #' @examples
 #' \dontrun{
@@ -319,8 +320,16 @@ NULL
 #' print(conditions)
 #' }
 #' @seealso \code{\link{loadMetaData}} To display global informations about the experiment.
-loadDAMFile <- function(FILE, start_date=-Inf, stop_date=+Inf, tz = ""){
+loadDAMFile <- function(FILE, 
+                        start_date=-Inf,
+                        stop_date=+Inf,
+                        tz = "",
+                        verbose=TRUE
+                        ){
   # 1 load time stamps
+  if(verbose)
+    print(sprintf("Reading %s.",FILE))
+  
   dt <- fread(FILE, select=2:3, header = FALSE)
   dt[,datetime:=paste(V2,V3, sep=" ")]
   dt[,t:=as.POSIXct(strptime(datetime,"%d %b %y %H:%M:%S",tz=tz))]
@@ -568,6 +577,7 @@ listDailyDAMFiles <- function(result_dir){
 #' @param reference_hour the hour, in the day, to use as t_0 reference. This should be expressed on Greenwich Meridian Time.
 #' @param tz the time zone on which the DAM2 data was saved (e.g. BSM -> British Summer Time)
 #' @param FUN an optional function to transform the data from each `region' (i.e. a data.table) immediately after is has been loaded. 
+#' @param verbose whether to print progress (a logical).
 #' @param ... extra arguments to be passed to \code{FUN}
 #' @return A data.table where every row is an individual measurement. That is an activity at a unique time (\code{t}) in a 
 #' unique channel (\code{region_id}), and from a unique result date/experiment (\code{experiment_id}).
@@ -593,7 +603,12 @@ listDailyDAMFiles <- function(result_dir){
 #' }
 #' @seealso \code{\link{queryDAMData}} to load data from a regular DAM2 file
 #' @export
-fetchDAMData <- function(result_dir,query, reference_hour=9.0, tz="BST", FUN=NULL, ...){
+fetchDAMData <- function(result_dir,
+                         query, 
+                         reference_hour=9.0, 
+                         tz="BST",
+                         verbose=TRUE,
+                         FUN=NULL, ...){
   q = copy(query)
   #files_info[, experiment_id := paste(date,machine_id,sep="_")]
   files_info <- listDailyDAMFiles(result_dir)
@@ -630,7 +645,7 @@ fetchDAMData <- function(result_dir,query, reference_hour=9.0, tz="BST", FUN=NUL
   
   
   bar <- function(files){
-    out <- lapply(files, loadDAMFile,tz=tz)
+    out <- lapply(files, loadDAMFile,tz=tz,verbose=verbose)
     rbindlist(out)
   }
   
