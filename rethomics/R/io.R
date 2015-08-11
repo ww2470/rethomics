@@ -546,7 +546,9 @@ fetchPsvResultFiles <- function(result_dir,query=NULL){
       warning(sprintf("No result for machine_name == %s and date == %s. Omiting query",out_nas[i,machine_name],out_nas[i,date])) 
     }
   }
-  na.omit(out)
+  out <- na.omit(out)
+  setkeyv(out, union(key(out),colnames(q)))
+  out
 }
 NULL
 listDailyDAMFiles <- function(result_dir){
@@ -754,12 +756,15 @@ queryDAMFiles <- function(query, FUN=NULL, ...){
   
   out[, t:=as.numeric(t-t0,units='secs')]
   out$t0 <- NULL
+  q$t0 <- NULL
   
   setkeyv(out,final_key)
   
   if(!is.null(FUN)){
     out <- out[, FUN(.SD,...),by=key(out)]
   }
+  
+  setkeyv(out, union(key(out),colnames(q)))
   out
 }
 NULL
