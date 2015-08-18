@@ -614,7 +614,7 @@ fetchDAMData <- function(result_dir,
                          FUN=NULL, ...){
   q = copy(query)
   #files_info[, experiment_id := paste(date,machine_id,sep="_")]
-  files_info <- listDailyDAMFiles(result_dir)
+  files_info <- listDailyDAMFiles(DAILY_DATA_DIR)
   
   if(!("region_id" %in% colnames(q)))
     q <- q[,.(region_id=1:32),by=c(colnames(q))]
@@ -644,8 +644,6 @@ fetchDAMData <- function(result_dir,
   day_query$nrow <- NULL
   setkeyv(day_query,c("experiment_id"))
   day_query <- uniq_q[day_query]
-  day_query
-  
   
   bar <- function(files){
     out <- lapply(files, loadDAMFile,tz=tz,verbose=verbose)
@@ -656,10 +654,13 @@ fetchDAMData <- function(result_dir,
                         bar(path)
                         ,by="experiment_id"]
   #all_data[,t:=as.numeric(t - min(t))]
+  
   setkeyv(q,c("experiment_id","region_id"))
   setkeyv(all_data,c("experiment_id","region_id"))
   all_data <- all_data[q]
   
+  q_key <- setdiff(colnames(q),c("start_date","stop_date"))
+  setkeyv(all_data, union(key(all_data),q_key))
   all_data[,t := as.numeric(t  - start_date,units="secs")]
   all_data[,t := t-hours(reference_hour)]
   
