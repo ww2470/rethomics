@@ -5,7 +5,7 @@
 \title{Retrieves DAM2 data from daily saved files}
 \usage{
 fetchDAMData(result_dir, query, reference_hour = 9, tz = "BST",
-  FUN = NULL, ...)
+  verbose = TRUE, FUN = NULL, ...)
 }
 \arguments{
 \item{result_dir}{the root directory where all daily data are saved}
@@ -15,6 +15,8 @@ fetchDAMData(result_dir, query, reference_hour = 9, tz = "BST",
 \item{reference_hour}{the hour, in the day, to use as t_0 reference. This should be expressed on Greenwich Meridian Time.}
 
 \item{tz}{the time zone on which the DAM2 data was saved (e.g. BSM -> British Summer Time)}
+
+\item{verbose}{whether to print progress (a logical).}
 
 \item{FUN}{an optional function to transform the data from each `region' (i.e. a data.table) immediately after is has been loaded.}
 
