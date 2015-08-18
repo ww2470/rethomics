@@ -226,7 +226,7 @@ NULL
 #' Sleep as contiguous inactivity (absence of beam crossing) for a minimal duration.
 #'
 #' @param data the data (i.e a data.table) from a \emph{single} region. It must contain, at least,
-#' the columns `t`, `x` and `y`.
+#' the columns \code{t}, \code{x} and \code{y}.
 #' @param time_window_length The number of seconds to be used by the motion classifier. This corresponds to the sampling period of the output data.
 #' @param min_time_immobile the minimal duration (in s) after which an immobile animal is scored as `asleep'.
 #' @return A data table similar to \code{data} with additional variables/annotations (i.e. `moving', `asleep').
@@ -251,4 +251,52 @@ sleepDAMAnnotation <- function(
   d[, moving:= activity > 0]
   d[, asleep := sleep_contiguous(moving, 1/time_window_length, min_time_immobile)]
   d
+}
+NULL
+
+#' Finds when an animal is `dead' and removes the all consecutive data
+#'
+#' In this context, death is defined by very long periods of immobility.
+#'
+#' @param data the data (i.e a data.table) from a \emph{single} region. It must contain, at least,
+#' the columns \code{t}and \code{moving}.
+#' @param max_immobile_live the longest duration an alive animal can remain immobile before being considered dead.
+#' @return A data table similar to \code{data} where late time points have potentially been removed
+#' @note Death is assumed to be irreversible. Therefore, if an animal is classified as dead, all subsequent data is is removed.
+#' @examples
+#' # Let us load some sample data
+#' data(dam_data)
+# we add a `moving` column to the data
+#' dt <- dam_data[,
+#'             sleepDAMAnnotation(.SD),
+#'             by=key(dam_data)]
+#' # let us have a look at the pattern of movement.
+#' # Some animals (e.g. 06, 21, 24) died early.
+#' overviewPlot(moving,dt,normalise_var_per_id = FALSE)
+#' dt_curated <- dt[,curateDeadAnimals(.SD,hours(15)),by=key(dt)]
+#' # Note that some data has been removed.
+#' # Also, no data was there for region_id == 06, therefore, it is removed altogether
+#' overviewPlot(moving, dt_curated, normalise_var_per_id = FALSE)
+#' #####
+#' # A simple way to compute total lifespan of each remaining animal:
+#' lifespan_dt <- dt_curated[,
+#'         .(lifespan = max(t) - min(t))
+#'         ,by=key(dt_curated)]
+#' @seealso \code{\link{sleepAnnotation}} and \code{\link{sleepDAMAnnotation}} to define movement and add a \code{moving} column.
+#' @export
+
+curateDeadAnimals <- function(data, max_immobile_live=hours(12)){
+  if(!"moving" %in% colnames(data))
+    stop("`data` must have a column names `moving`")
+  death_dt = copy(data[moving==F])
+  bout_dt <- makeBoutDt(data[,moving],data)
+  
+  bout_dt[,dead := length > max_immobile_live]
+  
+  dead_instances <- which(bout_dt[,dead])
+  if(length(dead_instances) < 1)
+    return(data)
+  first_death_idx <- min(dead_instances)
+  first_dead_time <- bout_dt[first_death_idx,start_time]
+  data[t < first_dead_time]
 }
