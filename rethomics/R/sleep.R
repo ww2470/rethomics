@@ -287,7 +287,8 @@ NULL
 curateDeadAnimals <- function(data, max_immobile_live=hours(12)){
   if(!"moving" %in% colnames(data))
     stop("`data` must have a column names `moving`")
-  death_dt = copy(data[moving==F])
+  death_dt <- data[moving==F]
+  death_dt = copy(death_dt)
   bout_dt <- makeBoutDt(data[,moving],data)
   
   bout_dt[,dead := length > max_immobile_live]
