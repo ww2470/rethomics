@@ -329,8 +329,7 @@ loadDAMFile <- function(FILE,
   # 1 load time stamps
   if(verbose)
     print(sprintf("Reading %s.",FILE))
-  
-  dt <- fread(FILE, select=2:3, header = FALSE)
+  dt <- fread(FILE, select=2:4, header = FALSE)
   dt[,datetime:=paste(V2,V3, sep=" ")]
   dt[,t:=as.POSIXct(strptime(datetime,"%d %b %y %H:%M:%S",tz=tz))]
   min_date <- dateStrToPosix(start_date,tz)
@@ -343,11 +342,11 @@ loadDAMFile <- function(FILE,
   if(max_date < min_date)
     stop("`max_date` MUST BE greater than `min_date`")
   valid_dt <- dt[,.(
-    valid = (t >= min_date & t < max_date),
+    valid = (t >= min_date & t < max_date & V4 ==1),
     idx = 1:.N,
     t=t
   )]
-  valid_dt <- valid_dt[valid ==T ]
+  valid_dt <- valid_dt[valid == T]
   
   first = min(valid_dt[,idx]) 
   last = max(valid_dt[,idx])     
@@ -361,8 +360,8 @@ loadDAMFile <- function(FILE,
   valid_dt <- na.omit(valid_dt)
   sampling_periods <- valid_dt[,.(n=.N),by=diff_t]
   if(nrow(sampling_periods) > 1){
-    warning("The sampling period is not always regular.
-            Some reads must have been skipped.")
+    warning(sprintf("The sampling period is not always regular in %s.
+            Some reads must have been skipped.",FILE))
     #fixme show a table of samplig rates
   }
   
@@ -376,10 +375,11 @@ loadDAMFile <- function(FILE,
          It looks as if the recording computer went back in time!")
   }
   # 3 actually load the file
-  DAM_COL_NAMES <- c("idx", "day_month_year", "time", sprintf("channel_%02d", 1:32))
-  dt_list <- fread(FILE, drop=4:10, header = FALSE,
+  DAM_COL_NAMES <- c("idx", "day_month_year", "time","status", sprintf("channel_%02d", 1:32))
+  dt_list <- fread(FILE, drop=5:10, header = FALSE,
                    skip = first-1, nrows = last-first+1)
   setnames(dt_list,DAM_COL_NAMES)
+  dt_list <- dt_list[status ==1]
   dt_list[,datetime:=paste(day_month_year,time, sep=" ")]
   dt_list[,t:=as.POSIXct(strptime(datetime,"%d %b %y %H:%M:%S",tz=tz))]
   #clean table from unused variables (idx,time, datetime...)
@@ -387,6 +387,7 @@ loadDAMFile <- function(FILE,
   dt_list[,datetime:=NULL]
   dt_list[,idx:=NULL]
   dt_list[,day_month_year:=NULL]
+  dt_list[,status:=NULL]
   
   out <- as.data.table(melt(dt_list,id="t"))
   
