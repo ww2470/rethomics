@@ -9,7 +9,7 @@ sleepDAMAnnotation(data, time_window_length = 60, min_time_immobile = 60 *
 }
 \arguments{
 \item{data}{the data (i.e a data.table) from a \emph{single} region. It must contain, at least,
-the columns `t`, `x` and `y`.}
+the columns \code{t}, \code{x} and \code{y}.}
 
 \item{time_window_length}{The number of seconds to be used by the motion classifier. This corresponds to the sampling period of the output data.}
 

@@ -4,7 +4,8 @@
 \alias{loadDAMFile}
 \title{Read a text file formatted as DAM2 into a single data table.}
 \usage{
-loadDAMFile(FILE, start_date = -Inf, stop_date = +Inf, tz = "")
+loadDAMFile(FILE, start_date = -Inf, stop_date = +Inf, tz = "",
+  verbose = TRUE)
 }
 \arguments{
 \item{FILE}{the name of the input file.}
@@ -14,6 +15,8 @@ loadDAMFile(FILE, start_date = -Inf, stop_date = +Inf, tz = "")
 \item{stop_date}{the last day of the experiment. Same format as \code{start_date}}
 
 \item{tz}{the time zone of the computer saving the file. By default, \code{tz} is taken from the computer running this function}
+
+\item{verbose}{whether to print progress (a logical).}
 }
 \value{
 a data table with an activity (number of beam crosses) variable, a region_id (channel) variable and a posix time stamp.
