@@ -21,7 +21,7 @@ ethogramPlot(y, data, condition = NULL, facet_var = NULL,
 
 \item{normalise_var_per_id}{whether each row is to be normalised (using \code{new_x = (x - mean(x))/sd(x)}).}
 
-\item{error_bar}{what type of error bar should be used. It should be one of \code{NULL},`sem' or `sd'.}
+\item{error_bar}{what type of error bar should be used see details.}
 }
 \value{
 A \code{ggplot} object that can be plotted directly, or modified.
@@ -30,6 +30,16 @@ A \code{ggplot} object that can be plotted directly, or modified.
 This function produces a graph where the variable of interest and time are on the y and x axes, respectively.
 It can be used to visualise temporal trends per groups of conditions.
 The response variable, y,  is grouped by time windows of defined size.
+}
+\details{
+At the moment, four types of error bars are supported:
+\itemize{
+ \item{`sd' }{The standard error}
+ \item{`sem' }{The standard error of the mean (\emph{i.e.} \eqn{\frac{sd}{\sqrt{n}}})}
+ \item{`gauss_ci' }{The gaussian 95\% confidence interval (\emph{i.e.} \eqn{1.96 \cdot{} \frac{sd}{\sqrt{n}}})}
+ \item{`boot_ci' }{A standard 95\% bootstrap resampling confidence interval.
+                  This is done over 5000 replicates. This can be quite \emph{slow}, but is often more statistically sound.}
+}
 }
 \examples{
 data(sleep_sexual_dimorphism)
@@ -47,6 +57,16 @@ p <- ethogramPlot(asleep,my_data,condition=sex,facet_var=experiment_id,error_bar
 print(p)
 # p is simply a ggplot object, so we can change things:
 print(p + labs(title="MY own title"))
+# Let us play with several error bars:
+p <- ethogramPlot(asleep,my_data,condition=sex,error_bar="sd")
+p
+p <- ethogramPlot(asleep,my_data,condition=sex,error_bar="sem")
+p
+p <- ethogramPlot(asleep,my_data,condition=sex,error_bar="gauss_ci")
+p
+# this one is a bit slow
+p <- ethogramPlot(asleep,my_data,condition=sex,error_bar="boot_ci")
+p
 }
 \seealso{
 \code{\link{overviewPlot}} to show per-individual patterns
