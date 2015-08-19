@@ -83,8 +83,17 @@ NULL
 #' @param facet_var An optional grouping factor to draw group in each row of a faceted plot
 #' @param summary_time_window the width (in seconds) of the time window used to draw each ``pixel''.
 #' @param normalise_var_per_id whether each row is to be normalised (using \code{new_x = (x - mean(x))/sd(x)}).
-#' @param error_bar what type of error bar should be used. It should be one of \code{NULL},`sem' or `sd'.
+#' @param error_bar what type of error bar should be used see details.
 #' @return A \code{ggplot} object that can be plotted directly, or modified.
+#' @details 
+#' At the moment, four types of error bars are supported:
+#' \itemize{
+#'  \item{`sd' }{The standard error}
+#'  \item{`sem' }{The standard error of the mean (\emph{i.e.} \eqn{\frac{sd}{\sqrt{n}}})}
+#'  \item{`gauss_ci' }{The gaussian 95\% confidence interval (\emph{i.e.} \eqn{1.96 \cdot{} \frac{sd}{\sqrt{n}}})}
+#'  \item{`boot_ci' }{A standard 95\% bootstrap resampling confidence interval.
+#'                   This is done over 5000 replicates. This can be quite \emph{slow}, but is often more statistically sound.}
+#' }
 
 #' @examples
 #' data(sleep_sexual_dimorphism)
@@ -102,6 +111,16 @@ NULL
 #' print(p)
 #' # p is simply a ggplot object, so we can change things:
 #' print(p + labs(title="MY own title"))
+#' # Let us play with several error bars:
+#' p <- ethogramPlot(asleep,my_data,condition=sex,error_bar="sd")
+#' p
+#' p <- ethogramPlot(asleep,my_data,condition=sex,error_bar="sem")
+#' p
+#' p <- ethogramPlot(asleep,my_data,condition=sex,error_bar="gauss_ci")
+#' p
+#' # this one is a bit slow
+#' p <- ethogramPlot(asleep,my_data,condition=sex,error_bar="boot_ci")
+#' p
 #' @seealso \code{\link{overviewPlot}} to show per-individual patterns
 #' @export
 ethogramPlot <- function(y,data,
@@ -151,20 +170,25 @@ ethogramPlot <- function(y,data,
   summary_dt[,t_d:=t_r/days(1)]
   
   if(!is.null(error_bar)){
-    if(!error_bar %in% c("sd", "sem"))
-      stop("error_bar should can be only one of NULL,'sd' or 'sem'")
+    if(!error_bar %in% c("sd", "sem", "boot_ci", "gauss_ci"))
+      stop("error_bar should can be only one of NULL,'sd, 'sem', 'gauss_ci' or 'boot_ci' ")
     
     if(error_bar == "sd")
-      errBarFun <- sd
-    
+      errBarFun <- plusMinusSd
+
     if(error_bar == "sem")
-      errBarFun <- function(x){
-        sd(x)/sqrt(length(x))
-      }    
+      errBarFun <-plusMinusSem
     
-    summary_dt_all_animals <- summary_dt[,list(
+    if(error_bar == "gauss_ci")
+      errBarFun <-gaussianCi
+    
+    if(error_bar == "boot_ci")
+      errBarFun <- bootCi
+    
+    
+    summary_dt_all_animals <- summary_dt[,c(
       y_var=mean(y_var),
-      err_var=errBarFun(y_var)),
+      errBarFun(y_var)),
       by=.(t_r,c_var,f_var)]  
     
   }
@@ -183,10 +207,10 @@ ethogramPlot <- function(y,data,
   
   if(!is.null(error_bar)){
     if(c_var_name != "NULL"){
-      p <- p + geom_ribbon(aes(ymin=y_var-err_var, ymax=y_var+err_var,colour=NULL),alpha=.3)
+      p <- p + geom_ribbon(aes(ymin=lower, ymax=higher,colour=NULL),alpha=.3)
     }
     else{
-      p <- p + geom_ribbon(aes(ymin=y_var-err_var, ymax=y_var+err_var),alpha=.3)
+      p <- p + geom_ribbon(aes(ymin=lower, ymax=higher),alpha=.3)
     }
   }
   
@@ -198,4 +222,33 @@ ethogramPlot <- function(y,data,
     p <- p + facet_grid(f_var ~ .)
   }
   p
+}
+
+
+plusMinusSd <- function(x){
+  m <- mean(x)
+  s <- sd(x)
+  list(lower = m - s, higher = m +s)
+}
+plusMinusSem <- function(x){
+  m <- mean(x)
+  s <- sd(x)/sqrt(length(x)) 
+  list(lower = m - s, higher = m +s)
+}
+
+gaussianCi <- function(x){
+  m <- mean(x)
+  s <- 1.96 * sd(x)/sqrt(length(x)) 
+  list(lower = m - s, higher = m +s)
+}
+
+
+bootCi <- function(x,
+                   r=5000,
+                   ci=0.95){
+  v <- replicate(r, mean(sample(x,replace=T)))
+  ci <- quantile(v,c(1-ci,ci))
+  out <-list(lower = ci[1],
+             higher = ci[2])
+  out
 }
