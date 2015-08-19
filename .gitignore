@@ -22,6 +22,5 @@ rethomics/*.pdf
 rethomics/.RData
 *.Rcheck/
 *.tar.gz
-
-
 .Rproj.user
+
