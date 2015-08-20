@@ -1,5 +1,5 @@
 ---
-title: "Loading DAM Data"
+title: "Loading DAM2 Data"
 author: "Quentin Geissmann"
 date: "18 August 2015"
 output: html_document
@@ -13,10 +13,15 @@ In this tutorial, we will learn how to:
 
 * Load data from [TriKinetics DAM2 monitors](http://www.trikinetics.com/)
 * Visually control the quality of the data
-* Remove dead animals
 
 Loading data from continuous DAM2 files
 ----------------------------------------
+For each DAM2 monitor, the TriKinetics software generates a single, long, continuous file.
+New data is simply added in the end of this unique file.
+Therefore, in princinple, one could have the same file for several years of data for one monitor.
+This implies that **this file will contain data from many experiments**.
+Therefore, we will need a way to query this file in order to retrieve only the relevant information.
+
 
 As usual, we start by loading rethomics.
 ```{r, eval=FALSE}
@@ -27,16 +32,27 @@ library(rethomics)
 library(rethomics)
 ```
 
-At this point, you may not have your own DAM file, so we will need to access the one enclosed in the package:
+If you do not have your own DAM2 file, you can use this command to retrieve the path to a sample file that I provided within the package:
 
 ```{r}
 sample_file <- system.file('data/DAMfile.txt', package="rethomics")
 print(sample_file)
 ```
 
+Otherwise, if you have your own file, you can simply write something like:
+
+```{r,eval=F}
+sample_file <- "C:/path/to/my_file.txt"
+print(sample_file)
+```
+
+
 Then, we build a **query**.
-This is very important to understand exactly what we mean by query in this context.
-If you are unsure, I invite you to read through the ["build a query"](./build_a_query.html) tutorial.
+Queries are a powerful concept in `rethomics`, so it is *important to understand exactly what we mean by query* in this context.
+If you are confused about how to, for instance, load *multiple experiments* from *multiple files/monitors* and link then to experimental conditions for further analysis, I invite you to read through the ["build a query"](./build_a_query.html) tutorial. 
+For now, we will focus on a single experiment, from a single monitor.
+
+
 In this query, we define:
 
 * the `path` of the input file
@@ -48,7 +64,8 @@ Then, we add an extract column, where we *map these mandatory variables to an op
 In our case, the treatment is named "condition", and can be either "a" or "b".
 
 An important point here is that the start date also *contains time* (e.g. `2015-07-02_10-00-00` is the 2nd of july 2015 at 10:00:00). 
-This time defines the *start of the biological day* (i.e. ZT0). All time data will be expressed relatively to this reference time.
+This time defines the *start of the biological day* (i.e. ZT0). 
+All time data will be expressed relatively to this reference time.
 
 ```{r}
 query = data.table(path=sample_file,
@@ -85,7 +102,7 @@ Note the new columns `moving` and `asleep`
 overviewPlot(moving, dt, normalise_var_per_id = TRUE)
 ```
 
-With this representation, you can spot that animals in `region_id` 21 and 24 seemed to have **died before the end ot the experiement**.
+With this representation, you can spot that animals in `region_id` 21 and 24 seemed to have **died before the end ot the experiment**.
 
 Data curation
 ----------------------
