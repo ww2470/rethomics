@@ -1,0 +1,95 @@
+---
+title: "Curating data when animals died"
+author: "Quentin Geissmann"
+date: "19 August 2015"
+output: html_document
+---
+
+
+Aims
+----- 
+
+In this tutorial, we will learn how to:
+
+* Visually control the quality of the data
+* Remove data after death of each animal
+
+Visual detection of dead animals
+----------------------------------------
+In some experiments, a significant proportion of the animals may die.
+While we may be interested in life span per se, dead animals will often "polute" our data.
+For instance, if you are interested in locomotion, dead individuals will simply *count as "immobile"* ones, possibly biasing your results.
+Ideally, we would like to detect when an animals died and *remove only the data after death*.
+
+
+As usual, we start by loading rethomics.
+```{r, eval=FALSE}
+library(rethomics)
+```
+
+```{r, include=FALSE}
+library(rethomics)
+```
+
+For this tutorial, we will work with the `dam_data` data set, which is enclosed to `rethomics`.
+In order to learn how to load your own data, have a read of the [loading data](todo) section of this tutorial.
+
+```{r}
+data(dam_data)
+print(dam_data)
+```
+
+Here, the `activity` columns refers to the number of beam crosses. 
+We can, for instance, show the average activity, over time, for each animal like so:
+
+```{r, plot=TRUE}
+overviewPlot(activity, dam_data, normalise_var_per_id = TRUE)
+```
+
+With this representation, you can spot that animals in `region_id` 21 and 24 seemed to have **died before the end ot the experiment**.
+
+Data curation
+----------------------
+
+The aim of the curation is to:
+
+* remove animals that were dead all along or simply absent.
+* remove data *after* death of one animal (but keep the data before).
+
+In order to curate data, we first need to **define movement**. In other words, we want to add a column called `moving` which is `TRUE` if the animal is moving at this time, and `FALSE` otherwise.
+It turns out that is is excatly what the function `sleepDAMAnnotation`.
+  To apply it to each animal we use a bit of `data.table`  wizardry:
+```{r}
+dam_data <- dam_data[,sleepDAMAnnotation(.SD),by=key(dam_data)]
+print(dam_data)
+```
+
+Note the new columns: `moving` and `alseep`. 
+Just to check `moving` is relevant, we can repeat the overview plot for `moving`.
+
+```{r, plot=TRUE}
+overviewPlot(moving, dam_data, normalise_var_per_id = TRUE)
+```
+
+
+**The important part happens here**, as we apply the function `curateDeadAnimals` to all individuals:
+
+```{r}
+dam_data_curated <- dam_data[,
+                             curateDeadAnimals(.SD,hours(12)),
+                             by=key(dam_data)]
+```
+
+Here, the `hours(12)` means we consider an animal to be dead if and only if it immobile (*i.e.* has not crossed a beam) for at least 12h. Obviously you can change this duration to another another one, such as 10h.
+
+If we replot the graphical overview with the curated data:
+
+```{r, plot=TRUE}
+overviewPlot(moving, 
+             dam_data_curated,
+             normalise_var_per_id = TRUE)
+```
+
+As you can see, animals 21 and 24 are still present, but instead of being scored as immobile, data is remove after there probable death. 
+
+

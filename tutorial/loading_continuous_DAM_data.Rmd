@@ -1,5 +1,5 @@
 ---
-title: "Loading DAM Data"
+title: "Loading DAM2 Data"
 author: "Quentin Geissmann"
 date: "18 August 2015"
 output: html_document
@@ -13,10 +13,15 @@ In this tutorial, we will learn how to:
 
 * Load data from [TriKinetics DAM2 monitors](http://www.trikinetics.com/)
 * Visually control the quality of the data
-* Remove dead animals
 
 Loading data from continuous DAM2 files
 ----------------------------------------
+For each DAM2 monitor, the TriKinetics software generates a single, long, continuous file.
+New data is simply added in the end of this unique file.
+Therefore, in princinple, one could have the same file for several years of data for one monitor.
+This implies that **this file will contain data from many experiments**.
+Therefore, we will need a way to query this file in order to retrieve only the relevant information.
+
 
 As usual, we start by loading rethomics.
 ```{r, eval=FALSE}
@@ -27,16 +32,27 @@ library(rethomics)
 library(rethomics)
 ```
 
-At this point, you may not have your own DAM file, so we will need to access the one enclosed in the package:
+If you do not have your own DAM2 file, you can use this command to retrieve the path to a sample file that I provided within the package:
 
 ```{r}
 sample_file <- system.file('data/DAMfile.txt', package="rethomics")
 print(sample_file)
 ```
 
+Otherwise, if you have your own file, you can simply write something like:
+
+```{r,eval=F}
+sample_file <- "C:/path/to/my_file.txt"
+print(sample_file)
+```
+
+
 Then, we build a **query**.
-This is very important to understand exactly what we mean by query in this context.
-If you are unsure, I invite you to read through the ["build a query"](./build_a_query.html) tutorial.
+Queries are a powerful concept in `rethomics`, so it is *important to understand exactly what we mean by query* in this context.
+If you are confused about how to, for instance, load *multiple experiments* from *multiple files/monitors* and link then to experimental conditions for further analysis, I invite you to read through the ["build a query"](./build_a_query.html) tutorial. 
+For now, we will focus on a single experiment, from a single monitor.
+
+
 In this query, we define:
 
 * the `path` of the input file
@@ -48,7 +64,8 @@ Then, we add an extract column, where we *map these mandatory variables to an op
 In our case, the treatment is named "condition", and can be either "a" or "b".
 
 An important point here is that the start date also *contains time* (e.g. `2015-07-02_10-00-00` is the 2nd of july 2015 at 10:00:00). 
-This time defines the *start of the biological day* (i.e. ZT0). All time data will be expressed relatively to this reference time.
+This time defines the *start of the biological day* (i.e. ZT0). 
+All time data will be expressed relatively to this reference time.
 
 ```{r}
 query = data.table(path=sample_file,
@@ -69,7 +86,7 @@ print(dt)
 Graphical quality control
 --------------------------
 
-In this example, we would like to define when animals are moving, and diplay movement over time for each animal.
+In this example, we would like to define when animals are moving, and display movement over time for each animal.
 In other words, we want to add a column called `moving` which is `TRUE` when an animal has crossed a beam within a minute and `FALSE` otherwise.
 In fact, this is exactly what the built-in function `sleepDAMAnnotation` does. 
 Since, `queryDAMFiles` allows us to apply an arbitrary function as we load the data, we can simply do:
@@ -79,34 +96,15 @@ dt <- queryDAMFiles(query, FUN=sleepDAMAnnotation)
 print(dt)
 ```
 
-Note the new columns `moving` and `asleep`
+Note the new columns `moving` and `asleep`.
+
+One way of ensure the data is not erroneous is to use an `overViewPlot` (see section [Using overview plots](overview_plot.html)):
 
 ```{r, plot=TRUE}
 overviewPlot(moving, dt, normalise_var_per_id = TRUE)
 ```
 
-With this representation, you can spot that animals in `region_id` 21 and 24 seemed to have **died before the end ot the experiement**.
+I would advise to use this sort of plot systematically after loading new data.
+In our current example, we can see that we have 5 days of data, and that most animals seem to to have a very rhythmic pattern, which is expected.
 
-Data curation
-----------------------
-
-The aim of the curation is to:
-
-* remove animals that were dead all along or simply absent.
-* remove data *after* death of one animal (but keep the data before).
-
-```{r}
-dt_curated <- dt[,curateDeadAnimals(.SD,hours(12)),by=key(dt)]
-```
-
-Here, the `hours(12)` means we consider an animal to be dead if and only if it has not crossed a beam for at least 12h (you can change this to another duration such as 10h).
-
-If we replot the graphical overview with the curated data:
-
-```{r, plot=TRUE}
-overviewPlot(moving, dt_curated, normalise_var_per_id = TRUE)
-```
-
-As you can see, animals 21 and 24 are still present, but instead of being scored as immobile, data is remove after there probable death. 
-This is quite conservative as we discarded minimal amount of data.
 
