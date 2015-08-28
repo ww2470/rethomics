@@ -1,0 +1,193 @@
+---
+title: "Data structure"
+author: "Quentin Geissmann"
+date: "27 August 2015"
+output: html_document
+---
+
+Aims
+-----
+
+This tutorial is mainly intended for users who would like to contribute to make their own functions and understand how the package works at a lower level. We will learn how to:
+
+* Data table can be used to to store arbitrary behavioural data.
+* `rethomics` use them to keep multiple animals in the same table.
+* Work with data table keys.
+* Use `rethomics` conventions.
+
+
+Data organisation
+-----------------------
+
+```{r, include=FALSE}
+library(rethomics)
+```
+
+Raw behavioural data are time series of features.
+For each time point and each animal, their should be a set of features.
+Typically, features are XY coordinates, orientation and other numbers, but they can also be categorical (or logical) variables (e.g. whether the animal has crossed a light beam --TRUE of FALSE -- at a defined time point).
+
+Let us make a simple **dummy** data table with random x and y positions to understand how that works:
+
+
+```{r}
+dt <- data.table(t=1:30,
+           x=rnorm(30),
+           y=rnorm(30),
+           is_feeding = rnorm(30) >0
+           )
+dt
+```
+
+In the resulting data table, each row is a record of that animal at a time defined in column `t`.
+This is a very flexible format since:
+
+* Time can be heterogeneous.
+* It is not a problem is we skip some rows (missing data).
+* The same structure can be used for different acquisition platforms/tools, since we simply need to add/remove columns.
+
+
+Keeping multiple animals in the same data structure
+-----------------------------------------------------------------------
+
+The data above is from a single animal.
+However, in real life, we would like to work with multiple ones.
+For instance, you are likely to use multiple **regions**, each containing one animal.
+One approach could be to store each data table in some sort of list:
+
+```{r}
+
+# 10 reads
+dt_region_1 <- data.table(t=1:10,
+           x=rnorm(10),
+           y=rnorm(10)
+           )
+# 15 reads
+dt_region_2 <- data.table(t=1:15,
+           x=rnorm(15),
+           y=rnorm(15)
+           )
+#...
+```
+
+It is however very impractical to work with this type of *ad hock* structure.
+If you are familiar with statistical modelling or data mining, you can probably see a better alternative.
+The idea is to store both animals in the same table, and add a column to tell us from which animals (i.e. region) comes a read:
+
+```{r}
+# We make a column animal_id with the value 1
+dt_region_1[, region_id := 1]
+
+# We make a column animal_id with the value 2
+dt_region_2[, region_id := 2]
+
+# we simply put all the rows together an a new data tables called dt
+dt <- rbind(dt_region_1, dt_region_2)
+dt
+```
+
+This results in much greater flexibility and efficiency.
+Since all the data is together, it is very simple to filter it.
+For instance, to get all the data (for all animals) where time is greater than 5:
+```{r}
+dt[t>5]
+```
+
+Or to get only the animal in region 1:
+```{r}
+dt[region_id==1]
+```
+
+For more advance uses, the data table framework a fantastic resource to summarise or aggregate the data.
+We will just see a couple of examples to illustrate the power of data table in this context,
+but you can follow [Matt Dowle's tutorial](http://user2014.stat.ucla.edu/files/tutorial_Matt.pdf) if you want to know more.
+
+For instance, in order to get the number of read **for each animal**:
+
+```{r}
+dt[,
+   .N,
+   by="region_id"
+   ]
+```
+
+So, the answer is N=10 in region 1 and N=15 in region 2.
+
+Then, if we wanted to get the average x position **per animal**.
+
+```{r}
+dt[,
+   mean(x),
+   by="region_id"
+   ]
+```
+
+
+Storing multiple experiments in one table
+-------------------------------------------------------
+
+Another real life issue is the fact that we may have several experiments with the same regions id.
+For instance, if we performed one experiment every week for three week and, in each experiments, we had twenty animals (in regions one to twenty).
+The issue is that now `region_id` is not sufficient to define a **unique animal** (indeed, three animals are in region 1, but from three different experiments).
+In `rethomics`, the solution was to define a column named `experiment_id`.
+In principle, for any unique combination of `region_id` **and** `experiment_id` we have a **unique animal**.
+
+
+The `experiment_id` is generally a string of character including the date and time of the experiment and a unique identifier for the acquisition device.
+
+The advantage of this approach is that we can still work (graphs, stats, summaries) with individual animals, but we keep the freedom to exclude or filter many experiments.
+
+
+Using data table key
+----------------------------
+
+If you are already familiar with databases, you will have understood that, together,  `region_id` and `experiment_id` are implicit a so called **key** reffering to unique animals.
+
+When you load data in `rethomics`, the resulting data table will use these column as keys, which makes it very efficient to process and store the data. Let us use a real life data set that I have put into the package.
+
+```{r}
+data(sleep_sexual_dimorphism)
+sleep_sexual_dimorphism
+```
+
+As you can see, there are many variables, and most of them probably do not make much sense to you.
+The important thing for us now is to see that the three important variables `t`, `region_id` and `experiment_id` are there. As I mentioned, a **key** is contained in this data:
+
+```{r}
+key(sleep_sexual_dimorphism)
+```
+
+It means that for every unique combination of `date`, `machine_name`, `region_id`,`sex` and `experiment_id`, there is only one animal (but many time points). In the key, the columns `date`, `machine_name`, `sex` are optional columns defining variables for each animal (e.g. a given animal can be male or female).
+These optional variables are *redundant* in so far as they could be deduced from `region_id` and `experiment_id`.
+It is however useful to keep them in the key.
+If say we want to compute the average proportion of time spent sleeping **for each animal**, but we would like to conserve the sex of this animal, so we can tell, for instance, if males sleep more than females:
+
+
+
+```{r}
+summary_dt <- sleep_sexual_dimorphism[,# all rows
+                        .(sleep_fraction = sum(asleep)/.N), # number of alseep is TRUE over total (.N)
+                        # this is the IMPORTANT bit.
+                        # we do this for each animal independently
+                        by = key(sleep_sexual_dimorphism)
+]
+summary_dt
+```
+
+As a result, we have computed one number for each of the 56 unique animals, and kept the additional variables such as sex. This integrates very well with `R` and makes is straightforward to do perform statistics and draw graphs:
+
+```{r, plot=TRUE}
+# a graph using ggplot
+ggplot(summary_dt, aes(sex,sleep_fraction, fill=sex)) + geom_boxplot()
+```
+
+
+Conventions
+---------------
+
+Time is **always** named `t`, and expressed in **seconds**. The time is always compared to a reference point. The reference time can be either the start of the experiment, or a time in the first day of the experiment (see tutorial on loading the data) TODO ref.
+
+Distance units such as `x`, `y`, `w` and `h` variables are coordinates from the **top-left** of the region in which the animal was recorded. They are expressed as a **fraction of the region width**, *not* in pixels or cm.
+
+
+
