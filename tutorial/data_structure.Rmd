@@ -8,7 +8,9 @@ output: html_document
 Aims
 -----
 
-This tutorial is mainly intended for users who would like to contribute to make their own functions and understand how the package works at a lower level. It should be complementary to the [documentation](../rethomics.pdf) We will learn how to:
+This tutorial is mainly intended for users who would like to contribute to make their own functions and understand how the package works at a lower level. 
+It should be complementary to the [documentation](../rethomics.pdf).
+In this tutorial, we will learn how to:
 
 * Data table can be used to to store arbitrary behavioural data.
 * `rethomics` use them to keep multiple animals in the same table.
