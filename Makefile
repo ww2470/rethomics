@@ -12,7 +12,7 @@ vpath %.R  $(R_DIR)
 
 .PHONY:  R 
 #I~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-all : R tuto check
+all : R tuto check $(R_PDF)
 
 clean:
 	rm -fr  *.tar.gz *.out *.pdf  *.log  $(R_dir)/man $(R_dir)/NAMESPACE
@@ -21,7 +21,7 @@ clean:
 #I~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-R : $(R_TGZ) $(R_PDF)
+R : $(R_TGZ) 
 	@echo "installing Package"
 	R CMD INSTALL --no-multiarch --with-keep.source  $(PACKAGE_NAME)
 #I~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
