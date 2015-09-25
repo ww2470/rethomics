@@ -5,7 +5,8 @@
 \title{Displays, per individual, the temporal average of a variable of interest.}
 \usage{
 overviewPlot(y, data, condition = NULL, summary_time_window = mins(30),
-  normalise_var_per_id = TRUE)
+  normalise_var_per_id = FALSE, time_wrap = NULL,
+  time_unit_conversion = days)
 }
 \arguments{
 \item{y}{The variable of interest}
@@ -17,6 +18,10 @@ overviewPlot(y, data, condition = NULL, summary_time_window = mins(30),
 \item{summary_time_window}{the width (in seconds) of the time window used to draw each pixel.}
 
 \item{normalise_var_per_id}{whether each row is to be normalised, using \code{new_y = (y - mean(y))/sd(y)}.}
+
+\item{time_wrap}{the time (in seconds) used to wrap the data (see details).}
+
+\item{time_unit_conversion}{a function to convert time in the x axis. typically, \code{days}, \code{hours} or \code{mins}.}
 }
 \value{
 A \code{ggplot} object that can be plotted directly or modified.
@@ -25,6 +30,10 @@ A \code{ggplot} object that can be plotted directly or modified.
 This function produces a tiled representation in which every row represents one individual (i.e. from a unique combination of region and experiment).
 The x axis represents time in days.
 The values of the variable of interest are represented by different colour intensities.
+}
+\details{
+\code{time_wrap} is typically used to express time relatively to the start of the the day.
+In other words, it can help be used to pull all days together in one representative day. In this case, \code{time_wrap=hours(24)}`.
 }
 \examples{
 # Load sample data, it is already annotated for sleep, has sex=='male' or sex=="female"
@@ -41,6 +50,17 @@ p <- overviewPlot(asleep,my_data,condition = sex)
 print(p)
 # p is simply a ggplot object, so we can change things:
 print(p + labs(title="MY own title"))
+##### time wrapping example
+data(dam_data)
+# the original plot:
+p <- overviewPlot(activity,dam_data)
+p
+# summarise/wrap activity in one `day'
+p <- overviewPlot(activity,dam_data,time_wrap=hours(24))
+p
+######expresses time in hours:
+p <- overviewPlot(activity,dam_data, time_unit_conversion=hours)
+p
 }
 \seealso{
 \code{\link{ethogramPlot}} To show trend by aggregating individuals over time.

@@ -6,7 +6,7 @@
 \usage{
 ethogramPlot(y, data, condition = NULL, facet_var = NULL,
   summary_time_window = mins(30), normalise_var_per_id = FALSE,
-  error_bar = NULL)
+  error_bar = NULL, time_unit_conversion = days)
 }
 \arguments{
 \item{y}{The variable of interest.}
@@ -22,6 +22,10 @@ ethogramPlot(y, data, condition = NULL, facet_var = NULL,
 \item{normalise_var_per_id}{whether each row is to be normalised (using \code{new_x = (x - mean(x))/sd(x)}).}
 
 \item{error_bar}{what type of error bar should be used see details.}
+
+\item{time_unit_conversion}{a function to convert time in the x axis. typically, \code{days}, \code{hours} or \code{mins}.}
+
+\item{time_wrap}{the time (in seconds) used to wrap the data (see details).}
 }
 \value{
 A \code{ggplot} object that can be plotted directly, or modified.
@@ -32,7 +36,10 @@ It can be used to visualise temporal trends per groups of conditions.
 The response variable, y,  is grouped by time windows of defined size.
 }
 \details{
-At the moment, four types of error bars are supported:
+\code{time_wrap} is typically used to express time relatively to the start of the the day.
+In other words, it can help be used to pull all days together in one representative day. In this case, \code{time_wrap=hours(24)}`.
+
+At the moment, four types of error bars (\code{error_bar}) are supported:
 \itemize{
  \item{`sd' }{The standard error}
  \item{`sem' }{The standard error of the mean (\emph{i.e.} \eqn{\frac{sd}{\sqrt{n}}})}
@@ -66,6 +73,25 @@ p <- ethogramPlot(asleep,my_data,condition=sex,error_bar="gauss_ci")
 p
 # this one is a bit slow
 p <- ethogramPlot(asleep,my_data,condition=sex,error_bar="boot_ci")
+p
+data(dam_data)
+# Time, on the x axis, in hours via
+p <- ethogramPlot(activity,
+             dam_data,
+             condition,
+             error_bar = "sem",
+             normalise_var_per_id = F,
+             time_unit_conversion=hours # this is where you set time in hours
+             )
+p
+# summarise/wrap data in one day
+#' p <- ethogramPlot(activity,
+             dam_data,
+             condition,
+             error_bar = "sem",
+             normalise_var_per_id = F,
+             time_wrap=days(1) # this argument does the job
+             )
 p
 }
 \seealso{

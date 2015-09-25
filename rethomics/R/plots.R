@@ -11,7 +11,12 @@ NULL
 #' @param condition An optional grouping factor to order rows.
 #' @param summary_time_window the width (in seconds) of the time window used to draw each pixel.
 #' @param normalise_var_per_id whether each row is to be normalised, using \code{new_y = (y - mean(y))/sd(y)}.
+#' @param time_wrap the time (in seconds) used to wrap the data (see details).
+#' @param time_unit_conversion a function to convert time in the x axis. typically, \code{days}, \code{hours} or \code{mins}.
+#' @details \code{time_wrap} is typically used to express time relatively to the start of the the day.
+#' In other words, it can help be used to pull all days together in one representative day. In this case, \code{time_wrap=hours(24)}`.
 #' @return A \code{ggplot} object that can be plotted directly or modified.
+#' 
 
 #' @examples
 #' # Load sample data, it is already annotated for sleep, has sex=='male' or sex=="female"
@@ -28,17 +33,33 @@ NULL
 #' print(p)
 #' # p is simply a ggplot object, so we can change things:
 #' print(p + labs(title="MY own title"))
+#' ##### time wrapping example
+#' data(dam_data)
+#' # the original plot:
+#' p <- overviewPlot(activity,dam_data)
+#' p
+#' # summarise/wrap activity in one `day'
+#' p <- overviewPlot(activity,dam_data,time_wrap=hours(24))
+#' p
+#' ######expresses time in hours:
+#' p <- overviewPlot(activity,dam_data, time_unit_conversion=hours)
+#' p
+#' 
 #' @seealso \code{\link{ethogramPlot}} To show trend by aggregating individuals over time. 
 #' @export
 overviewPlot <- function(y,data,
                          condition=NULL,
                          summary_time_window=mins(30),
-                         normalise_var_per_id=TRUE){
+                         normalise_var_per_id=FALSE,
+                         time_wrap=NULL,
+                         time_unit_conversion=days){
   
   dt = copy(as.data.table(data))  
   y_var_name <- deparse(substitute(y))
   setnames(dt,y_var_name,"y_var")
   dt[,t_r := floor(t/summary_time_window) * summary_time_window]
+  if(!is.null(time_wrap))
+    dt[,t_r := t_r %% time_wrap]
   dt[,y_var:=as.numeric(y_var)]
   c_var_name <- deparse(substitute(condition))
   
@@ -52,7 +73,7 @@ overviewPlot <- function(y,data,
   
   summary_dt <- dt[,list(y_var=mean(y_var)),
                    by=c("t_r","c_var",key(dt))]
-  summary_dt[,t_d:=t_r/days(1)]
+  summary_dt[,t_d:=t_r/time_unit_conversion(1)]
   
   if(c_var_name != "NULL"){
     summary_dt[,row_name:=sprintf("%s | %s | %02d",c_var,experiment_id,region_id)]
@@ -84,9 +105,14 @@ NULL
 #' @param summary_time_window the width (in seconds) of the time window used to draw each ``pixel''.
 #' @param normalise_var_per_id whether each row is to be normalised (using \code{new_x = (x - mean(x))/sd(x)}).
 #' @param error_bar what type of error bar should be used see details.
+#' @param time_wrap the time (in seconds) used to wrap the data (see details).
+#' @param time_unit_conversion a function to convert time in the x axis. typically, \code{days}, \code{hours} or \code{mins}.
 #' @return A \code{ggplot} object that can be plotted directly, or modified.
 #' @details 
-#' At the moment, four types of error bars are supported:
+#' \code{time_wrap} is typically used to express time relatively to the start of the the day.
+#' In other words, it can help be used to pull all days together in one representative day. In this case, \code{time_wrap=hours(24)}`.
+#' 
+#' At the moment, four types of error bars (\code{error_bar}) are supported:
 #' \itemize{
 #'  \item{`sd' }{The standard error}
 #'  \item{`sem' }{The standard error of the mean (\emph{i.e.} \eqn{\frac{sd}{\sqrt{n}}})}
@@ -121,6 +147,25 @@ NULL
 #' # this one is a bit slow
 #' p <- ethogramPlot(asleep,my_data,condition=sex,error_bar="boot_ci")
 #' p
+#' data(dam_data)
+#' # Time, on the x axis, in hours via
+#' p <- ethogramPlot(activity,
+#'              dam_data,
+#'              condition,
+#'              error_bar = "sem",
+#'              normalise_var_per_id = F,
+#'              time_unit_conversion=hours # this is where you set time in hours
+#'              )
+#' p
+#' # summarise/wrap data in one day
+#' #' p <- ethogramPlot(activity,
+#'              dam_data,
+#'              condition,
+#'              error_bar = "sem",
+#'              normalise_var_per_id = F,
+#'              time_wrap=days(1) # this argument does the job
+#'              )
+#' p
 #' @seealso \code{\link{overviewPlot}} to show per-individual patterns
 #' @export
 ethogramPlot <- function(y,data,
@@ -128,12 +173,17 @@ ethogramPlot <- function(y,data,
                           facet_var=NULL,
                           summary_time_window=mins(30),
                           normalise_var_per_id=FALSE,
-                          error_bar=NULL){
+                          error_bar=NULL,
+                          time_unit_conversion=days){
   
   dt = copy(as.data.table(data))  
   y_var_name <- deparse(substitute(y))
   setnames(dt,y_var_name,"y_var")
   dt[,t_r := floor(t/summary_time_window) * summary_time_window]
+  
+  if(!is.null(time_wrap))
+    dt[,t_r := t_r %% time_wrap]
+  
   dt[,y_var:=as.numeric(y_var)]
   c_var_name <- deparse(substitute(condition))
   f_var_name <- deparse(substitute(facet_var))
@@ -167,7 +217,7 @@ ethogramPlot <- function(y,data,
                    by=c("t_r","c_var","f_var",key(dt))]
   
   
-  summary_dt[,t_d:=t_r/days(1)]
+  summary_dt[,t_d:=t_r/time_unit_conversion(1)]
   
   if(!is.null(error_bar)){
     if(!error_bar %in% c("sd", "sem", "boot_ci", "gauss_ci"))
@@ -195,7 +245,7 @@ ethogramPlot <- function(y,data,
   if(is.null(error_bar))
     summary_dt_all_animals <- summary_dt[,list(y_var=mean(y_var)),by=.(t_r,c_var,f_var)] 
   
-  summary_dt_all_animals[,t_d:=t_r/days(1)]
+  summary_dt_all_animals[,t_d:=t_r/time_unit_conversion(1)]
   
   if(c_var_name != "NULL"){
     p <- ggplot(summary_dt_all_animals, aes(t_d,y_var,colour=c_var,fill=c_var)) + geom_line() 
