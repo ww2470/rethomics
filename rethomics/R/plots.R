@@ -85,7 +85,7 @@ overviewPlot <- function(y,data,
   }
   
   p <- ggplot(summary_dt,aes(x=t_d,y=row_name,fill=y_var)) + geom_tile(alpha=1) +
-    labs(title= sprintf("Overview of individual '%s' pattern over time",y_var_name),x="time (day)", y=y_lab)+
+    labs(title= sprintf("Overview of individual '%s' pattern over time",y_var_name),x="time", y=y_lab)+
     guides(fill=guide_legend(title=y_var_name))
   p
 }
@@ -153,16 +153,14 @@ NULL
 #'              dam_data,
 #'              condition,
 #'              error_bar = "sem",
-#'              normalise_var_per_id = F,
 #'              time_unit_conversion=hours # this is where you set time in hours
 #'              )
 #' p
 #' # summarise/wrap data in one day
-#' #' p <- ethogramPlot(activity,
+#' p <- ethogramPlot(activity,
 #'              dam_data,
 #'              condition,
 #'              error_bar = "sem",
-#'              normalise_var_per_id = F,
 #'              time_wrap=days(1) # this argument does the job
 #'              )
 #' p
@@ -174,6 +172,7 @@ ethogramPlot <- function(y,data,
                           summary_time_window=mins(30),
                           normalise_var_per_id=FALSE,
                           error_bar=NULL,
+                          time_wrap=NULL,
                           time_unit_conversion=days){
   
   dt = copy(as.data.table(data))  
@@ -264,7 +263,7 @@ ethogramPlot <- function(y,data,
     }
   }
   
-  p <- p + labs(title= sprintf("Average '%s' over time",y_var_name),x="time (day)", y=y_var_name)
+  p <- p + labs(title= sprintf("Average '%s' over time",y_var_name),x="time", y=y_var_name)
   p <- p + guides(fill=guide_legend(title=c_var_name),
                   colour=guide_legend(title=c_var_name))
   

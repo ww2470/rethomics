@@ -6,7 +6,7 @@
 \usage{
 ethogramPlot(y, data, condition = NULL, facet_var = NULL,
   summary_time_window = mins(30), normalise_var_per_id = FALSE,
-  error_bar = NULL, time_unit_conversion = days)
+  error_bar = NULL, time_wrap = NULL, time_unit_conversion = days)
 }
 \arguments{
 \item{y}{The variable of interest.}
@@ -23,9 +23,9 @@ ethogramPlot(y, data, condition = NULL, facet_var = NULL,
 
 \item{error_bar}{what type of error bar should be used see details.}
 
-\item{time_unit_conversion}{a function to convert time in the x axis. typically, \code{days}, \code{hours} or \code{mins}.}
-
 \item{time_wrap}{the time (in seconds) used to wrap the data (see details).}
+
+\item{time_unit_conversion}{a function to convert time in the x axis. typically, \code{days}, \code{hours} or \code{mins}.}
 }
 \value{
 A \code{ggplot} object that can be plotted directly, or modified.
@@ -80,16 +80,14 @@ p <- ethogramPlot(activity,
              dam_data,
              condition,
              error_bar = "sem",
-             normalise_var_per_id = F,
              time_unit_conversion=hours # this is where you set time in hours
              )
 p
 # summarise/wrap data in one day
-#' p <- ethogramPlot(activity,
+p <- ethogramPlot(activity,
              dam_data,
              condition,
              error_bar = "sem",
-             normalise_var_per_id = F,
              time_wrap=days(1) # this argument does the job
              )
 p
