@@ -93,3 +93,12 @@ overviewPlot(moving,
 As you can see, animals 21 and 24 are still present, but instead of being scored as immobile, data is remove after there probable death. 
 
 
+One last thing we can do is compute the **lifespan of each animal**, using `data.table` magic:
+
+```{r}
+life_span <- dam_data_curated[,
+                              # `/days(1)` means we express lifespan in days as opposed to seconds
+                             .(life_span = (t[.N] - t[1])/days(1)),
+                             by=key(dam_data_curated)]
+life_span
+```
