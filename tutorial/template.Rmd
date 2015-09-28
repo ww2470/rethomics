@@ -78,7 +78,7 @@ print(query)
 
 We can simply load the raw data like so:
 ```{r}
-dt <- queryDAMFiles(query)
+dt <- loadDAM2Data(query)
 print(dt)
 ```
 
@@ -89,10 +89,10 @@ Graphical quality control
 In this example, we would like to define when animals are moving, and diplay movement over time for each animal.
 In other words, we want to add a column called `moving` which is `TRUE` when an animal has crossed a beam within a minute and `FALSE` otherwise.
 In fact, this is exactly what the built-in function `sleepDAMAnnotation` does. 
-Since, `queryDAMFiles` allows us to apply an arbitrary function as we load the data, we can simply do:
+Since, `loadDAM2Data` allows us to apply an arbitrary function as we load the data, we can simply do:
 
 ```{r}
-dt <- queryDAMFiles(query, FUN=sleepDAMAnnotation)
+dt <- loadDAM2Data(query, FUN=sleepDAMAnnotation)
 print(dt)
 ```
 
