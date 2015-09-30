@@ -10,7 +10,7 @@ R_PDF := $(N).pdf
 vpath %.R  $(R_DIR)
 
 
-.PHONY:  R 
+.PHONY:  R tarball
 #I~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 all : R tuto check $(R_PDF)
 
@@ -21,7 +21,9 @@ clean:
 #I~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-R : $(R_TGZ) 
+tarball : $(R_TGZ)
+
+R : tarball
 	@echo "installing Package"
 	R CMD INSTALL --no-multiarch --with-keep.source  $(PACKAGE_NAME)
 #I~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

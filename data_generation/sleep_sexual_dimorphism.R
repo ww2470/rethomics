@@ -3,8 +3,8 @@ library(rethomics)
 MY_RESULT_DIR <- "/data/psv_results"
 OUT_NAME <- "sleep_sexual_dimorphism.RData"
 query <- fread("sleep_sexual_dimorphism.csv")
-path_query <- fetchPsvResultFiles(MY_RESULT_DIR, query)
-dt <- loadPsvData(
+path_query <- buildEthoscopeQuery(MY_RESULT_DIR, query)
+dt <- loadEthoscopeData(
   # What files/conditions to fecth
   path_query, 
   # We apply directly the function to annotate sleep event. This will make the data smaller (1point/10s)
