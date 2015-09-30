@@ -284,7 +284,9 @@ NULL
 #'         ,by=key(dt_curated)]
 #' @seealso \code{\link{sleepAnnotation}} and \code{\link{sleepDAMAnnotation}} to define movement and add a \code{moving} column.
 #' @export
+#' 
 curateDeadAnimals <- function(data, max_immobile_live=hours(12)){
+  
   if(!"moving" %in% colnames(data))
     stop("`data` must have a column names `moving`")
   death_dt <- copy(data)
@@ -298,3 +300,4 @@ curateDeadAnimals <- function(data, max_immobile_live=hours(12)){
   first_dead_time <- bout_dt[first_death_idx,start_time]
   data[t < first_dead_time]
 }
+
