@@ -27,7 +27,7 @@ NULL
 #' sleep_dt <-  tube_monitor_validation[,sleepAnnotation(.SD),by=key(tube_monitor_validation)]
 #' # The same bare code for all regions
 #' ggplot(sleep_dt, aes(t,region_id,fill=asleep)) + geom_tile()
-#' @seealso \code{\link{loadPsvData}} to load data and optionaly apply analysis on the fly.
+#' @seealso \code{\link{loadEthoscopeData}} to load data and optionally apply analysis on the fly.
 #' @export
 sleepAnnotation <- function(data,
                             time_window_length=10, #s
@@ -62,7 +62,7 @@ sleepAnnotation <- function(data,
   d_small[missing_val,is_interpolated:=TRUE] 
   
   d_small[is_interpolated == T, moving := FALSE]
-  d_small[,asleep := sleep_contiguous(moving,1/time_window_length,min_valid_time = min_time_immobile)]
+  d_small[,asleep := sleepContiguous(moving,1/time_window_length,min_valid_time = min_time_immobile)]
   setkeyv(d_small, ori_keys)
   na.omit(d_small)
 }
@@ -128,7 +128,7 @@ half_angular_distance <- function(half_angle){
 }
 
 
-sleep_contiguous <- function(moving,fs,min_valid_time=5*60){
+sleepContiguous <- function(moving,fs,min_valid_time=5*60){
 	min_len <- fs * min_valid_time
 	r_sleep <- rle(!moving)
 	valid_runs <-  r_sleep$length > min_len 
@@ -249,7 +249,7 @@ sleepDAMAnnotation <- function(
   if(nrow(d) <1)
     return(NULL)
   d[, moving:= activity > 0]
-  d[, asleep := sleep_contiguous(moving, 1/time_window_length, min_time_immobile)]
+  d[, asleep := sleepContiguous(moving, 1/time_window_length, min_time_immobile)]
   d
 }
 NULL
