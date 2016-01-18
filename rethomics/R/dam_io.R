@@ -42,7 +42,7 @@ loadDailyDAM2Data <- function(result_dir,
                          FUN=NULL, ...){
   q = copy(query)
   #files_info[, experiment_id := paste(date,machine_id,sep="_")]
-  files_info <- listDailyDAMFiles(DAILY_DATA_DIR)
+  files_info <- listDailyDAMFiles(result_dir)
   
   if(!("region_id" %in% colnames(q)))
     q <- q[,.(region_id=1:32),by=c(colnames(q))]
@@ -95,7 +95,7 @@ loadDailyDAM2Data <- function(result_dir,
   if(!is.null(FUN)){
     all_data <- all_data[, FUN(.SD,...),by=key(all_data)]
   }
-  all_data
+  return(all_data)
 }
 NULL
 #' Retrieves DAM2 data from continuous files
