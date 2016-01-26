@@ -38,6 +38,9 @@ It should have  the following columns:
 }
 \examples{
 sample_file <- system.file('data/DAMfile.txt', package="rethomics")
+print(installed.packages()["rethomics","LibPath"])
+print(list.files(paste0(installed.packages()["rethomics","LibPath"],"/rethomics/data")))
+sample_file <- paste0(installed.packages()["rethomics","LibPath"],"/rethomics/data/DAMfile.txt")
 query = data.table(path=sample_file,
                    # note the time (10:00) is added as reference time
                  start_date="2015-07-02_10-00-00", 
