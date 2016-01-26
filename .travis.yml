@@ -1,7 +1,8 @@
 language: r
 sudo: required
 
-warnings_are_errors: true
+# for now
+warnings_are_errors: false
 
 before_install:
     - cd rethomics
