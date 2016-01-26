@@ -37,7 +37,7 @@
 loadDailyDAM2Data <- function(result_dir,
                          query, 
                          reference_hour=9.0, 
-                         tz="BST",
+                         tz="UTC",
                          verbose=TRUE,
                          FUN=NULL, ...){
   q = copy(query)
@@ -48,8 +48,15 @@ loadDailyDAM2Data <- function(result_dir,
     q <- q[,.(region_id=1:32),by=c(colnames(q))]
   
   
-  q[, start_date:=as.POSIXct(start_date, "%Y-%m-%d", tz="GMT")]
-  q[, stop_date:=as.POSIXct(stop_date, "%Y-%m-%d", tz="GMT")]
+  q[, start_date:=sapply( start_date, dateStrToPosix,  tz="GMT")]
+  q[, stop_date:=sapply(stop_date, dateStrToPosix, tz="GMT")]
+  
+  # we check that dates can be converted to posix
+  #invalid_dates = q[is.na(start_date) | is.na(stop_date),]
+  #if(nrow(invalid_dates >0)){
+  #  stop("Some dates do not have the correct")
+  #}
+  
   q[, experiment_id := paste(start_date,machine_id,sep="_")]
   
   foo <- function(d){
