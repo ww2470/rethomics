@@ -8,6 +8,7 @@ before_script:
 
 r_binary_packages:
   - ggplot2
+  - data.table
   
 
 r_github_packages:
