@@ -3,4 +3,4 @@ markdown: redcarpet
 highlighter: pygments
 safe: true
 lsi: false
-baseurl: /ethoscope
+baseurl: /rethomics
