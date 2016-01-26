@@ -7,7 +7,6 @@ before_script:
     - git config --global user.email "travis@example.org"
 
 r_binary_packages:
-  - devtools
   - ggplot2
   
 
