@@ -6,7 +6,7 @@
 #' @param result_dir the root directory where all daily data are saved
 #' @param query a formatted query used to request data (see detail).
 #' @param reference_hour the hour, in the day, to use as t_0 reference. This should be expressed on Greenwich Meridian Time.
-#' @param tz the time zone on which the DAM2 data was saved (e.g. BSM -> British Summer Time)
+#' @param tz the time zone on which the DAM2 data was saved (e.g. Europe/London -> British Summer Time)
 #' @param FUN an optional function to transform the data from each `region' (i.e. a data.table) immediately after is has been loaded. 
 #' @param verbose whether to print progress (a logical).
 #' @param ... extra arguments to be passed to \code{FUN}
@@ -47,6 +47,7 @@ loadDailyDAM2Data <- function(result_dir,
   if(!("region_id" %in% colnames(q)))
     q <- q[,.(region_id=1:32),by=c(colnames(q))]
   
+  
   q[, start_date:=as.POSIXct(start_date, "%Y-%m-%d", tz="GMT")]
   q[, stop_date:=as.POSIXct(stop_date, "%Y-%m-%d", tz="GMT")]
   q[, experiment_id := paste(start_date,machine_id,sep="_")]
@@ -58,6 +59,10 @@ loadDailyDAM2Data <- function(result_dir,
     eid <- unique(d[,experiment_id])
     out <- files_info[date >= t0 & date <= t1 & machine_id == mid, .(path)]
     
+    if(nrow(out) == 0)
+      warning(sprintf("Could not find any file assicated with %s",
+                      paste(sep=", ",as.character(t0),as.character(t1),mid,eid)))
+    
     out[,experiment_id := eid]
   }
   setkeyv(q,c("experiment_id"))
@@ -66,9 +71,13 @@ loadDailyDAM2Data <- function(result_dir,
   uniq_q$region_id <- NULL
   setkeyv(uniq_q,c("experiment_id"))
   #setkeyv(uniq_q,c("experiment_id"))
+  
   day_query <- uniq_q[,
                       foo(.SD)
                       ,by= 1:nrow(uniq_q)]
+  if(nrow(day_query) == 0)
+    stop("No file match the query. Check your query and daily data folder")
+  
   day_query$nrow <- NULL
   setkeyv(day_query,c("experiment_id"))
   day_query <- uniq_q[day_query]
