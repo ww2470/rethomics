@@ -1,0 +1,84 @@
+
+/*
+dag.process.active{
+	fill: "red";
+}
+*/
+svg{display: block;margin:auto;}
+.footer{
+	font-size: 12px;
+	margin-top:20px;
+	text-align:center
+}
+div.iframe_container{
+	/*border: 2px solid;*/
+}
+figcaption em{
+	text-decoration:underline
+}
+figure img{
+	width: 85%;
+	margin-left: auto;
+    margin-right: auto;
+    border-width: 1px;
+    border-color: Black;
+}
+
+figure table{
+	width: 85%;
+	margin-left: auto;
+    margin-right: auto;
+    border-width: 1px;
+    border-color: Black;
+}
+
+figcaption{
+	font-style: italic;
+	width: 100%;
+	margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 10px;
+}
+	
+.dag_div .process:hover{
+	opacity: 0.7;
+	cursor:pointer;
+}
+.dag_div .process{
+	opacity: 0.3;
+	fill:#00ffff;
+	fill-opacity:1;
+	stroke:#000000;
+	stroke-width:3;
+}
+
+.dag_div .process.active{
+	opacity: 0.5;
+	fill-opacity: 1;
+	fill:yellow;
+	stroke: red;
+}
+
+.fig_div .process{
+	display: none;
+}
+
+.fig_div .process.active{
+  display: inline-block;
+}
+
+.math_div .process{
+  display: none;
+}
+
+.math_div .process.active{
+  display: inline-block;
+}
+
+
+/*
+
+circle:hover{
+  fill:red;
+}
+*/
