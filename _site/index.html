@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    
+<!--
+       <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+-->
+        <title>Ethoscope Home</title>
+
+<!-- syntax highlighting CSS -->
+<!--
+        <link rel="stylesheet" href="/css/syntax.css">
+-->
+        <!-- Custom CSS -->
+<!--
+        <link rel="stylesheet" href="/css/main.css">
+-->
+		<!-- Bootstrap -->
+		<link href="/ethoscope/css/bootstrap.min.css" rel="stylesheet">
+		<link href="/ethoscope/css/generic.css" rel="stylesheet">
+	<script type="text/x-mathjax-config">
+	MathJax.Hub.Config({
+	  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+	});
+	</script>
+	<script type="text/javascript"
+		src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+	</script>
+
+
+    </head>
+    <body>
+
+           <!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand"  href="/ethoscope/"><img src="/ethoscope/img/home.png" style="opacity:0.6; width:48px" ></img> Ethoscope platform</a>
+          <!-- <a class="navbar-brand" href="/ethoscope/">Ethoscope</a> -->
+        </div>
+        <div class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">          
+			
+			<li class="more">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Hardware<b class="caret"></b></a>
+              <ul class="dropdown-menu">
+				  <li><a href="/ethoscope/hardware">Overview</a></li>
+				  <li class="divider"></li>
+  				  <li><a href="/ethoscope/hardware#node">Node</a></li>
+  				  <li><a href="/ethoscope/hardware#router">Router</a></li>
+  				  <li><a href="/ethoscope/hardware#ethoscope">Ethoscope</a></li>
+  				  <li><a href="/ethoscope/hardware#Arenas">Arenas</a></li>
+  				  <li><a href="/ethoscope/hardware#ethoscope_mods">Modules</a></li>
+              </ul>
+            </li>
+			
+			<li class="more">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Software<b class="caret"></b></a>
+              <ul class="dropdown-menu">
+				  <li><a href="/ethoscope/software">Overview</a></li>
+				  <li class="divider"></li>
+  				  <li><a href="/ethoscope/software#node">Node</a></li>
+  				  <li><a href="/ethoscope/software#router">Router</a></li>
+  				  <li><a href="/ethoscope/software#ethoscope">Ethoscope</a></li>
+  				  <li><a href="/ethoscope/software#ethoscope_mods">Modules</a></li>
+              </ul>
+            </li>
+            
+            <li><a href="/ethoscope/blog/">Blog</a></li>
+            <li><a href="/ethoscope/rethomics/">R Package</a></li>
+            
+            
+			<li class="more">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">More<b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                  <li><a href="/ethoscope/data">Data</a></li>
+                  <li class="divider"></li>
+				<li><a href="/ethoscope/people#authors">Authors</a></li>
+				<li><a href="/ethoscope/people#collaborators">Collaborators</a></li>
+				 <li class="divider"></li>
+				<li><a href="/ethoscope/publications/">Publications</a></li>
+				 <li class="divider"></li>
+				<li><a href="/ethoscope/links/">Links</a></li>
+              </ul>
+            </li>
+          </ul>
+
+        </div><!--/.nav-collapse -->
+      </div>
+    </div>
+    <div class="container">
+        <div class="jumbotron">
+		    <h2>The Ethoscope Platform</h2>
+<h2>WEBSITE UNDER CONSTRUCTION, be patient ;)</h2>
+
+<div class="row">
+	<div class="col-md-8 dag_div">
+		<p>
+			The <i>Ethoscope Platform</i> is a collection of interconnected tools allowing biologists to design experiments,
+			acquire and analyse large amount of behavioural data.
+		</p>
+		<p>
+			It features :
+	    </p>
+			<ul>
+			  <li> A completely <b>free and open-source</b> set of tools -- software was built on top of `GNU/Linux` and `python`. Ethoscopes are build from *raspberry pis* along with custom *3d printed* parts.</li>
+			  <li> <b>Real time video tracking</b> -- this allows experimenters to individually deliver stimulus according to the behaviour of the animals.</li>
+			  <li> A modern <b>web-interface</b> to control multiple devices effectively.</li>
+			  <li> High-throughput detailed post-hock analysis -- thanks to the <b>R package</b> <a href='https://github.com/gilestrolab/rethomics'>rethomics</a>.</li>
+			  <li> A <b>modular design</b> -- it is straightforward to modify both devices and software and create new experimental paradigms. </li>
+			  <li> A <b>high scalability</b> -- multiple, inexpensive, ethoscopes can run in parallel within the same platform</li>
+			</ul>
+
+		<p>
+			The aim of this website is to describe the platform, explain how it can be set-up and develop a community of users.
+		</p>
+	</div>
+
+	<div class="col-md-4 dag_div">
+		<h3>Blog posts</h3>
+		<ul>
+      
+        <li>
+          <a href="/ethoscope//howto/2016/01/08/how-to-make-a-blog-post.html">How to make a blog post</a>
+        </li>
+      
+	</div>
+</div>
+
+
+	    </div>
+	</div>
+	<div class="container">
+	  <div class="footer">
+		<div class="contact">
+			<a href="mailto:quentin.geissmann13@imperial.ac.uk?Subject=Website" target="_top">Quentin Geissmann</a>,
+			<a href="http://www3.imperial.ac.uk/lifesciences">Department of Life Sciences</a>, Imperial College London. 18 Jan 2016
+			<a rel="license" href="http://creativecommons.org/licenses/by/4.0/">
+				<img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by/4.0/88x31.png" width="44"/>
+				</a><br /><span xmlns:dct="http://purl.org/dc/terms/" href="http://purl.org/dc/dcmitype/InteractiveResource"
+				property="dct:title" rel="dct:type">This website</span>, and all its content, is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.
+		  </p>
+		</div>
+	  </div>
+	</div>
+       </div>
+	 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="/ethoscope/js/jquery-1.11.0.min.js"></script>
+    <script src="/ethoscope/js/generic.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="/ethoscope/js/bootstrap.min.js"></script>
+
+
+
+    </body>
+</html>

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    
+<!--
+       <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+-->
+        <title>Ethoscope R</title>
+
+<!-- syntax highlighting CSS -->
+<!--
+        <link rel="stylesheet" href="/css/syntax.css">
+-->
+        <!-- Custom CSS -->
+<!--
+        <link rel="stylesheet" href="/css/main.css">
+-->
+		<!-- Bootstrap -->
+		<link href="/ethoscope/css/bootstrap.min.css" rel="stylesheet">
+		<link href="/ethoscope/css/generic.css" rel="stylesheet">
+	<script type="text/x-mathjax-config">
+	MathJax.Hub.Config({
+	  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+	});
+	</script>
+	<script type="text/javascript"
+		src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+	</script>
+
+
+    </head>
+    <body>
+
+           <!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand"  href="/ethoscope/"><img src="/ethoscope/img/home.png" style="opacity:0.6; width:48px" ></img> Ethoscope platform</a>
+          <!-- <a class="navbar-brand" href="/ethoscope/">Ethoscope</a> -->
+        </div>
+        <div class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">          
+			
+			<li class="more">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Hardware<b class="caret"></b></a>
+              <ul class="dropdown-menu">
+				  <li><a href="/ethoscope/hardware">Overview</a></li>
+				  <li class="divider"></li>
+  				  <li><a href="/ethoscope/hardware#node">Node</a></li>
+  				  <li><a href="/ethoscope/hardware#router">Router</a></li>
+  				  <li><a href="/ethoscope/hardware#ethoscope">Ethoscope</a></li>
+  				  <li><a href="/ethoscope/hardware#Arenas">Arenas</a></li>
+  				  <li><a href="/ethoscope/hardware#ethoscope_mods">Modules</a></li>
+              </ul>
+            </li>
+			
+			<li class="more">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Software<b class="caret"></b></a>
+              <ul class="dropdown-menu">
+				  <li><a href="/ethoscope/software">Overview</a></li>
+				  <li class="divider"></li>
+  				  <li><a href="/ethoscope/software#node">Node</a></li>
+  				  <li><a href="/ethoscope/software#router">Router</a></li>
+  				  <li><a href="/ethoscope/software#ethoscope">Ethoscope</a></li>
+  				  <li><a href="/ethoscope/software#ethoscope_mods">Modules</a></li>
+              </ul>
+            </li>
+            
+            <li><a href="/ethoscope/blog/">Blog</a></li>
+            <li><a href="/ethoscope/rethomics/">R Package</a></li>
+            
+            
+			<li class="more">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">More<b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                  <li><a href="/ethoscope/data">Data</a></li>
+                  <li class="divider"></li>
+				<li><a href="/ethoscope/people#authors">Authors</a></li>
+				<li><a href="/ethoscope/people#collaborators">Collaborators</a></li>
+				 <li class="divider"></li>
+				<li><a href="/ethoscope/publications/">Publications</a></li>
+				 <li class="divider"></li>
+				<li><a href="/ethoscope/links/">Links</a></li>
+              </ul>
+            </li>
+          </ul>
+
+        </div><!--/.nav-collapse -->
+      </div>
+    </div>
+    <div class="container">
+        <div class="jumbotron">
+		    <h2>Rethomics</h2>
+<p>
+    State of the art behavioural analysis can generate large amount of data.
+    For instance, assume a simple experiment running 10 Ethoscopes for 1 week.
+    In normal condition, we have two measurements a second (thins includes things like position and shape of the animal) on 20 animals.
+    This results in a total of 10 * 20 * 2 * 3600 * 24 * 7  = which is actually <b>1/4 of a billion reads</b>!
+</p>
+<p>
+    Whilst this is a large amount of data to deal with for graphical user interface based tool like Excel, this is a manageable job for statistical languages such as <a href=https://www.r-project.org/>R</a>.
+    In order to facilitate data analysis, we have developed an R package named <b>rethomics</b>.
+    It can be used for:
+</p>
+
+    <ul>
+        <li>Loading data from the Ethoscope platform.</li>
+        <li>Visualising behavioural trends.</li>
+        <li>Analysing quiescence/sleep behaviour.</li>
+        <li>Analysing survival.</li>
+    </ul>
+<p>
+    Rethomics has its own exhaustive documentation, and its <a href='http://gilestrolab.github.io/rethomics/'>own website</a>.
+</p>
+
+	    </div>
+	</div>
+	<div class="container">
+	  <div class="footer">
+		<div class="contact">
+			<a href="mailto:quentin.geissmann13@imperial.ac.uk?Subject=Website" target="_top">Quentin Geissmann</a>,
+			<a href="http://www3.imperial.ac.uk/lifesciences">Department of Life Sciences</a>, Imperial College London. 18 Jan 2016
+			<a rel="license" href="http://creativecommons.org/licenses/by/4.0/">
+				<img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by/4.0/88x31.png" width="44"/>
+				</a><br /><span xmlns:dct="http://purl.org/dc/terms/" href="http://purl.org/dc/dcmitype/InteractiveResource"
+				property="dct:title" rel="dct:type">This website</span>, and all its content, is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.
+		  </p>
+		</div>
+	  </div>
+	</div>
+       </div>
+	 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="/ethoscope/js/jquery-1.11.0.min.js"></script>
+    <script src="/ethoscope/js/generic.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="/ethoscope/js/bootstrap.min.js"></script>
+
+
+
+    </body>
+</html>

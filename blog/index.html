@@ -1,0 +1,15 @@
+---
+layout: default
+title: Ethoscope Blog
+---
+
+    <h2>Blog</h2>
+
+    <ul>
+      {% for post in site.posts %}
+        <li>
+          <a href="{{ site.baseurl }}/{{ post.url }}">{{ post.title }}</a>
+          {{ post.excerpt }}
+        </li>
+      {% endfor %}
+    </ul>
