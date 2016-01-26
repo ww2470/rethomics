@@ -44,6 +44,6 @@ sleep_dt <-  tube_monitor_validation[,sleepAnnotation(.SD),by=key(tube_monitor_v
 ggplot(sleep_dt, aes(t,region_id,fill=asleep)) + geom_tile()
 }
 \seealso{
-\code{\link{loadPsvData}} to load data and optionaly apply analysis on the fly.
+\code{\link{loadEthoscopeData}} to load data and optionally apply analysis on the fly.
 }
 

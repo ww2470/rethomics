@@ -1,0 +1,56 @@
+---
+title: "Position analysis"
+author: "Quentin Geissmann"
+date: "18 November 2015"
+output: html_document
+---
+
+Aims
+-----
+
+This turorial demonstrates basic ways to visualise and analyse positional behavioural data.
+We will learn how to:
+
+* 
+* `rethomics` use them to keep multiple animals in the same table.
+* Work with data table keys.
+* Use `rethomics` conventions.
+
+
+Getting the data
+-----------------------
+
+```{r, include=FALSE}
+library(rethomics)
+```
+
+We will use the `multiple_iterative_y_mazes` that is inside the package.
+
+```{r}
+data(multiple_iterative_y_mazes)
+
+# we rename it to 'dt'
+dt <- multiple_iterative_y_mazes
+```
+
+In this set of experiment, we have reccorded x,y,width,height, angle and other variable of individual fruit flies as they move through a maze.
+The animals are males or females ("sex" column), and can bei either sleep deprived of not ("sleep_deprived" column).
+In this data set, there is only one region of interest per experiment, so `region_id` is always 1.
+
+First, we want to check how many animals we have per treatment/condition.
+For that, we use some `data.table` trick:
+
+```{r}
+# this gives us only the first point for each animal
+first_point_dt <- unique(dt)
+
+# when we can get the number of animals:
+nrow(first_point_dt)
+
+# now we could like to count animals for of each sex and sleep deprivation treatment:
+first_point_dt[, .N, by=.(sex, sleep_deprived)]
+```
+
+
+ggplot(dt, aes(x,y)) + geom_point() + geom_hex()
+
