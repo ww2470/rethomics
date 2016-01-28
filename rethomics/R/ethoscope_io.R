@@ -276,6 +276,8 @@ buildEthoscopeQuery <- function(result_dir,query=NULL){
       warning(str)
     }
   }
+  # we don't need the column 'n' any longer
+  out[, n:=NULL]
   nas <- is.na(out[,path]) 
   if(any(nas)){
     out_nas <- out[nas,]
