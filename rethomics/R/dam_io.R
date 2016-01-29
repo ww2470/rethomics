@@ -41,7 +41,7 @@ loadDailyDAM2Data <- function(result_dir,
                          verbose=TRUE,
                          FUN=NULL, ...){
   q = copy(query)
-  #files_info[, experiment_id := paste(date,machine_id,sep="_")]
+  checkColumns(c("start_date","machine_id"), colnames(q))
   files_info <- listDailyDAMFiles(result_dir)
   
   if(!("region_id" %in% colnames(q)))

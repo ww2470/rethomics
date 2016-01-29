@@ -127,8 +127,9 @@ loadEthoscopeData <- function(what,
       experiment_id=experiment_id),by=path]
   }
   else if(is.data.frame(what)){
-    if(!"path" %in% colnames(what))
-      stop("When `what` is a data.frame, it MUST have a column named 'path'")
+    
+    checkColumns("path", colnames(what))
+    
     master_table <- copy(as.data.table(what))
     #fixme check uniqueness of file/use path as key?
     master_table[,path := as.character(path)]
@@ -227,9 +228,8 @@ buildEthoscopeQuery <- function(result_dir,query=NULL){
   use_date <- F
   if(!is.null(query)){
     q <- copy(as.data.table(query))
+    checkColumns(key, colnames(q))
     q[, date:=as.character(date)]
-    if(!("date" %in% colnames(q)))
-      stop("Query MUST have a `date` column")
     
     t <- q[,as.POSIXct(date, "%Y-%m-%d_%H-%M-%S", tz="GMT")]
     if(any(is.na(t)))
