@@ -36,7 +36,7 @@ checkColumns <- function(expected_colnames, cols){
     stop(sprintf("The following columns are needed, but not found: %s",col_not_found))  
 }
 
-checkDirExists(dir){
+checkDirExists <- function(dir){
   if(!dir.exists(dir))
     stop(sprintf("The directory %s does not exist",dir))  
 }
