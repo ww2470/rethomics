@@ -40,6 +40,7 @@ loadDailyDAM2Data <- function(result_dir,
                          tz="UTC",
                          verbose=TRUE,
                          FUN=NULL, ...){
+  checkDirExists(result_dir)
   q = copy(query)
   checkColumns(c("start_date","machine_id"), colnames(q))
   files_info <- listDailyDAMFiles(result_dir)
@@ -370,6 +371,7 @@ parseDateStr <- function(str, tz=''){
   }
 
 listDailyDAMFiles <- function(result_dir){
+  checkDirExists(result_dir)
   fs <- list.files( result_dir,pattern="M...*\\.txt",recursive = T)
   fields <- strsplit(fs,"/")
   valid_files <- sapply(fields,length) == 4

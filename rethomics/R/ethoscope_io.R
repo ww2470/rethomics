@@ -221,9 +221,9 @@ NULL
 #' }
 #' @export
 buildEthoscopeQuery <- function(result_dir,query=NULL){
-  if(!dir.exists(result_dir)){
-    stop("result_dir not found. Ensure you use the correct path")
-  }
+  
+  checkDirExists(result_dir)
+  
   key <- c("date","machine_name")
   use_date <- F
   if(!is.null(query)){
