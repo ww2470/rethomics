@@ -4,12 +4,14 @@
 \alias{buildEthoscopeQuery}
 \title{Build a query for loading ethoscope dat; using the date of experiments and devices name to retreive result files.}
 \usage{
-buildEthoscopeQuery(result_dir, query = NULL)
+buildEthoscopeQuery(result_dir, query = NULL, use_cached = FALSE)
 }
 \arguments{
 \item{result_dir}{The location of the result directory (i.e. the folder containing all the data).}
 
 \item{query}{An optional query formatted as a dataframe (see details).}
+
+\item{use_cached}{whether cache files should be used}
 }
 \value{
 The query extended with the requested paths. When \code{query} is not specified, the function returns a table with all available files.
@@ -51,5 +53,8 @@ print(query)
 map <- buildEthoscopeQuery(MY_DATA_DIR, query)
 dt <- loadEthoscopeData(map)
 }
+}
+\seealso{
+\code{\link{cacheEthoscopeData}} to build a cached data directory.
 }
 

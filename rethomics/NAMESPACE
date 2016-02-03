@@ -2,6 +2,7 @@
 
 export(boutAnalysis)
 export(buildEthoscopeQuery)
+export(cacheEthoscopeData)
 export(curateDeadAnimals)
 export(days)
 export(ethogramPlot)

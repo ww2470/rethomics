@@ -21,7 +21,8 @@ Depends:
     RSQLite,
     data.table,
     ggplot2,
-    reshape2
+    reshape2,
+    tools
 LazyLoad: TRUE
 Collate:
     'ethoscope_io.R'

@@ -5,8 +5,8 @@
 \title{Read data from a result file.}
 \usage{
 loadEthoscopeData(what, min_time = 0, max_time = Inf,
-  reference_hour = NULL, verbose = TRUE, cache_files = TRUE,
-  n_cores = 1, columns = NULL, FUN = NULL, ...)
+  reference_hour = NULL, verbose = TRUE, columns = NULL, FUN = NULL,
+  ...)
 }
 \arguments{
 \item{what}{an object describing which file(s) to load and, optionally, associated variables/conditions (see details).}
@@ -18,10 +18,6 @@ loadEthoscopeData(what, min_time = 0, max_time = Inf,
 \item{reference_hour}{the hour, in the day, to use as t_0 reference. When unspecified, time will be relative to the start of the experiment.}
 
 \item{verbose}{whether to print progress (a logical).}
-
-\item{cache_files}{whether SQL files should be cached in a tmp dir for faster reading}
-
-\item{n_cores}{how many cores should be used to read/convert data}
 
 \item{columns}{an optionnal vector of columns to be selected from the db file. Time (t) is always implicitely selected.}
 

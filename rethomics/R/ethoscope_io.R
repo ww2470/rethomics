@@ -11,8 +11,6 @@ NULL
 #' @param max_time exclude data after max_time (in seconds). It is also relative to the start of the experiment.
 #' @param reference_hour the hour, in the day, to use as t_0 reference. When unspecified, time will be relative to the start of the experiment.
 #' @param verbose whether to print progress (a logical).
-#' @param cache_files whether SQL files should be cached in a tmp dir for faster reading
-#' @param n_cores how many cores should be used to read/convert data
 #' @param columns an optionnal vector of columns to be selected from the db file. Time (t) is always implicitely selected.
 #' @param FUN an optional function to transform the data from each `region' (i.e. a data.table) immediately after is has been loaded. 
 #' @param ... extra arguments to be passed to \code{FUN}
@@ -109,13 +107,54 @@ loadEthoscopeData <- function(what,
                               max_time = Inf, 
                               reference_hour=NULL,
                               verbose=TRUE,
-                              cache_files=TRUE,
-                              n_cores=1,
                               columns = NULL,
                               FUN=NULL,
                               ...){
-  
   # from the `what` argument, we build a `master_table` that we will map to the actual data.
+  master_table <- makeMasterTable(what)
+  
+  # Each row of master table refers to a unique ROI. to each ROI we apply the function `parseOneROI` 
+  # and get each ROI in a dt.
+  # So, l_dt is a list of data tables, one per ROI. If no data is availeble, the list element is `NULL`.
+  l_dt <- lapply(1:nrow(master_table),parseOneROI, master_table,min_time, max_time, reference_hour,verbose,columns=columns,FUN,...)
+
+  # if any element of the list is `NULL`, then it is removed
+  l_dt <- l_dt[!sapply(l_dt,is.null)]
+  
+  #all data table in the list should have the same key
+  if(length(unique(lapply(l_dt,key))) > 1){
+    stop("Data tables do not have the same keys")
+  }
+  # if they have the same keys, then  the key for everyone is:
+  keys <- key(l_dt[[1]])
+  
+  # then we bin ALL roi tables in one datatable with all ROIs in  
+  out <- rbindlist(l_dt)
+  
+  # now we remove l_dt as it is expected to be quite large
+  rm(l_dt)
+  # we also can force R to garbage collect, making memory avalable:
+  gc()
+  
+  # we reasign the correct key to the output data table
+  setkeyv(out, keys)
+  
+  # we join master and out, so extra, user defined, cols are no in out
+  out <- master_table[out]
+  
+  # we don't want path in out, it is too long and inconsistent
+  out[, path := NULL]
+  
+  master_table[, path := NULL]
+  
+  # we want all user defined variables AND the default key (region_id, experiment_id) to be key.
+  setkeyv(out, colnames(master_table))
+  out
+}
+
+#' Generates a unified master table for any allowed `what` argument.
+#' The resulting master table will always have the columns "path", "experiment_id", "region_id"
+makeMasterTable <- function(what){
   
   # case 1 what is a file, or a vector of files
   if(is.character(what)){
@@ -127,7 +166,6 @@ loadEthoscopeData <- function(what,
       experiment_id=experiment_id),by=path]
   }
   else if(is.data.frame(what)){
-    
     checkColumns("path", colnames(what))
     
     master_table <- copy(as.data.table(what))
@@ -137,6 +175,7 @@ loadEthoscopeData <- function(what,
     
     setkey(master_table,experiment_id)
     
+    # when user did not specify ROIs, we load them all.
     if(!"region_id" %in% colnames(what)){
       m <- master_table[,list(region_id=availableROIs(path)),by=key(master_table)]
       master_table <- m[master_table]
@@ -147,38 +186,11 @@ loadEthoscopeData <- function(what,
     stop("Unexpected `what` argument!")
   }
   
-  if(cache_files)
-    master_table[, path:= cacheResultFile(master_table[,path])]
+  checkColumns(c("experiment_id","region_id","path"),colnames(master_table))
   
   setkeyv(master_table,c("experiment_id","region_id"))
-  
-  if(n_cores == 1)
-    l_dt <- lapply(1:nrow(master_table),parseOneROI, master_table,min_time, max_time, reference_hour,verbose,columns=columns,FUN,...)
-  else{
-    require(parallel)
-    #cl <- makeCluster(n_cores)
-    l_dt <- mclapply(1:nrow(master_table),parseOneROI, master_table,min_time, max_time, reference_hour,verbose,columns,FUN,...,mc.cores = getOption("mc.cores", n_cores))
-    # stopCluster(cl)
-  }
-  
-  l_dt <- l_dt[!sapply(l_dt,is.null)]
-  if(length(unique(lapply(l_dt,key))) > 1){
-    stop("Data tables do not have the same keys")
-  }
-  
-  keys <- key(l_dt[[1]])
-  out <- rbindlist(l_dt)
-  rm(l_dt)
-  
-  setkeyv(out, keys)
-  out <- master_table[out]
-  out$path <-NULL
-  master_table$path <-NULL
-  master_table
-  setkeyv(out, colnames(master_table))
-  out
+  return(master_table)
 }
-
 NULL
 #'  Build a query for loading ethoscope dat; using the date of experiments and devices name to retreive result files.
 #' 
@@ -186,6 +198,7 @@ NULL
 #' In general, end-users will want to retrieve  path to their experimental files
 #' according to the date and ID of the video monitor without having to understand the underlying directory structure.
 #' @param result_dir The location of the result directory (i.e. the folder containing all the data).
+#' @param use_cached whether cache files should be used
 #' @param query An optional query formatted as a dataframe (see details).
 #' @return
 #' The query extended with the requested paths. When \code{query} is not specified, the function returns a table with all available files.
@@ -207,6 +220,7 @@ NULL
 #'  \item{\code{machine_name}, }{a human friendly name for acquisition device. In practice, this is expected to be unique within laboratory.}
 #'  \item{\code{datetime}, }{the date and time of the start of the experiment}
 #' }
+#' @seealso \code{\link{cacheEthoscopeData}} to build a cached data directory.
 #' @examples
 #' \dontrun{
 #' # This is where I store the data on my computer
@@ -220,7 +234,7 @@ NULL
 #' dt <- loadEthoscopeData(map)
 #' }
 #' @export
-buildEthoscopeQuery <- function(result_dir,query=NULL){
+buildEthoscopeQuery <- function(result_dir, query=NULL, use_cached=FALSE){
   
   checkDirExists(result_dir)
   
@@ -229,24 +243,19 @@ buildEthoscopeQuery <- function(result_dir,query=NULL){
   if(!is.null(query)){
     q <- copy(as.data.table(query))
     checkColumns(key, colnames(q))
-    q[, date:=as.character(date)]
-    
-    t <- q[,as.POSIXct(date, "%Y-%m-%d_%H-%M-%S", tz="GMT")]
-    if(any(is.na(t)))
-      t <- q[,as.POSIXct(date, "%Y-%m-%d", tz="GMT")]
+    q[, date:=sapply(date, dateStrToPosix,  tz="GMT")]
     use_date <- T
-    
-    q[,date :=t]
     setkeyv(q,key)
   }
-  all_db_files <- list.files(result_dir,recursive=T, pattern="*\\.db$")
-  
+  if(use_cached)
+    all_db_files <- list.files(result_dir,recursive=T, pattern="*\\.rdb$")
+  else
+    all_db_files <- list.files(result_dir,recursive=T, pattern="*\\.db$")
   
   fields <- strsplit(all_db_files,"/")
   valid_files <- sapply(fields,length) == 4
   
   all_db_files <- all_db_files[valid_files]
-  
   if(length(all_db_files) == 0){
     stop(sprintf("No .db files detected in the directory '%s'. Ensure it is not empty.",result_dir))
   }
@@ -326,6 +335,7 @@ availableROIs <- function(FILE){
   return(available_rois)
 }
 
+#' we obtain data from one ROI and optionaly preanalyse it, by applying FUN.
 parseOneROI <- function(i, master_table,min_time, max_time, reference_hour,verbose,FUN,columns=NULL,...){
   
   region_id <- master_table[i,region_id]
@@ -334,7 +344,15 @@ parseOneROI <- function(i, master_table,min_time, max_time, reference_hour,verbo
   if(verbose)
     cat(sprintf("Loading ROI number %i from:\n\t%s\n",region_id,path))
   
-  out <- loadOneROI(path,	region_id=region_id,
+  if(tools::file_ext(path) == "db")
+    loadingFUN <- loadOneROI
+  else if(tools::file_ext(path) == "rdb")
+    loadingFUN <- loadOneROICached
+  else
+    stop(sprintf("Unsuported file extention in %s",path))
+    
+    
+  out <- loadingFUN(path,	region_id=region_id,
                     min_time = min_time,
                     max_time = max_time, 
                     reference_hour=reference_hour,columns=columns)
@@ -356,14 +374,19 @@ parseOneROI <- function(i, master_table,min_time, max_time, reference_hour,verbo
   setkeyv(out,c("experiment_id","region_id"))
 }
 
-# a helper function to laod data from a single region
+loadOneROIFromRData <- function( FILE,  region_id, min_time=0, max_time=Inf,  reference_hour=NULL, columns = NULL){
+  
+}
+# a helper function to load data from a single region
+
 loadOneROI <- function( FILE,  region_id, min_time=0, max_time=Inf,  reference_hour=NULL, columns = NULL){
+  
   metadata <- loadEthoscopeMetaData(FILE)
   con <- dbConnect(SQLite(), FILE)
-  
   var_map <- as.data.table(dbGetQuery(con, "SELECT * FROM VAR_MAP"))
   setkey(var_map, var_name)
   roi_map <- as.data.table(dbGetQuery(con, "SELECT * FROM ROI_MAP"))
+  
   roi_row <- roi_map[roi_idx == region_id,]
   if(nrow(roi_row) == 0 ){
     warning(sprintf("ROI %i does not exist, skipping",region_id))
@@ -395,6 +418,7 @@ loadOneROI <- function( FILE,  region_id, min_time=0, max_time=Inf,  reference_h
   sql_query <- sprintf("SELECT %s FROM ROI_%i WHERE t >= %e %s",selected_cols, region_id,min_time, max_time_condition )
   
   roi_dt <- as.data.table(dbGetQuery(con, sql_query))
+  
   if("id" %in% colnames(roi_dt))
     roi_dt$id <- NULL
   roi_dt[, region_id := region_id]
@@ -423,20 +447,151 @@ loadOneROI <- function( FILE,  region_id, min_time=0, max_time=Inf,  reference_h
   roi_dt$is_inferred <- NULL
   return(roi_dt)
 }
+
 NULL
-cacheResultFile <- function(all_paths,subdir="rethomic_file_cache"){
-  src <- unique(all_paths)
+
+#' A function to load data from a .rdb file this is faster cause it is indexed and R binary data.
+#' See cacheEthoscopeData in order to generate cached files
+loadOneROICached <- function( FILE,  region_id, min_time=0, max_time=Inf,  reference_hour=NULL, columns = NULL){
   
-  dst_dir <- paste(tempdir(),subdir,sep="/")
-  if(!dir.exists(dst_dir))
-    dir.create(dst_dir)
-  dst <- paste(dst_dir,basename(src),sep="/")
-  map <- data.table(src,dst,key="src")
+  lazyLoad(tools::file_path_sans_ext(FILE))
   
-  lapply(1:nrow(map),function(i){
-    file.copy(map[i,src],map[i,dst],overwrite = F)
-  })
-  path_map <- data.table(src=all_paths)
-  return(map[path_map][,dst])
+  metadata <- METADATA
+  var_map <- VAR_MAP
+  setkey(var_map, var_name)
+  roi_map <- ROI_MAP
+  
+  roi_row <- roi_map[roi_idx == region_id,]
+  if(nrow(roi_row) == 0 ){
+    warning(sprintf("ROI %i does not exist, skipping",region_id))
+    return(NULL)
+  }
+  
+  min_time <- min_time * 1000 
+  roi_dt <- eval(as.symbol(sprintf("ROI_%i",region_id)))
+  roi_dt[,region_id := region_id]
+  
+  if(!is.null(reference_hour)){
+    p <- as.POSIXct(as.numeric(metadata[field == "date_time",value]), origin="1970-01-01")
+    hour_start <- as.numeric(format(p, "%H")) + as.numeric(format(p, "%M")) / 60 +  as.numeric(format(p, "%S")) / 3600
+    ms_after_ref <- ((hour_start - reference_hour) %% 24) * 3600 * 1000
+    roi_dt[, t:= (t + ms_after_ref) ]
+  }
+  
+  roi_width <- max(c(roi_row[,w], roi_row[,h]))
+  
+  if(!is.null(columns)){
+    columns_to_remove <- intersect(var_map$var_name[!var_map$var_name %in% columns], colnames(roi_dt))
+    columns_to_remove <- c(columns_to_remove,"id")
+  }
+  else
+    columns_to_remove <- "id"
+  
+  roi_dt[, (columns_to_remove) := NULL]
+  
+  for(var_n in intersect(var_map$var_name,colnames(roi_dt))){
+    if(var_map[var_n, functional_type] == "distance"){
+      roi_dt[, (var_n) := get(var_n) / roi_width]
+    }
+    else if(var_map[var_n, sql_type] == "BOOLEAN"){
+      roi_dt[, (var_n) := as.logical(get(var_n))]
+    }
+  }
+  
+  roi_dt[, t:= t/1e3]
+  return(roi_dt)
 }
+
 NULL
+#' Caches incrementally db  files to R native files
+#' 
+#' This function is meant to be run by heavy users who want to speed up reading ethoscope file.
+#' It will essentially preload all data in a result directory into a cached directory with the same structure.
+#' .rdb and .idx fils are generated instead of .db file.
+#' In practice, this function will be run every day to fetch and cache new data. 
+#' @param result_dir The location of the result directory (i.e. the folder containing all the data).
+#' @param result_dir The location of the directory where data should be saved.
+#' @param dry_ The location of the directory where data should be saved.
+#' @export
+cacheEthoscopeData <- function(result_dir, cached_dir, dry_run=F){
+  db_files <- buildEthoscopeQuery(result_dir)
+  db_files[,cached_dir := sprintf("%s/%s/%s/%s",
+                                  cached_dir,
+                                  machine_id,
+                                  machine_name,
+                                  format(date,"%Y-%m-%d_%H-%M-%S")
+  )]
+  
+  db_files[,cached_path_idx := paste0(cached_dir,"/",basename(file_path_sans_ext(path)),".rdx")]
+  db_files[,db_mtime := file.info(path)["mtime"]]
+  db_files[,idx_mtime := file.info(cached_path_idx)["mtime"]]
+  db_files[,needs_building := is.na(idx_mtime) | db_mtime > idx_mtime]
+  db_files[,order(file)]
+  if(dry_run)
+    return(db_files)
+  
+  db_files <- db_files[needs_building==T]
+  print(sprintf("Building %i files",nrow(db_files)))
+  lapply(1:nrow(db_files),function(i){
+    print(i)
+    db_files[i,buildCacheDir(path, cached_dir)]
+  })
+}
+
+
+sqliteTableToDataTable <- function(name,connection, dt, rm_inferred){
+  dt <- dbGetQuery(connection, sprintf("SELECT * FROM %s",name))
+  dt <- as.data.table(dt)
+  if(rm_inferred & "is_inferred" %in% colnames(dt)){
+    dt <- dt[is_inferred == FALSE]
+    dt[,is_inferred := NULL]
+  }
+  dt
+}
+
+sqliteToRdb <- function(input_db, output_rdb,rm_inferred=TRUE){
+  con <- dbConnect(SQLite(), input_db)
+  
+  list_of_table <- dbGetQuery(con,"SELECT name FROM sqlite_master WHERE type='table'")$name
+  dt_list <- lapply(list_of_table, sqliteTableToDataTable,con, rm_inferred=rm_inferred)
+  names(dt_list) <- list_of_table
+  rdata_file <- sprintf("%s.RData",output_rdb)
+  en <- list2env(dt_list)
+  save(list=names(dt_list),envir = en, file=rdata_file)
+  
+  
+  en <- local({load(rdata_file); environment()})  
+  tools:::makeLazyLoadDB(en, output_rdb, compress=FALSE)
+  file.remove(rdata_file)
+}
+
+
+buildCacheDir <- function(input_db, output_dir){
+  
+  print(sprintf("building %s, from %s", output_dir, input_db))
+  session_tmp_dir <- tempdir()
+  tmp_dir <- paste0(session_tmp_dir,"/",output_dir)
+  out_file_name <- paste0(tmp_dir,"/",file_path_sans_ext(basename(input_db)))
+  print(tmp_dir)
+  dir.create(tmp_dir, recursive = TRUE, showWarnings = FALSE)
+  
+  return_value <- TRUE
+  
+  tryCatch(
+    { 
+      sqliteToRdb(input_db, out_file_name)
+      dir.create(output_dir, recursive = TRUE,showWarnings = F)
+      cached_files <-  list.files(tmp_dir, full.names = T)
+      file.copy(cached_files, output_dir, overwrite=T)
+    },
+    error=function(e){return_value<-FALSE},
+    finally= unlink(tmp_dir,recursive = T)
+  )
+  if(dir.exists(tmp_dir)){
+    stop("dir not removed")
+  }
+  # only after we are sure that all is created do we move the file
+  
+  #dirname(output_dir)
+  return(return_value)
+}
