@@ -189,8 +189,22 @@ makeMasterTable <- function(what){
   checkColumns(c("experiment_id","region_id","path"),colnames(master_table))
   
   setkeyv(master_table,c("experiment_id","region_id"))
+  master_table[,n:=.N,by=key(master_table)]
+  master_table <- unique(master_table)
+  duplicated_rows <- master_table[n>1]
+  
+  if(nrow(duplicated_rows)>0){
+    for(i in 1:nrow(duplicated_rows)){
+      str <- "Duplicated rows in query! experiment %s and region %i}"        
+      str <- sprintf(str, duplicated_rows[i,experiment_id],duplicated_rows[i,region_id])
+      warning(str)
+    }
+      
+  }
+  master_table[,n:=NULL]
   return(master_table)
 }
+
 NULL
 #'  Build a query for loading ethoscope dat; using the date of experiments and devices name to retreive result files.
 #' 
@@ -235,18 +249,19 @@ NULL
 #' }
 #' @export
 buildEthoscopeQuery <- function(result_dir, query=NULL, use_cached=FALSE){
-  
   checkDirExists(result_dir)
-  
   key <- c("date","machine_name")
   use_date <- F
   if(!is.null(query)){
     q <- copy(as.data.table(query))
     checkColumns(key, colnames(q))
-    q[, date:=sapply(date, dateStrToPosix,  tz="GMT")]
+    query_date <- q[, dateStrToPosix(date, tz="GMT")]
+    q[, date := query_date]
     use_date <- T
     setkeyv(q,key)
   }
+  
+  class(q$date)
   if(use_cached)
     all_db_files <- list.files(result_dir,recursive=T, pattern="*\\.rdb$")
   else
@@ -256,6 +271,9 @@ buildEthoscopeQuery <- function(result_dir, query=NULL, use_cached=FALSE){
   valid_files <- sapply(fields,length) == 4
   
   all_db_files <- all_db_files[valid_files]
+  fields <- fields[valid_files]
+  
+  
   if(length(all_db_files) == 0){
     stop(sprintf("No .db files detected in the directory '%s'. Ensure it is not empty.",result_dir))
   }
@@ -275,13 +293,17 @@ buildEthoscopeQuery <- function(result_dir, query=NULL, use_cached=FALSE){
   if(is.null(query))
     return(files_info)
   files_info[,n:=.N,by=key(files_info)]
+  
   unique_fi = unique(files_info,fromLast = T)
+  
   out <- unique_fi[q]
-  duplicated_queries <- unique(out[n>1,.(date,machine_name)])
+  
+  duplicated_queries <- unique(out[n>1,.(n, date,machine_name)])
   if(nrow(duplicated_queries) > 0){
     for( i in 1:nrow(duplicated_queries)){
-      str <- "Duplicated queries. Excluding {%s, %s}"        
-      str <- sprintf(str,duplicated_queries[i,machine_name],duplicated_queries[i,date])
+      str <- "Several files(%i) in machine %s and date %s. Keeping last file. Use date and time if it is not intended.}"        
+      
+      str <- sprintf(str,duplicated_queries[i,n], duplicated_queries[i,machine_name],duplicated_queries[i,as.character(date)])
       warning(str)
     }
   }
@@ -298,6 +320,7 @@ buildEthoscopeQuery <- function(result_dir, query=NULL, use_cached=FALSE){
   setkeyv(out, union(key(out),colnames(q)))
   out
 }
+
 
 #' Retrieves  metadata from a result file.
 #' 

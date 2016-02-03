@@ -49,8 +49,8 @@ loadDailyDAM2Data <- function(result_dir,
     q <- q[,.(region_id=1:32),by=c(colnames(q))]
   
   
-  q[, start_date:=sapply( start_date, dateStrToPosix,  tz="GMT")]
-  q[, stop_date:=sapply(stop_date, dateStrToPosix, tz="GMT")]
+  q[, start_date:= dateStrToPosix(start_date,  tz="GMT")]
+  q[, stop_date:=dateStrToPosix(stop_date,  tz="GMT")]
   
   # we check that dates can be converted to posix
   #invalid_dates = q[is.na(start_date) | is.na(stop_date),]
@@ -184,7 +184,7 @@ loadDAM2Data <- function(query, FUN=NULL, ...){
   final_key <- copy(colnames(q))
   
   setkeyv(q,final_key)
-  q[, t0:=sapply(start_date,dateStrToPosix,tz)]
+  q[, t0:=dateStrToPosix(start_date, tz)]
   out <- merge(q,out)
   
   out[, t:=as.numeric(t-t0,units='secs')]
@@ -337,38 +337,6 @@ NULL
 # valid_dates <- c('2015-05-04_10-00-00', '2015-05-04')
 # invalid_dates <- c('2015-05-04_25-00-00', '2015-05-34',
 #                   '2015-05-03 10:23:11')
-parseDateStr <- function(str, tz=''){
-  
-  pattern <- "^[0-9]{4}-[0-9]{2}-[0-9]{2}(_[0-9]{2}-[0-9]{2}-[0-9]{2}){0,1}$"
-  if(length(str) >1){
-    stop("Dates must be checked one by one, you are providing several dates")
-  }
-  match = grep(pattern, str)
-  if (length(match) != 1){
-    stop(sprintf("Date '%s' is not formated correctly.
-                 It must be either 'yyyy-mm-dd' or 'yyyy-mm-dd_hh-mm-ss'",str))
-  }
-  
-  out <- list()
-  
-  if(nchar(str) == 10){
-    date <- as.POSIXct(str, "%Y-%m-%d",tz=tz)
-    out$date <- date
-    out$has_time <- F
-  }
-  else{
-    date <- as.POSIXct(str, "%Y-%m-%d_%H-%M-%S",tz=tz)
-    out$date <- date
-    out$has_time <- T
-  }
-  if(is.na(date)){
-    stop(sprintf("Date '%s' seems to be formated correctly,
-                 but we cannot read it as a date. 
-                 Probably the numbers are wrong (e.g. 2015-30-02 does not exist)",str))
-  }
-  
-  out
-  }
 
 listDailyDAMFiles <- function(result_dir){
   checkDirExists(result_dir)
@@ -390,8 +358,3 @@ listDailyDAMFiles <- function(result_dir){
   files_info
 }
 
-dateStrToPosix <- function(date,tz="GMT"){
-  if(is.infinite(date))
-    return(date)
-  parseDateStr(as.character(date),tz)$date
-}
