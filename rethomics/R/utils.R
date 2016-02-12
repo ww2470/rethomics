@@ -37,7 +37,7 @@ dir.exists <- function(d) {
 }
 
 dateStrToPosix <- function(date,tz="GMT"){
-  date_char = ifelse(is.infinite(date),as.character(date),date)
+  date_char = ifelse(is.finite(date),as.character(date),date)
   ldt <- lapply(date_char,function(x,tz){as.data.table(parseDateStr(x,tz))},tz)
   rbindlist(ldt)[,date]
 }
