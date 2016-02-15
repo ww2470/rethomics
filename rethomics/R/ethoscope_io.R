@@ -490,7 +490,6 @@ loadOneROICached <- function( FILE,  region_id, min_time=0, max_time=Inf,  refer
     return(NULL)
   }
   
-  min_time <- min_time * 1000 
   roi_dt <- eval(as.symbol(sprintf("ROI_%i",region_id)))
   roi_dt[,region_id := region_id]
   
@@ -522,6 +521,8 @@ loadOneROICached <- function( FILE,  region_id, min_time=0, max_time=Inf,  refer
   }
   
   roi_dt[, t:= t/1e3]
+  if(min_time > 0 | is.finite(max_time))
+    roi_dt <- roi_dt[between(t, min_time,max_time)]
   return(roi_dt)
 }
 

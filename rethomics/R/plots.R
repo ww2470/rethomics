@@ -301,3 +301,73 @@ bootCi <- function(x,
              higher = ci[2])
   out
 }
+
+
+
+#' Put white and black bars under a plot to show Dark and Light phases.
+
+#' @param pl A \code{ggplot} object to be annotated.
+#' @param time_conversion_unit The time conversion function used in \code{pl}.
+#' @param period The period, in seconds
+#' @param offset A number, lower than the \code{period} to shift the bar left or right
+#' @param size The hight of the bar. It is expressed in percent of the graph height
+#' @return A \code{ggplot} object that can be plotted directly, or modified.
+#' @examples
+#' data(sleep_sexual_dimorphism)
+#' my_data <- sleep_sexual_dimorphism
+#' # Fraction of animal asleep over time:
+#' p <- overviewPlot(asleep,my_data,condition=sex)
+#' p <- makeLDAnnotation(p)
+#' print(p)
+#' p <- ethogramPlot(asleep,my_data,condition=sex,error_bar="sem")
+#' p <- makeLDAnnotation(p)
+#' print(p)
+#' @export
+makeLDAnnotation <- function(pl, time_conversion_unit=days,period=hours(24), offset=0, size=.02){
+	panel_ranges <- ggplot_build(pl)$panel$ranges[[1]]
+	
+	min_y <- panel_ranges$y.range[1]
+	max_y <- panel_ranges$y.range[2]
+	middle_y <- panel_ranges$y.major_source[1]
+	min_x <- time_conversion_unit(panel_ranges$x.range[1])
+	max_x <- time_conversion_unit(panel_ranges$x.range[2])
+	
+	steps <- offsettedSeq(min_x, max_x, by=period/2, offset)
+	
+	
+	steps <- steps / time_conversion_unit(1)
+	
+	if(length(steps) %% 2 == 0){
+		step_mat_l <- matrix(steps,ncol=2,byrow=T)
+		step_mat_d <- matrix(c(NA,steps[1:(length(steps) -1)]),ncol=2,byrow=T)
+		}
+	else{
+		step_mat_l <- matrix(c(steps, NA),ncol=2,byrow=T)
+		step_mat_d <- matrix(c(NA,steps),ncol=2,byrow=T)
+		}
+	
+	step_mat_d <- na.omit(step_mat_d)
+	step_mat_l <- na.omit(step_mat_l)
+	
+	
+	
+	top_annotation <- (min_y + middle_y)/2
+	bottom_annotation <- top_annotation - (max_y -min_y) * size
+	
+	al <- annotate("rect", xmin=step_mat_l[,1], xmax=step_mat_l[,2], ymin=bottom_annotation, ymax= top_annotation  , fill=c("white"))
+	ad <- annotate("rect", xmin=step_mat_d[,1], xmax=step_mat_d[,2], ymin=bottom_annotation, ymax= top_annotation  , fill=c("black"))
+	s1 <- annotate("segment", x=min(steps), xend=max(steps), y=top_annotation, yend= top_annotation  , colour=c("black"))
+	s2 <- annotate("segment", x=min(steps), xend=max(steps), y=bottom_annotation, yend= bottom_annotation  , colour=c("black"))
+	
+	pl + al + ad  + s1 + s2
+}
+
+
+offsettedSeq <- function(start, end, by,offset){
+		second <- by * ceiling(start/by) + offset
+		out <- seq(from = second, to=end, by=by)
+		
+		
+		return(unique(c(start,out,end)))
+		
+}
