@@ -544,6 +544,8 @@ cacheEthoscopeData <- function(result_dir, cached_dir, dry_run=F){
                                   machine_name,
                                   format(date,"%Y-%m-%d_%H-%M-%S")
   )]
+  checkDirExists(result_dir)
+  checkDirExists(cached_dir)
   
   db_files[,cached_path_idx := paste0(cached_dir,"/",basename(file_path_sans_ext(path)),".rdx")]
   db_files[,db_mtime := file.info(path)["mtime"]]
