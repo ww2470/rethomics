@@ -12,6 +12,7 @@ NULL
 #' @param reference_hour the hour, in the day, to use as t_0 reference. When unspecified, time will be relative to the start of the experiment.
 #' @param verbose whether to print progress (a logical).
 #' @param columns an optionnal vector of columns to be selected from the db file. Time (t) is always implicitely selected.
+#' @param ncores the number of cores to use for optionnal parallel processing.
 #' @param FUN an optional function to transform the data from each `region' (i.e. a data.table) immediately after is has been loaded. 
 #' @param ... extra arguments to be passed to \code{FUN}
 #' @return A data.table where every row is an individual measurement. That is a position at a unique time (\code{t}) in a 
@@ -108,6 +109,7 @@ loadEthoscopeData <- function(what,
                               reference_hour=NULL,
                               verbose=TRUE,
                               columns = NULL,
+                              ncores=1,
                               FUN=NULL,
                               ...){
   # from the `what` argument, we build a `master_table` that we will map to the actual data.
@@ -116,7 +118,19 @@ loadEthoscopeData <- function(what,
   # Each row of master table refers to a unique ROI. to each ROI we apply the function `parseOneROI` 
   # and get each ROI in a dt.
   # So, l_dt is a list of data tables, one per ROI. If no data is availeble, the list element is `NULL`.
-  l_dt <- lapply(1:nrow(master_table),parseOneROI, master_table,min_time, max_time, reference_hour,verbose,columns=columns,FUN,...)
+  
+  if(ncores == 1){
+    l_dt <- lapply(1:nrow(master_table),parseOneROI, master_table,min_time, max_time, reference_hour,verbose,columns=columns,FUN,...)
+  }
+  else{
+    library(parallel)
+    # cl <- makeCluster(getOption("cl.cores", ncores))
+    # clusterExport(cl, "master_table")
+    l_dt <- mclapply(1:nrow(master_table),parseOneROI, 
+                      mc.cores=ncores,
+                      master_table,min_time, max_time,
+                      reference_hour, verbose,columns=columns,FUN,...)
+  }
 
   # if any element of the list is `NULL`, then it is removed
   l_dt <- l_dt[!sapply(l_dt,is.null)]
