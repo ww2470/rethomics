@@ -261,7 +261,6 @@ buildEthoscopeQuery <- function(result_dir, query=NULL, use_cached=FALSE){
     setkeyv(q,key)
   }
   
-  class(q$date)
   if(use_cached)
     all_db_files <- list.files(result_dir,recursive=T, pattern="*\\.rdb$")
   else
