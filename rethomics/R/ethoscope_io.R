@@ -315,7 +315,6 @@ buildEthoscopeQuery <- function(result_dir, query=NULL, use_cached=FALSE){
   if(nrow(duplicated_queries) > 0){
     for( i in 1:nrow(duplicated_queries)){
       str <- "Several files(%i) in machine %s and date %s. Keeping last file. Use date and time if it is not intended.}"        
-      
       str <- sprintf(str,duplicated_queries[i,n], duplicated_queries[i,machine_name],duplicated_queries[i,as.character(date)])
       warning(str)
     }
@@ -325,7 +324,7 @@ buildEthoscopeQuery <- function(result_dir, query=NULL, use_cached=FALSE){
   nas <- is.na(out[,path]) 
   if(any(nas)){
     out_nas <- out[nas,]
-    for(i in nrow(out_nas)){
+    for(i in 1:nrow(out_nas)){
       warning(sprintf("No result for machine_name == %s and date == %s. Omiting query",out_nas[i,machine_name],out_nas[i,date])) 
     }
   }
