@@ -9,9 +9,9 @@ cacheEthoscopeData(result_dir, cached_dir, dry_run = F)
 \arguments{
 \item{result_dir}{The location of the result directory (i.e. the folder containing all the data).}
 
-\item{result_dir}{The location of the directory where data should be saved.}
+\item{cached_dir}{The location of the directory where data should be saved.}
 
-\item{dry_}{The location of the directory where data should be saved.}
+\item{dry_run}{The location of the directory where data should be saved.}
 }
 \description{
 This function is meant to be run by heavy users who want to speed up reading ethoscope file.

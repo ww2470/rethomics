@@ -8,6 +8,7 @@ Authors@R: c(
     person("Girogio", "Gilestro", role = "ctb"),
     person("Luis", "Garcia", role = "ctb", email="luis.garcia@polygonaltree.co.uk"),
     person("Anne", "Petzold", role = "ctb", email="a.petzold13@imperial.ac.uk"),
+    person("Diana ", "Bicazan", role = "ctb", email="diana.bicazan12@imperial.ac.uk"),
     person("Joe", "Gallagher", role = "ctb",email = "boa07jg@sheffield.ac.uk"))
 Author: Quentin Geissmann
 Maintainer: Quentin Geissmann <qgeissmann@gmail.com>
@@ -27,10 +28,16 @@ LazyLoad: TRUE
 Collate:
     'ethoscope_io.R'
     'dam_io.R'
-    'legacy.R'
     'helpers.R'
     'plots.R'
     'sleep.R'
-    'utils.R'
+    'utils_time.R'
+    'utils_path.R'
+    'utils_misc.R'
+    'datasets.R'
 URL: https://github.com/gilestrolab/rethomics
-RoxygenNote: 5.0.0
+RoxygenNote: 5.0.1
+Suggests: 
+    testthat,
+    devtools,
+    parallel

@@ -33,10 +33,10 @@ NULL
 #'
 #' # First of all, let us load files from the data sample included within this package.
 #' # Most likely, you will already have your own data files.
-#' sample_files <- c("tube_monitor_validation_subset.db",
-#'                   "monitor_validation_subset.db")
+#' sample_files <- c("misc/db_files/tube_monitor_validation_subset.db",
+#'                   "misc/db_files/monitor_validation_subset.db")
 #' # Extract the files in your computer
-#' paths <- sapply(sample_files, loadSampleData)
+#' paths <- sapply(sample_files, getSampleDataPath)
 #' # Now, `paths` is just a vector of file names:
 #' print(paths)
 #' #################
@@ -100,7 +100,6 @@ NULL
 #' # You could of course combine this with more conditions/region selection.
 #' # For most complicated cases, you would probably have pre-generated the 
 #' # master-table (e.g. as a csv file) before analysing the results.
-
 #' @seealso \code{\link{loadEthoscopeMetaData}} To display global informations about a specific file. 
 #' @export
 loadEthoscopeData <- function(what,
@@ -123,10 +122,14 @@ loadEthoscopeData <- function(what,
     l_dt <- lapply(1:nrow(master_table),parseOneROI, master_table,min_time, max_time, reference_hour,verbose,columns=columns,FUN,...)
   }
   else{
-    library(parallel)
+    if (!requireNamespace("parallel", quietly = TRUE)) {
+      stop("`parallel` package needed for ncores > 1.
+           Please install it.",
+           call. = FALSE)
+    }
     # cl <- makeCluster(getOption("cl.cores", ncores))
     # clusterExport(cl, "master_table")
-    l_dt <- mclapply(1:nrow(master_table),parseOneROI, 
+    l_dt <- parallel::mclapply(1:nrow(master_table),parseOneROI, 
                       mc.cores=ncores,
                       master_table,min_time, max_time,
                       reference_hour, verbose,columns=columns,FUN,...)
@@ -166,8 +169,8 @@ loadEthoscopeData <- function(what,
   out
 }
 
-#' Generates a unified master table for any allowed `what` argument.
-#' The resulting master table will always have the columns "path", "experiment_id", "region_id"
+# Generates a unified master table for any allowed `what` argument.
+# The resulting master table will always have the columns "path", "experiment_id", "region_id"
 makeMasterTable <- function(what){
   
   # case 1 what is a file, or a vector of files
@@ -250,17 +253,17 @@ NULL
 #' }
 #' @seealso \code{\link{cacheEthoscopeData}} to build a cached data directory.
 #' @examples
-#' \dontrun{
-#' # This is where I store the data on my computer
-#' MY_DATA_DIR <- "/data/ethoscope_results/"
-#' 
-#' query <- data.table(date="2015-06-02",
-#'                     machine_name=c("GGSM-001","GGSM-003"),
-#'                     region_id = rep(1:10,each=2))
+#' # Some sample data are store in the package:
+#' sample_dir <- getSampleDataPath(get_sample_dir =  TRUE)
+#' result_dir <- paste(sample_dir,"ethoscope",sep="/")
+#'
+#' query <- data.table(
+#'    machine_name = c("E_029","E_014", "E_014"),
+#'    date = c("2016-01-25","2016-01-25", "2016-02-17")
+#'    )
+#' query_path <- buildEthoscopeQuery(result_dir, query)
+#' # now we have maped a query to a path:
 #' print(query)
-#' map <- buildEthoscopeQuery(MY_DATA_DIR, query)
-#' dt <- loadEthoscopeData(map)
-#' }
 #' @export
 buildEthoscopeQuery <- function(result_dir, query=NULL, use_cached=FALSE){
   checkDirExists(result_dir)
@@ -294,7 +297,7 @@ buildEthoscopeQuery <- function(result_dir, query=NULL, use_cached=FALSE){
   files_info <- do.call("rbind",fields[valid_files])
   files_info <- as.data.table(files_info)
   setnames(files_info, c("machine_id", "machine_name", "date","file"))
-  
+
   if(use_date)
     files_info[,date:=as.POSIXct(date, "%Y-%m-%d", tz="GMT")]
   else
@@ -370,7 +373,7 @@ availableROIs <- function(FILE){
   return(available_rois)
 }
 
-#' we obtain data from one ROI and optionaly preanalyse it, by applying FUN.
+# we obtain data from one ROI and optionaly preanalyse it, by applying FUN.
 parseOneROI <- function(i, master_table,min_time, max_time, reference_hour,verbose,FUN,columns=NULL,...){
   
   region_id <- master_table[i,region_id]
@@ -485,8 +488,8 @@ loadOneROI <- function( FILE,  region_id, min_time=0, max_time=Inf,  reference_h
 
 NULL
 
-#' A function to load data from a .rdb file this is faster cause it is indexed and R binary data.
-#' See cacheEthoscopeData in order to generate cached files
+# A function to load data from a .rdb file this is faster cause it is indexed and R binary data.
+# See cacheEthoscopeData in order to generate cached files
 loadOneROICached <- function( FILE,  region_id, min_time=0, max_time=Inf,  reference_hour=NULL, columns = NULL){
   
   lazyLoad(tools::file_path_sans_ext(FILE))
@@ -546,8 +549,8 @@ NULL
 #' .rdb and .idx fils are generated instead of .db file.
 #' In practice, this function will be run every day to fetch and cache new data. 
 #' @param result_dir The location of the result directory (i.e. the folder containing all the data).
-#' @param result_dir The location of the directory where data should be saved.
-#' @param dry_ The location of the directory where data should be saved.
+#' @param cached_dir The location of the directory where data should be saved.
+#' @param dry_run The location of the directory where data should be saved.
 #' @export
 cacheEthoscopeData <- function(result_dir, cached_dir, dry_run=F){
   db_files <- buildEthoscopeQuery(result_dir)
@@ -599,7 +602,8 @@ sqliteToRdb <- function(input_db, output_rdb,rm_inferred=TRUE){
   
   
   en <- local({load(rdata_file); environment()})  
-  tools:::makeLazyLoadDB(en, output_rdb, compress=FALSE)
+  makeLazyLoadDB <- getFromNamespace(x = "makeLazyLoadDB", "tools")
+  makeLazyLoadDB(en, output_rdb, compress=FALSE)
   file.remove(rdata_file)
 }
 

@@ -5,8 +5,8 @@
 \title{Read data from a result file.}
 \usage{
 loadEthoscopeData(what, min_time = 0, max_time = Inf,
-  reference_hour = NULL, verbose = TRUE, columns = NULL, FUN = NULL,
-  ...)
+  reference_hour = NULL, verbose = TRUE, columns = NULL, ncores = 1,
+  FUN = NULL, ...)
 }
 \arguments{
 \item{what}{an object describing which file(s) to load and, optionally, associated variables/conditions (see details).}
@@ -20,6 +20,8 @@ loadEthoscopeData(what, min_time = 0, max_time = Inf,
 \item{verbose}{whether to print progress (a logical).}
 
 \item{columns}{an optionnal vector of columns to be selected from the db file. Time (t) is always implicitely selected.}
+
+\item{ncores}{the number of cores to use for optionnal parallel processing.}
 
 \item{FUN}{an optional function to transform the data from each `region' (i.e. a data.table) immediately after is has been loaded.}
 
@@ -51,10 +53,10 @@ When additional conditions are provided, they will result in creation of custom 
 
 # First of all, let us load files from the data sample included within this package.
 # Most likely, you will already have your own data files.
-sample_files <- c("tube_monitor_validation_subset.db",
-                  "monitor_validation_subset.db")
+sample_files <- c("misc/db_files/tube_monitor_validation_subset.db",
+                  "misc/db_files/monitor_validation_subset.db")
 # Extract the files in your computer
-paths <- sapply(sample_files, loadSampleData)
+paths <- sapply(sample_files, getSampleDataPath)
 # Now, `paths` is just a vector of file names:
 print(paths)
 #################

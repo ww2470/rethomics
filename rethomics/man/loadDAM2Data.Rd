@@ -37,10 +37,8 @@ It should have  the following columns:
 }
 }
 \examples{
-sample_file <- system.file('data/DAMfile.dam', package="rethomics")
-#print(installed.packages()["rethomics","LibPath"])
-#print(list.files(paste0(installed.packages()["rethomics","LibPath"],"/rethomics/data")))
-#sample_file <- paste0(installed.packages()["rethomics","LibPath"],"/rethomics/data/DAMfile.dam")
+# This is a simple, single sample dam2 file:
+sample_file <- getSampleDataPath('misc/DAMfile.dam')
 query = data.table(path=sample_file,
                    # note the time (10:00) is added as reference time
                  start_date="2015-07-02_10-00-00", 
@@ -53,6 +51,6 @@ dt <- loadDAM2Data(query,FUN= sleepDAMAnnotation)
 ethogramPlot(asleep,dt,condition) + scale_x_continuous(breaks=0:10/2)
 }
 \seealso{
-\code{\link{fetchDAMData}} to load DAM data that is saved by day
+\code{\link{loadSingleDAM2File}} to load DAM data that is saved by day
 }
 

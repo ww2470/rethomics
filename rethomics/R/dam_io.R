@@ -140,10 +140,8 @@ NULL
 #' }
 #'
 #' @examples
-#' sample_file <- system.file('data/DAMfile.dam', package="rethomics")
-#' #print(installed.packages()["rethomics","LibPath"])
-#' #print(list.files(paste0(installed.packages()["rethomics","LibPath"],"/rethomics/data")))
-#' #sample_file <- paste0(installed.packages()["rethomics","LibPath"],"/rethomics/data/DAMfile.dam")
+#' # This is a simple, single sample dam2 file:
+#' sample_file <- getSampleDataPath('misc/DAMfile.dam')
 #' query = data.table(path=sample_file,
 #'                    # note the time (10:00) is added as reference time
 #'                  start_date="2015-07-02_10-00-00", 
@@ -154,7 +152,7 @@ NULL
 #' ethogramPlot(activity,dt,condition) + scale_x_continuous(breaks=0:10/2)
 #' dt <- loadDAM2Data(query,FUN= sleepDAMAnnotation)
 #' ethogramPlot(asleep,dt,condition) + scale_x_continuous(breaks=0:10/2)
-#' @seealso \code{\link{fetchDAMData}} to load DAM data that is saved by day
+#' @seealso \code{\link{loadSingleDAM2File}} to load DAM data that is saved by day
 #' @export
 loadDAM2Data <- function(query, FUN=NULL, ...){
   tz=""
@@ -229,7 +227,7 @@ NULL
 #' conditions <- cbind(roi_id=1:32, expand.grid(treatment=c(T,F), genotype=LETTERS[1:4]))
 #' print(conditions)
 #' }
-#' @seealso \code{\link{loadMetaData}} To display global informations about the experiment.
+#' @seealso \code{\link{loadDAM2Data}} To load data from a query.
 loadSingleDAM2File <- function(FILE, 
                                start_date=-Inf,
                                stop_date=+Inf,

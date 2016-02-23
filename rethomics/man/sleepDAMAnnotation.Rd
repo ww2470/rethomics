@@ -33,6 +33,6 @@ dam_data[,
            
 }
 \seealso{
-\code{\link{queryDAMData}} to load data in and apply this function directly
+\code{\link{loadDAM2Data}} To load DAM2 data first/ apply this function to each animal.
 }
 

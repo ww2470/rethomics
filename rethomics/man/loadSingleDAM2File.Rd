@@ -40,6 +40,6 @@ print(conditions)
 }
 }
 \seealso{
-\code{\link{loadMetaData}} To display global informations about the experiment.
+\code{\link{loadDAM2Data}} To load data from a query.
 }
 

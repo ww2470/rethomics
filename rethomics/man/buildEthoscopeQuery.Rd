@@ -42,17 +42,17 @@ The ethoscope platform store data in a hard-coded directory structure \code{/roo
 }
 }
 \examples{
-\dontrun{
-# This is where I store the data on my computer
-MY_DATA_DIR <- "/data/ethoscope_results/"
+# Some sample data are store in the package:
+sample_dir <- getSampleDataPath(get_sample_dir =  TRUE)
+result_dir <- paste(sample_dir,"ethoscope",sep="/")
 
-query <- data.table(date="2015-06-02",
-                    machine_name=c("GGSM-001","GGSM-003"),
-                    region_id = rep(1:10,each=2))
+query <- data.table(
+   machine_name = c("E_029","E_014", "E_014"),
+   date = c("2016-01-25","2016-01-25", "2016-02-17")
+   )
+query_path <- buildEthoscopeQuery(result_dir, query)
+# now we have maped a query to a path:
 print(query)
-map <- buildEthoscopeQuery(MY_DATA_DIR, query)
-dt <- loadEthoscopeData(map)
-}
 }
 \seealso{
 \code{\link{cacheEthoscopeData}} to build a cached data directory.

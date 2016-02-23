@@ -155,14 +155,6 @@ curateSparseRoiData <- function(
 	
 
 
-#' set.seed(1)
-#' bout_length <- round(runif(100,1,100))
-#'bout_val <- rep(c(T,F),length.out=length(bout_length))
-#' x <- rep(bout_val,bout_length)
-#' test_dt  <- data.table(x=x,
-#'   t=1:length(x) + 50)
-#' makeBoutDt(x,test_dt)
-
 makeBoutDt <- function(x,sub_data){
   sdt <- copy(sub_data)
   sdt[,delta_t:= c(0,diff(sub_data[,t]))] 
@@ -238,7 +230,7 @@ NULL
 #'            sleepDAMAnnotation(.SD),
 #'            by=key(dam_data)]
 #'            
-#' @seealso \code{\link{queryDAMData}} to load data in and apply this function directly
+#' @seealso \code{\link{loadDAM2Data}} To load DAM2 data first/ apply this function to each animal.
 #' @export
 sleepDAMAnnotation <- function(
   data,
