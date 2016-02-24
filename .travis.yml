@@ -17,6 +17,9 @@ r_binary_packages:
 
 r_github_packages:
     - rstudio/rmarkdown
+
+after_success:
+- bash tools/make_tuto.sh
  
 #
 
