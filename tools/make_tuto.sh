@@ -11,6 +11,7 @@ git remote add origin $FULL_REPO
 git fetch
 git config user.name "rapporter-travis"
 git config user.email "travis"
+git checkout master
 #git checkout gh-pages
 
 # do useful work for gh-pages, for example convert README.md to index.html
