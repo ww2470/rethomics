@@ -26,3 +26,4 @@ git commit -m "test autocommit after $TRAVIS_COMMIT"
 echo "pushing to master"
 git push origin master
 echo "DONE"
+
