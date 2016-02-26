@@ -19,11 +19,7 @@ r_github_packages:
     - rstudio/rmarkdown
 
 after_success:
-    - pwd
-    - echo ~
-    - cd ..
-    - pwd
-    - ls
+    - export GH_TOKEN
     - bash tools/make_tuto.sh
  
 #
