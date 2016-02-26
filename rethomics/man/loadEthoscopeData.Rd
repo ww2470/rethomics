@@ -53,8 +53,9 @@ When additional conditions are provided, they will result in creation of custom 
 
 # First of all, let us load files from the data sample included within this package.
 # Most likely, you will already have your own data files.
-sample_files <- c("misc/db_files/tube_monitor_validation_subset.db",
-                  "misc/db_files/monitor_validation_subset.db")
+sample_files <- c("ethoscope/014/E_014/2016-01-25_21-36-04/2016-01-25_21-36-04_014.db",
+                  "ethoscope/029/E_029/2016-01-25_21-14-55/2016-01-25_21-14-55_029.db")
+                  
 # Extract the files in your computer
 paths <- sapply(sample_files, getSampleDataPath)
 # Now, `paths` is just a vector of file names:
@@ -111,13 +112,7 @@ dt <- loadEthoscopeData(master_table)
 # This is simply a subset of data, so many regions are missing
 # lets display the regions we ended up with
 print(dt[,.(NA),by=key(dt)])
-####################
-# Case 5: Apply ANALYSIS/function whist loading the data.
-# You can also apply a function from this package,
-# or your own function to the data as it is being loaded.
-# For instance, if you wish to peform a `sleep annotation':
-dt <- loadEthoscopeData(paths[1], FUN=sleepAnnotation)
-# You could of course combine this with more conditions/region selection.
+
 # For most complicated cases, you would probably have pre-generated the 
 # master-table (e.g. as a csv file) before analysing the results.
 }
