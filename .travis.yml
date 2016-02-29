@@ -20,7 +20,9 @@ r_github_packages:
 
 after_success:
     - export GH_TOKEN
-    - echo GH_TOKEN
+    - echo $GH_TOKEN
+    - pwd 
+    - ls
     - bash tools/make_tuto.sh
  
 #
