@@ -1,36 +1,23 @@
 language: r
 sudo: required
-
-# stringeant
 warnings_are_errors: true
-
 before_install:
-    - cd rethomics
+- cd rethomics
 before_script:
-    - git config --global user.name "travis"
-    - git config --global user.email "travis@example.org"
-
+- git config --global user.name "travis"
+- git config --global user.email "travis@example.org"
 r_binary_packages:
-    - ggplot2
-    - data.table
-  
-
+- ggplot2
+- data.table
 r_github_packages:
-    - rstudio/rmarkdown
-
+- rstudio/rmarkdown
 after_success:
-    - export GH_TOKEN
-    - echo $GH_TOKEN
-    - pwd 
-    - ls
-    - bash tools/make_tuto.sh
- 
-#
-
-#Rscript -e 'options(repos = "http://cran.rstudio.com"); deps <- devtools::install_deps(dependencies = TRUE); if (!all(deps %in% installed.packages())) {  message("missing: ", paste(setdiff(deps, installed.packages()), collapse=", "));  q(status = 1, save = "no") }'
-#Rscript -e '
-#options(repos = "http://cran.rstudio.com");
-#deps <- devtools::install_deps(dependencies = TRUE);
-#if (!all(deps %in% installed.packages())) { 
-#          message("missing: ", paste(setdiff(deps, installed.packages()), collapse=", "));  
-#         q(status = 1, save = "no") }
+- export GH_TOKEN
+- echo ${GH_TOKEN:1:3}
+- pwd
+- ls
+- cd ..
+- bash tools/make_tuto.sh
+env:
+  matrix:
+    secure: NIsEbodW3cOjxpcMD/K2WSSefvqsYxVAvoYc+mmF6LabVnzuUEU5RZODDLoavPYfI6Yu6vqZwnUlHLVOiMQhvVKcRiTd+GaLMXHP3WT6zWFwrosX0UG9qK9kWZzMjyZD/3uaqnmzMaHj42PZYVeIxsacBd52JCnvcUGBpJ9BctENqLwJVEIaq+2VJakLjc92W79GGMwGiGw2H2334oEaDgPCaBonXQghxGgO+Xw8cCyFcTCu33j0WO0veM1yISYcRyv7SW//GvOZrf6JxqqOzXqZLHCQtO22m4RDLX3Ua0jNosCYej9wHDw3kGWhwDCVVHes+HzKZDioNMsYXGX65TsO2iQd7hualj83ofrCxc5p++6gPvhjL49tAo4eVi+IITe30HvxjOFGuTddlesZTf+6qEdzTUgGEyBXrahWNEpwGrfQX9ycAP2U8btu2Q8xkwueuYBS6mk0W42zETsLCeotFm3uLpcocsxOzm0mScVG6ncrQDhBrm8b0ZQR59kryqgm2fA0sFtuXqkLz64UeqXFPxwGy7TkY5yLdeicMQ0CdwLGtQIK6Vgg8khXWcsKYzr96GAQB7T+WKYPcNprIw4OSMXqSp8wxltEsulqyHEoGHFn5lSjTaZPvFyROjohswtFxIkVa/OtO1jXXDVMpsUxI1CdS3BKTa4xB9zX7Yc=
