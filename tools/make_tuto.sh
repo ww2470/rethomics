@@ -2,6 +2,8 @@
 GH_REPO="@github.com/gilestrolab/rethomics.git"
 FULL_REPO="https://$GH_TOKEN$GH_REPO"
 
+cd
+
 mkdir out
 cd out
 
@@ -22,7 +24,7 @@ cat test
 
 # commit and push changes
 git add test
-git commit -m "test autocommit after $TRAVIS_COMMIT"
+git commit -m "test autocommit after $TRAVIS_COMMIT [ci skip]"
 echo "pushing to master"
 git push origin master
 echo "DONE"
