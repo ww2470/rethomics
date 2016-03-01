@@ -16,10 +16,7 @@ after_success:
     - cd ..
     # hides ghtoken from output
     - bash tutorial/make_tuto.sh 2>&1 | sed s/$GH_TOKEN/GH_TOKEN/g
-    - cp tutorial/ ~/tutorial -r 
-    - git checkout gh-page
-    - cp ~/tutorial/*.html tutorial/
-	
+
 
 env:
   matrix:

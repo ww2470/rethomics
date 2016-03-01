@@ -21,17 +21,30 @@ unzip ~/rethomic_tutorial_data.zip
 ls ~
 tree ~/rethomic_tutorial_data/
 
+cd tutorial 
+#the magic happens here!
+make all
+cd ..
+cp tutorial/ ~/tutorial -r 
+git checkout gh-page
+cp ~/tutorial/*.html tutorial/
 
-# do useful work for gh-pages, for example convert README.md to index.html
-#pandoc ../README.md -o index.html
-echo 'making file `test`'
-echo "$TRAVIS_COMMIT" > test
-cat test
-
-# commit and push changes
-git add test
+git add tutorial
 git commit -m "test autocommit after $TRAVIS_COMMIT [ci skip]"
-echo "pushing to master"
-git push origin master
-echo "DONE"
+git status
+	
+#~ # do useful work for gh-pages, for example convert README.md to index.html
+#~ #pandoc ../README.md -o index.html
+#~ echo 'making file `test`'
+#~ echo "$TRAVIS_COMMIT" > test
+#~ cat test
+
+
+
+#~ # commit and push changes
+#~ git add test
+#~ git commit -m "test autocommit after $TRAVIS_COMMIT [ci skip]"
+#~ echo "pushing to master"
+#~ git push origin master
+#~ echo "DONE"
 
