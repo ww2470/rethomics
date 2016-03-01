@@ -7,6 +7,7 @@ title: Rethomics Home
 
 <div class="row">
 
+	<div class="col-md-8 dag_div">
 		<p>
 			<i>Rethomics</i> is an <a href="https://www.r-project.org/">R</a> package designed to analyse
 			high throughput behavioural data.
@@ -14,7 +15,32 @@ title: Rethomics Home
             as well as TriKinetics' <a href="http://www.trikinetics.com/">Drosophila Activity Monitor</a>.
 		</p>
 		<p>
-			<a href="data_structure.html">Data structure</a>
+
+			It provides:
+	    </p>
+			<ul>
+			  <li> <b>Consistent data import</b> -- the data from diffent acquisition system will have the same internal structure.</li>
+			  <li> <b>Publication quality graph</b> -- Integrated with ggplot.</li>
+			  <li> A modern <b>web-interface</b> to control multiple devices effectively.</li>
+			  <li> High-throughput detailed post-hock analysis -- thanks to the <b>R package</b> <a href='https://github.com/gilestrolab/rethomics'>rethomics</a>.</li>
+			  <li> A <b>modular design</b> -- it is straightforward to modify both devices and software and create new experimental paradigms. </li>
+			  <li> A <b>high scalability</b> -- multiple, inexpensive, ethoscopes can run in parallel within the same platform</li>
+			</ul>
+
+		<p>
+			The aim of this website is to describe the platform, explain how it can be set-up and develop a community of users.
 		</p>
+	</div>
+
+	<div class="col-md-4 dag_div">
+		<h3>Blog posts</h3>
+		<ul>
+      {% for post in site.posts %}
+        <li>
+          <a href="{{ site.baseurl }}/{{ post.url }}">{{ post.title }}</a>
+        </li>
+      {% endfor %}
+	</div>
+>>>>>>> 63671a3a9bd2b41ea12bfbf6044b38ee39d9a340
 </div>
 
