@@ -13,8 +13,13 @@ git remote add origin $FULL_REPO
 git fetch
 git config user.name "rapporter-travis"
 git config user.email "travis"
-git checkout master
-#git checkout gh-pages
+git checkout gh-page
+
+echo "Getting data from $RETHOMIC_TUTO_DATA"
+wget $RETHOMIC_TUTO_DATA -O ~/rethomic_tutorial_data.zip
+unzip ~/rethomic_tutorial_data.zip
+ls ~
+tree ~/rethomic_tutorial_data/
 
 # do useful work for gh-pages, for example convert README.md to index.html
 #pandoc ../README.md -o index.html
