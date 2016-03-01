@@ -1,0 +1,73 @@
+---
+title: "Writing a queries"
+author: "Quentin Geissmann"
+date: "1 March 2016"
+output: html_document
+---
+
+
+Aims
+----- 
+
+In this tutorial, we will learn:
+
+* The concept of query
+* How some `rethomics` can use queries to load data
+
+Queries are just like lab-book entries
+----------------------------------------
+This part is a bit abstract, but things will make more sense after reading the next few tutorials -- about specific kinds of data.
+
+When doing an ethological experiment, you will most likely have multiple animals and several conditions/treatments/...
+When you load large amounts of behavioural data, you generally want to retain information about biological conditions.
+In other words, if you need a simple and flexible way to express the fact that you have applied a treatment to certain animals,
+and you have to retrieve this variable in your [data table](data_structure.html).
+This way, you can visualise and perform statistics in order to understand the effect of your treatments.
+
+A query is a simple table where:
+
+* each row is describes and animal
+* each column is a condition
+
+`rethomics` uses queries to locate and load data, so in most case queries will *compulsory columns* such as `region_id`, `path` to the result file...
+
+
+An imaginary example of query
+---------------------------------
+
+```{r, include=FALSE}
+library(rethomics)
+```
+
+As an example of simplistic query could, we could imagine an simple experiment with four animals that have a different sex and genotype:
+
+
+```{r}
+# our query is named q
+
+q <- data.table(
+   path="my_result_file.db",
+   region_id = 1:4,
+   sex=c("M","M","F","F"),
+   genotype=c("A","B","A","B")
+)
+q
+```
+
+Here, you can see each row defines, unambiguously, an animal. Note that sometimes, you may have redundant variables.
+In our example, the column `path` does not change because all data comes from the same result file.
+
+According th the specific acquisition platform, you would use a different way to load the data, but the end goal is
+always to use the query to map condition to time series.
+
+Say our hypothetical acquisition platform simply generated 10 time point per animal and observed a single variable
+(here random) named `x`, the resulting dt would look like:
+
+```{r}
+q[,
+    .(t=1:10,
+      x=round(runif(10),2)),
+    by=eval(colnames(q))]
+```
+
+

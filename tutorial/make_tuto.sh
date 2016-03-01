@@ -2,10 +2,9 @@
 GH_REPO="@github.com/gilestrolab/rethomics.git"
 FULL_REPO="https://$GH_TOKEN$GH_REPO"
 
-cd
 
-mkdir out
-cd out
+mkdir ~/rethomics_tuto
+cd ~/rethomics_tuto
 
 # setup REPO and checkout gh-pages branch
 git init
@@ -23,18 +22,19 @@ ls ~
 
 cd tutorial 
 #the magic happens here!
-make data_structure.html
+make clean && make TUTO_DATA_DIR=~/rethomic_tutorial_data all
 cd ..
 cp tutorial/ ~/tutorial -r 
 ls ~/tutorial
 echo 'checkout to ghpage'
-git checkout gh-page
+git checkout gh-pages
 cp ~/tutorial/*.html tutorial/
-
 
 git add tutorial
 git commit -m "test autocommit after $TRAVIS_COMMIT [ci skip]"
 git status
+git push origin gh-pages
+
 	
 #~ # do useful work for gh-pages, for example convert README.md to index.html
 #~ #pandoc ../README.md -o index.html
