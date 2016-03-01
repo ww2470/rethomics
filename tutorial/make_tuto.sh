@@ -19,15 +19,18 @@ echo "Getting data from $RETHOMIC_TUTO_DATA ..."
 wget $RETHOMICS_TUTO_DATA -O ~/rethomic_tutorial_data.zip
 unzip ~/rethomic_tutorial_data.zip
 ls ~
-tree ~/rethomic_tutorial_data/
+
 
 cd tutorial 
 #the magic happens here!
-make all
+make data_structure.html
 cd ..
 cp tutorial/ ~/tutorial -r 
+ls ~/tutorial
+echo 'checkout to ghpage'
 git checkout gh-page
 cp ~/tutorial/*.html tutorial/
+
 
 git add tutorial
 git commit -m "test autocommit after $TRAVIS_COMMIT [ci skip]"
