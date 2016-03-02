@@ -1,0 +1,76 @@
+---
+title: "Summarising data with Ethogram Plot"
+author: "Quentin Geissmann"
+date: "2 March 2016"
+output: html_document
+---
+
+
+Aims
+----- 
+
+In this tutorial, we will learn how to:
+
+* Summarise a behavioural variables per population
+* Use grouping and facets
+* Put error bars
+
+Going further than overview plots
+----------------------------------------
+In the previous tutorial, you learnt how to inspect data per animal.
+Often, you will want to complete that approach by computing averages of your variable of interest, per group and show statistical differences, at the *population* level.
+
+The function `ethogramPlot` works very much like overview plots, but it makes averages of the variable of interest between animals, and represents the variable of interest on the y axis.
+
+```{r, include=FALSE}
+library(rethomics)
+```
+
+We use the same data as before:
+
+```{r}
+data(sleep_sexual_dimorphism)
+dt <- sleep_sexual_dimorphism
+```
+
+```{r, plot=TRUE}
+pl <- ethogramPlot(moving, dt)
+pl
+```
+
+Now the y axis is a value between 1 and 0 which represents the proportion time spent moving for the whole population of animals.
+
+
+
+Grouping and facets
+--------------------------------
+This dataset contains males and females, so we want to compute one graph per sex:
+
+```{r, plot=TRUE}
+pl <- ethogramPlot(moving, dt, sex)
+pl
+```
+
+You an also use facets to separate groups:
+
+```{r, plot=TRUE}
+pl <- ethogramPlot(moving, dt, facet_var=   sex)
+pl
+```
+
+If you had two variables, say sex and genotype, you couls use a combinations of condition(grouping) and facets.
+
+Error bars
+--------------------------
+
+From this graphs, it is hard to get any idea of how significant the differences are.
+For this reason, we can compute error bars around the population average:
+
+```{r, plot=TRUE}
+pl <- ethogramPlot(moving, dt, sex, error_bar="sem")
+pl
+```
+
+Here, I chose "`sem"`, which is common, you can also use ``"sd"` and ``"boot_ci"` bootstrap confidence interval.
+The latter takes longer to compute, but is more rigorous/assumption free.
+

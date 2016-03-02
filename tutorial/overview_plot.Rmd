@@ -1,0 +1,93 @@
+---
+title: "Data inspection with Overview Plot"
+author: "Quentin Geissmann"
+date: "2 March 2016"
+output: html_document
+---
+
+
+Aims
+----- 
+
+In this tutorial, we will learn how to:
+
+* Inspect all your data in one go
+* Visualise difference between groups
+* Wrap data circadian data
+
+Why overview plots
+----------------------------------------
+After loading large amount of data, it is important to perform quality controls.
+Instead of immediately computing statistics for groups of animals, it is often sensible to "have a look" at the data, *at the individual level*.
+
+Per individual visualisation is often the only way to identify things that you did not anticipate (animals died, escaped...).
+This allows you to pinpoint experimental flaws and curate your data.
+It also is important to have an idea of the inter-animal variability of certain behaviour.
+
+In `rethomics` the `overviewPlot` function will serve this very purpose.
+The idea is to focus our attention on *one variable of interest*, and represent it, over time, for each animal.
+The variable of interest is averaged over a specific time window. Each row of the graph represents one animal, and each column, a time window.
+
+This should make more sense with an example:
+
+
+
+```{r, include=FALSE}
+library(rethomics)
+```
+
+We load data from the package:
+
+```{r}
+data(sleep_sexual_dimorphism)
+dt <- sleep_sexual_dimorphism
+#lets have a look at the data
+print(colnames(dt))
+# this shows the first observation for each animal
+print(unique(dt))
+```
+
+As you can see, there are several recorded variables.
+Let us take a look at the variable called `moving`. This is a binary (logical) variable, which can be `TRUE` or `FALSE`.
+Note that, internally, `TRUE` is `1` and `FALSE`, `0`, so if we take the average of a logical series (vector), we get a proportion (between 0 and 1) of `TRUE`.
+
+
+```{r, plot=TRUE, fig.width = 15, fig.height = 15}
+pl <- overviewPlot(moving, dt)
+pl
+```
+
+As you can see, the y axis has sorted individuals by `experiment_id` and `region_id`.
+Their fullname is writen so that you can easily identify them.
+The colour axis, from dark blue to clear blue represents how much an animal is moving at a given time (the proportion of time spent moving in the 30min time window).
+
+
+
+Sorting data per group
+--------------------------------
+
+In some cases, you want to sort data by biological groups as well (e.g. date of the experiment, condition, ...)
+Here, for instance, we want to sort rows per `sex` first:
+
+```{r, plot=TRUE, fig.width = 15, fig.height = 15}
+pl <- overviewPlot(moving, dt, sex)
+pl
+```
+
+This is helpful as if shows difference between groups whilst keeping an overview of the variability within group.
+
+Wrapping circadian data
+-----------------------------------
+
+In some instances we would be interested to average data at the same ZT. That is you want to pull together data from several day, at the same hour to extract the daily overall pattern.
+To do that you can use the option `time_wrap`, and give the value of one day in seconds (`days(1)`).
+The reason you have to specify the length of a day is that, in some conditions, you will run experiments on artificial day length that are different from 24h.
+
+```{r, plot=TRUE, fig.width = 15, fig.height = 15}
+pl <- overviewPlot(moving, dt, sex, time_wrap=days(1))
+pl
+```
+
+It is important to understand that you can perform overview plot on any quantitative or logical variable in your table.
+For instance, try it with the `asleep` variable.
+More options, such as changing the lenght of the average time window, are available, so feel free to read the documentation of this function.

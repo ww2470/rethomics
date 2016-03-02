@@ -1,0 +1,103 @@
+---
+title: "Annotating rethomics plots"
+author: "Quentin Geissmann"
+date: "2 March 2016"
+output: html_document
+---
+
+
+Aims
+----- 
+
+In this tutorial, we will learn how to:
+
+* use `ggplot` to transform your plot
+* Put LD annotations on your graphs
+
+
+Just ggplot
+----------------------------------------
+[ggplot](http://ggplot2.org/) is an extremely powerful visualisation tool for `R`.
+It is very well documented and widely used, which is why `rethomics` generates `ggplot` based graphs.
+At this stage, I would recommend to read a bnit about `ggplot`, of follow a [video tutorial](https://www.youtube.com/watch?v=RHu5vgBZ1yQ) by it's author.
+
+
+```{r, include=FALSE}
+library(rethomics)
+```
+
+
+Before we start on our own plot, I wanted to remind you a bit how ggplot works with some *completely unrelated data*:
+
+```{r}
+data(iris)
+print(head(iris))
+# we create a ggplot object that works on iris
+
+pl <- ggplot(iris, aes(Petal.Length, Petal.Width, colour=Species)) + geom_point()
+pl
+```
+
+Now the key point I want to show is that you can modify a plot (`pl`) after is is made:
+
+```{r}
+data(iris)
+print(head(iris))
+# we create a ggplot object that works on iris
+
+pl2 <- pl + labs(title="my fancy plot")
+#this one has a title
+pl2
+
+# you can also annotate/draw/...
+pl3 <- pl2 + geom_vline(xintercept=4)
+pl3
+```
+
+
+
+Let us use the same plot as in the `ethogramPlot` tutorial and call it `pl`.
+
+```{r, plot=TRUE}
+data(sleep_sexual_dimorphism)
+dt <- sleep_sexual_dimorphism
+pl <- ethogramPlot(moving, dt, sex, error_bar="sem")
+pl
+```
+
+Now our plot is just a ggplot object, so you can also annotate it:
+
+Let us start by putting more meaningful axis labels/title
+```{r}
+pl <- pl + labs(  title="Activity pattern\nfor males and females",
+            x="time (day)", y="proportion of time spent moving" )
+pl
+```
+
+LD annotations
+------------------------------
+
+Another common thing you may want to do is add LD (light/dark phase) annotations:
+
+
+```{r}
+pl <- makeLDAnnotation(pl)
+pl
+```
+
+
+A last thing that could be of interest, is the use of text, arrows, segments on graphs.
+For instance, imagine that you wanted to show, to the readers of the figure, that you applied a treatment at a given time,
+say at day 2:
+
+```{r}
+pl +
+    # here, we add a vertical arrow
+    annotate("segment", x=2, y=1.1, xend=2, yend=0.9, arrow = arrow()) +
+    # then some text
+    annotate("text", label = "my treatment\nwas here", x = 2, y = 1.2, size = 5, colour = "red") +
+    # we can also change the scale
+    scale_y_continuous(limits=c(-0.1,1.3))
+```
+
+This is just a quick overview, but Many more annotations and ways to modify plots can be found in `ggplot`.
