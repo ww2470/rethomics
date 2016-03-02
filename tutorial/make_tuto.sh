@@ -37,21 +37,4 @@ cp ~/tutorial/*.html tutorial/
 git add tutorial
 git commit -m "test autocommit after $TRAVIS_COMMIT [ci skip]"
 git status
-git push origin gh-pages
-
-	
-#~ # do useful work for gh-pages, for example convert README.md to index.html
-#~ #pandoc ../README.md -o index.html
-#~ echo 'making file `test`'
-#~ echo "$TRAVIS_COMMIT" > test
-#~ cat test
-
-
-
-#~ # commit and push changes
-#~ git add test
-#~ git commit -m "test autocommit after $TRAVIS_COMMIT [ci skip]"
-#~ echo "pushing to master"
-#~ git push origin master
-#~ echo "DONE"
-
+git push origin gh-pages        
