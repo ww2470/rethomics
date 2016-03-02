@@ -1,6 +1,6 @@
 name: Ethoscope
-markdown: redcarpet
 highlighter: rouge
 safe: true
 lsi: false
 baseurl: /rethomics
+
