@@ -47,7 +47,7 @@ TUTO_DATA_DIR <- "/the/path/to/rethomics_tutorial_data"
 result_dir <- paste(TUTO_DATA_DIR,"ethoscope_results", sep="/")
 # we check the folder exists
 if(!dir.exists(result_dir))
-    stop("No such directory")
+    stop(sprintf("No such directory: %s", result_dir))
 ```
 
 By using `buildEthoscopeQuery` without any query, we can already list all the experiments:
