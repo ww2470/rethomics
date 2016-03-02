@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e 
 GH_REPO="@github.com/gilestrolab/rethomics.git"
 FULL_REPO="https://$GH_TOKEN$GH_REPO"
 
