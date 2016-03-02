@@ -1,5 +1,5 @@
 ---
-title: "Writing a queries"
+title: "Writing queries"
 author: "Quentin Geissmann"
 date: "1 March 2016"
 output: html_document

@@ -195,7 +195,7 @@ Conventions
 
 Time is **always** named `t`, and expressed in **seconds**.
 The time is always compared to a reference point. The reference time can be either the start of the experiment,
-or a time in the first day of the experiment (see tutorial on loading the data) TODO ref.
+or a time in the first day of the experiment (see tutorial on [loading the data](ethoscope_data.html))
 
 Distance units such as `x`, `y`, `w` and `h` variables are coordinates from the **top-left** of the region in which the animal was recorded.
 They are expressed as a **fraction of the region width**, *not* in pixels or cm.

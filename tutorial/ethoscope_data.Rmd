@@ -1,0 +1,35 @@
+---
+title: "Writing queries"
+author: "Quentin Geissmann"
+date: "2 March 2016"
+output: html_document
+---
+
+
+Aims
+----- 
+
+In this tutorial, we will learn:
+
+* How to load data from the ethoscope platform.
+* How to use reference time to align experimental times
+* How to apply functions on data as they are loaded
+* Ways we can speed-up data import
+
+Ethoscope platform
+----------------------------------------
+Like `rethomics`, the [ethoscope platform](http://gilestrolab.github.io/ethoscope/) is a tool
+developed in the [Gilestro lab](http://lab.gilest.ro/), so they should integrate very well.
+
+When working with the ethoscope platform, you will most likely end up with experiments with several devices at different times.
+The platform saves one data file per experiment (*i.e.* one machine at one time) in an individual `.db` file (an sqlite3 db).
+The files are all organised in a canonical hierarchy:
+
+```
+/machine-id/machine-name/datetime/datetime_machine-id.db
+```
+
+```{r,eval=FALSE}
+TUTO_DATA_DIR <- "DEFINE ME!"
+```
+

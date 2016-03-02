@@ -1,0 +1,64 @@
+---
+title: "Getting the sample data"
+author: "Quentin Geissmann"
+date: "2 March 2016"
+output: html_document
+---
+
+
+Aims
+----- 
+
+In this tutorial, we will:
+
+* Download the sample data
+* Understand its structure
+
+Sample data
+----------------------------------------
+In order to provide real life example, I have put some data online to play with in the next part of the tutorial.
+You can find it [here](https://imperialcollegelondon.box.com/rethomics-tutorial-data).
+
+When you extract the zip archive, you will see several data folders.
+Folders with the suffix `_query` are simply examples of CSV files we will use later to load data.
+Folders with the suffix `_results` are results from different acquisition platforms (*e.g.* `ethoscope_results`).
+
+The result folders are organised the same way they are expected to be organised by the acquisition platform.
+For instance, ethoscope results look like:
+
+```
+ethoscope_results/
+├── 011aeeee10184bb39b0754e75cef7900/
+│   └── ETHOSCOPE_011/
+│       ├── 2016-01-08_16-04-55/
+│       │   └── 2016-01-08_16-04-55_011aeeee10184bb39b0754e75cef7900.db
+│       └── 2016-01-15_18-15-03/
+│           └── 2016-01-15_18-15-03_011aeeee10184bb39b0754e75cef7900.db
+└── 012aeeee10184bb39b0754e75cef7900/
+    └── ETHOSCOPE_012/
+        └── 2016-01-08_16-05-00/
+            └── 2016-01-08_16-05-00_012aeeee10184bb39b0754e75cef7900.db
+```
+
+
+
+
+At this point, regardless of the structure, which is imposed by the ethoscope platform, what matters is that this data looks
+exactly like data you could have acquired yourself, and is stored in the same manner.
+
+Storing the data in your computer
+-----------------------------------
+For now, you can simply extract the zip archive and store it on your hard drive.
+**We will use the path to the sample result later in the tutorial, so do write it down somewhere**.
+By convention, we will store this path in a variable named `TUTO_DATA_DIR`.
+
+So before starting some tutorials, you will need to define it. For instance,in a windows computer, it could be something like:
+
+```{r, eval=FALSE}
+TUTO_DATA_DIR <- "C:/Users/quentin/Desktop/rethomics_tutorial_data/"
+```
+
+Obviously, *do change that according to where the data is saved on your system*
+
+
+
