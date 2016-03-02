@@ -29,10 +29,15 @@ cd tutorial
 make clean && make TUTO_DATA_DIR=~/rethomic_tutorial_data all
 cd ..
 cp tutorial/ ~/tutorial -r 
-ls ~/tutorial
+
+make rethomics.pdf
+cp rethomics.pdf ~/tutorial/
+
+
 echo 'checkout to ghpage'
 git checkout gh-pages
 cp ~/tutorial/*.html tutorial/
+cp ~/tutorial/rethomics.pdf doc/
 
 git add tutorial
 git commit -m "test autocommit after $TRAVIS_COMMIT [ci skip]"
