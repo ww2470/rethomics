@@ -31,6 +31,7 @@ make clean && make TUTO_DATA_DIR=~/rethomic_tutorial_data all
 cd ..
 cp tutorial/ ~/tutorial -r 
 
+rm -f rethomics.pdf
 make rethomics.pdf
 cp rethomics.pdf ~/tutorial/
 
@@ -41,6 +42,7 @@ cp ~/tutorial/*.html tutorial/
 cp ~/tutorial/rethomics.pdf doc/
 
 git add tutorial
+git add doc
 git commit -m "test autocommit after $TRAVIS_COMMIT [ci skip]"
 git status
 git push origin gh-pages        

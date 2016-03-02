@@ -19,9 +19,13 @@ vignettes/*.pdf
 *-Ex.R
 
 rethomics/*.pdf
+*.pdf
+*.html
+
 rethomics/.RData
 *.Rcheck/
 *.tar.gz
 .Rproj.user
 
 .idea/
+
