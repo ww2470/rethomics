@@ -18,6 +18,7 @@ git checkout master
 echo "Getting data from $RETHOMIC_TUTO_DATA ..."
 wget $RETHOMICS_TUTO_DATA -O ~/rethomics_tutorial_data.zip -q
 unzip ~/rethomics_tutorial_data.zip
+ls
 mv rethomics_tutorial_data ~
 ls ~
 
