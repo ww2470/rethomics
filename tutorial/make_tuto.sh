@@ -16,8 +16,9 @@ git config user.email "travis"
 git checkout master
 
 echo "Getting data from $RETHOMIC_TUTO_DATA ..."
-wget $RETHOMICS_TUTO_DATA -O ~/rethomic_tutorial_data.zip -q
-unzip ~/rethomic_tutorial_data.zip
+wget $RETHOMICS_TUTO_DATA -O ~/rethomics_tutorial_data.zip -q
+unzip ~/rethomics_tutorial_data.zip
+mv rethomics_tutorial_data ~
 ls ~
 
 R -e "install.packages('rmarkdown', repos='http://cran.us.r-project.org')"
@@ -27,7 +28,7 @@ R -e "library(devtools); install_github('gilestrolab/rethomics',subdir='rethomic
 
 cd tutorial 
 #the magic happens here!
-make clean && make TUTO_DATA_DIR=~/rethomic_tutorial_data all
+make clean && make TUTO_DATA_DIR=~/rethomics_tutorial_data all
 cd ..
 cp tutorial/ ~/tutorial -r 
 
