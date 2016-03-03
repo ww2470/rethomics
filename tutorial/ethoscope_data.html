@@ -130,7 +130,189 @@ $(document).ready(function () {
 <p>Like <code>rethomics</code>, the <a href="http://gilestrolab.github.io/ethoscope/">ethoscope platform</a> is a tool developed in the <a href="http://lab.gilest.ro/">Gilestro lab</a>, so they should integrate very well.</p>
 <p>When working with the ethoscope platform, you will most likely end up with experiments with several devices at different times. The platform saves one data file per experiment (<em>i.e.</em> one machine at one time) in an individual <code>.db</code> file (an sqlite3 db). The files are all organised in a canonical hierarchy:</p>
 <pre><code>/machine-id/machine-name/datetime/datetime_machine-id.db</code></pre>
-<pre class="r"><code>TUTO_DATA_DIR &lt;- &quot;DEFINE ME!&quot;</code></pre>
+</div>
+<div id="listing-experiments" class="section level2">
+<h2>Listing experiments</h2>
+<pre class="r"><code># here, you need to write the path to the tutorial folder on your system
+TUTO_DATA_DIR &lt;- &quot;/the/path/to/rethomics_tutorial_data&quot;</code></pre>
+<pre class="r"><code># we build the path to ethoscope results
+# Note that you could just as well write the complete path yourself here.
+result_dir &lt;- paste(TUTO_DATA_DIR,&quot;ethoscope_results&quot;, sep=&quot;/&quot;)
+# we check the folder exists
+if(!dir.exists(result_dir))
+    stop(sprintf(&quot;No such directory: %s&quot;, result_dir))</code></pre>
+<p>By using <code>buildEthoscopeQuery</code> without any query, we can already list all the experiments:</p>
+<pre class="r"><code>exp_list &lt;- buildEthoscopeQuery(result_dir)
+print(exp_list)</code></pre>
+<pre><code>##                          machine_id  machine_name                date
+## 1: 011aeeee10184bb39b0754e75cef7900 ETHOSCOPE_011 2016-01-08 16:04:55
+## 2: 012aeeee10184bb39b0754e75cef7900 ETHOSCOPE_012 2016-01-08 16:05:00
+## 3: 011aeeee10184bb39b0754e75cef7900 ETHOSCOPE_011 2016-01-15 18:15:03
+##                                                       file
+## 1: 2016-01-08_16-04-55_011aeeee10184bb39b0754e75cef7900.db
+## 2: 2016-01-08_16-05-00_012aeeee10184bb39b0754e75cef7900.db
+## 3: 2016-01-15_18-15-03_011aeeee10184bb39b0754e75cef7900.db
+##                                                                                                                                                                                 path
+## 1: /home/travis/rethomics_tutorial_data/ethoscope_results/011aeeee10184bb39b0754e75cef7900/ETHOSCOPE_011/2016-01-08_16-04-55/2016-01-08_16-04-55_011aeeee10184bb39b0754e75cef7900.db
+## 2: /home/travis/rethomics_tutorial_data/ethoscope_results/012aeeee10184bb39b0754e75cef7900/ETHOSCOPE_012/2016-01-08_16-05-00/2016-01-08_16-05-00_012aeeee10184bb39b0754e75cef7900.db
+## 3: /home/travis/rethomics_tutorial_data/ethoscope_results/011aeeee10184bb39b0754e75cef7900/ETHOSCOPE_011/2016-01-15_18-15-03/2016-01-15_18-15-03_011aeeee10184bb39b0754e75cef7900.db</code></pre>
+<p>This tables shows three experiments(rows) and identify them by machine id, machine name, date and time, and the name of the file that stores the data. You can see that it also contains the complete path to each file. This is likely to be different in your system.</p>
+<p>Note that <code>exp_list</code> is a data table, so you can easly subset it:</p>
+<pre class="r"><code># experiments from machine 11 only
+print(exp_list[machine_name == &quot;ETHOSCOPE_011&quot;])</code></pre>
+<pre><code>##                          machine_id  machine_name                date
+## 1: 011aeeee10184bb39b0754e75cef7900 ETHOSCOPE_011 2016-01-08 16:04:55
+## 2: 011aeeee10184bb39b0754e75cef7900 ETHOSCOPE_011 2016-01-15 18:15:03
+##                                                       file
+## 1: 2016-01-08_16-04-55_011aeeee10184bb39b0754e75cef7900.db
+## 2: 2016-01-15_18-15-03_011aeeee10184bb39b0754e75cef7900.db
+##                                                                                                                                                                                 path
+## 1: /home/travis/rethomics_tutorial_data/ethoscope_results/011aeeee10184bb39b0754e75cef7900/ETHOSCOPE_011/2016-01-08_16-04-55/2016-01-08_16-04-55_011aeeee10184bb39b0754e75cef7900.db
+## 2: /home/travis/rethomics_tutorial_data/ethoscope_results/011aeeee10184bb39b0754e75cef7900/ETHOSCOPE_011/2016-01-15_18-15-03/2016-01-15_18-15-03_011aeeee10184bb39b0754e75cef7900.db</code></pre>
+<pre class="r"><code># experiments after 10 Jan 2016
+print(exp_list[date &gt; &quot;2016-01-10&quot;])</code></pre>
+<pre><code>##                          machine_id  machine_name                date
+## 1: 011aeeee10184bb39b0754e75cef7900 ETHOSCOPE_011 2016-01-15 18:15:03
+##                                                       file
+## 1: 2016-01-15_18-15-03_011aeeee10184bb39b0754e75cef7900.db
+##                                                                                                                                                                                 path
+## 1: /home/travis/rethomics_tutorial_data/ethoscope_results/011aeeee10184bb39b0754e75cef7900/ETHOSCOPE_011/2016-01-15_18-15-03/2016-01-15_18-15-03_011aeeee10184bb39b0754e75cef7900.db</code></pre>
+</div>
+<div id="loading-data-from-a-query" class="section level2">
+<h2>Loading data from a query</h2>
+<p>As <a href="queries.html">we have already discussed</a>, you are expected to generate a query that describe the experimental conditions for each animal.</p>
+<p>In order to load ethoscope data (via <code>loadEthoscopeData</code>), we need a query that contains:</p>
+<ul>
+<li>the <strong>path</strong> to the result file</li>
+<li>the <strong>region id</strong> so we can find any given animal within this experiment</li>
+<li>optionally, other variables like treatment, genotype,… that you can define yourself.</li>
+</ul>
+<p>However, it is not great to write by hand a query with the path because:</p>
+<ul>
+<li>it is very eassy to make mistakes</li>
+<li>it involves you to go trough the result files every time</li>
+<li>the path may be different for your collaborator with whom you want to share data and queries</li>
+</ul>
+<p>The alternative is to write a primary query that contains:</p>
+<ul>
+<li>the <em>machine name</em> (<code>machine_name</code>)</li>
+<li>the <em>date</em> (<code>date</code>)</li>
+<li>the <em>region id</em> (<code>region_id</code>)</li>
+</ul>
+<p>Then you can build a secondary query using <code>buildEthoscopeQuery</code> that will automatically find your experiment in the result files.</p>
+<p>Let’s play with an example from the <code>sleep_query.csv</code> query.</p>
+<pre class="r"><code>query_file &lt;- paste(TUTO_DATA_DIR,&quot;ethoscope_queries&quot;,&quot;sleep_query.csv&quot;,sep=&quot;/&quot;)
+# one can use fread to load the query:
+primary_query &lt;- fread(query_file)
+print(primary_query)</code></pre>
+<pre><code>##      machine_name       date region_id condition
+##  1: ETHOSCOPE_011 2016-01-08         2         B
+##  2: ETHOSCOPE_011 2016-01-08         4         A
+##  3: ETHOSCOPE_011 2016-01-08         6         A
+##  4: ETHOSCOPE_011 2016-01-08         8         A
+##  5: ETHOSCOPE_011 2016-01-08        10         A
+##  6: ETHOSCOPE_011 2016-01-08        11         B
+##  7: ETHOSCOPE_011 2016-01-08        13         A
+##  8: ETHOSCOPE_011 2016-01-08        15         A
+##  9: ETHOSCOPE_011 2016-01-08        17         A
+## 10: ETHOSCOPE_011 2016-01-08        19         B
+## 11: ETHOSCOPE_012 2016-01-08         2         B
+## 12: ETHOSCOPE_012 2016-01-08         4         B
+## 13: ETHOSCOPE_012 2016-01-08         6         B
+## 14: ETHOSCOPE_012 2016-01-08         8         B
+## 15: ETHOSCOPE_012 2016-01-08        10         A
+## 16: ETHOSCOPE_012 2016-01-08        11         B
+## 17: ETHOSCOPE_012 2016-01-08        13         A
+## 18: ETHOSCOPE_012 2016-01-08        15         A
+## 19: ETHOSCOPE_012 2016-01-08        17         B
+## 20: ETHOSCOPE_012 2016-01-08        19         B
+## 21: ETHOSCOPE_011 2016-01-15         1         A
+## 22: ETHOSCOPE_011 2016-01-15         2         A
+## 23: ETHOSCOPE_011 2016-01-15         3         A
+## 24: ETHOSCOPE_011 2016-01-15         4         A
+## 25: ETHOSCOPE_011 2016-01-15         5         A
+## 26: ETHOSCOPE_011 2016-01-15         6         B
+## 27: ETHOSCOPE_011 2016-01-15         7         B
+## 28: ETHOSCOPE_011 2016-01-15         8         A
+## 29: ETHOSCOPE_011 2016-01-15         9         A
+## 30: ETHOSCOPE_011 2016-01-15        10         B
+## 31: ETHOSCOPE_011 2016-01-15        11         A
+## 32: ETHOSCOPE_011 2016-01-15        12         B
+## 33: ETHOSCOPE_011 2016-01-15        13         A
+## 34: ETHOSCOPE_011 2016-01-15        14         B
+## 35: ETHOSCOPE_011 2016-01-15        15         A
+## 36: ETHOSCOPE_011 2016-01-15        16         B
+## 37: ETHOSCOPE_011 2016-01-15        17         B
+## 38: ETHOSCOPE_011 2016-01-15        18         A
+## 39: ETHOSCOPE_011 2016-01-15        19         A
+## 40: ETHOSCOPE_011 2016-01-15        20         B
+##      machine_name       date region_id condition</code></pre>
+<p>Here, we have 40 animals from three experiments (in two different days and two different machines)</p>
+<p>The next step is generate the final query:</p>
+<pre class="r"><code># we need to tell R where to find the files (i.e. in result_dir)
+final_query &lt;- buildEthoscopeQuery(result_dir, primary_query)
+# let us look at the columns in the final query
+print(colnames(final_query))</code></pre>
+<pre><code>## [1] &quot;machine_id&quot;   &quot;machine_name&quot; &quot;date&quot;         &quot;file&quot;        
+## [5] &quot;path&quot;         &quot;region_id&quot;    &quot;condition&quot;</code></pre>
+<p>You can see that the final query now has columns for <code>path</code>, <code>machine_id</code> and <code>file</code>. Therefore, we are ready to load data.</p>
+<p>The crucial function to load data is <code>loadEthoscopeData</code>. We will not go into details, but you can type <code>?loadEthoscopeData</code> to see all the options.</p>
+<p>The most basic way to load data is simply (this could take a while, so go and make a cup of tea):</p>
+<pre class="r"><code>dt &lt;- loadEthoscopeData(final_query, verbose=F)
+# Here, I turned off verbose so that we don't fill the tutorial with progress reports
+# So please use instead:
+# dt &lt;- loadEthoscopeData(query)</code></pre>
+<p>Now, all the data for this query is in <code>dt</code>.</p>
+<pre class="r"><code># you can print information about the data:
+colnames(dt)</code></pre>
+<pre><code>##  [1] &quot;machine_id&quot;         &quot;machine_name&quot;       &quot;date&quot;              
+##  [4] &quot;file&quot;               &quot;region_id&quot;          &quot;condition&quot;         
+##  [7] &quot;experiment_id&quot;      &quot;t&quot;                  &quot;x&quot;                 
+## [10] &quot;y&quot;                  &quot;w&quot;                  &quot;h&quot;                 
+## [13] &quot;phi&quot;                &quot;xy_dist_log10x1000&quot; &quot;has_interacted&quot;</code></pre>
+<pre class="r"><code>nrow(dt)</code></pre>
+<pre><code>## [1] 11422156</code></pre>
+<pre class="r"><code>key(dt)</code></pre>
+<pre><code>## [1] &quot;machine_id&quot;    &quot;machine_name&quot;  &quot;date&quot;          &quot;file&quot;         
+## [5] &quot;region_id&quot;     &quot;condition&quot;     &quot;experiment_id&quot;</code></pre>
+<p>This tells us which are the variables (columns), the number or observations (number of rows) and what is the key, which identifies individual animals.</p>
+<p>You will notice that their are several behavioural variables that are generated by the tracking algorithm such as <code>x</code>,<code>y</code>,<code>w</code>,<code>h</code> and others.</p>
+</div>
+<div id="the-reference-time-issue" class="section level2">
+<h2>The reference time issue</h2>
+<p><strong>Ethoscope data uses GMT</strong> instead of local time. This means that the time will not change according to timezones or season. This may seem a bit constitutive at first, but it avoids a lot of bugs (e.g. when the time changes between winter and summer time during an experiment, or when sharing data with collaborators from another time zone).</p>
+<p>At the moment, the time variable, <code>t</code> is expressed in second since the start of the experiments. This may make sense in many cases (for instance, in short experiments where we want to see what happens after one hour in the arena). However, for many long experiments, we want to align time to a circadian reference. In our case, experiments done on the 2016-01-08th started around 16:05:00 GMT, whilst the one on the 2016-01-15th started around 18:15:00 GMT.</p>
+<p>The option <code>reference_hour</code> in <code>loadEthoscopeData</code> allows you to force t0 to be at a given time of the day. By convention, we pick ZT0 for the reference hour. That means that the time will now be expressed relatively to the start of the first biological day of each experiment. For example, in our lab, light turns on at 09:00:00 GMT, so we can use <code>9.00 as a reference hour</code>.</p>
+<pre class="r"><code>dt &lt;- loadEthoscopeData(final_query, reference_hour=9.0, verbose=F)</code></pre>
+</div>
+<div id="preprocessing-data-on-the-fly" class="section level2">
+<h2>Preprocessing data on the fly</h2>
+<p>As you can see, <code>dt</code> has a huge number of observations, which take a lot of space in memory. In many instances, you already know what type of analysis you are going to perform, and you need to summarise/ downsample time series.</p>
+<p>For example, if you perform movement and sleep scoring in fruit fly, you will score every 10s of behaviour. Therefore, you should have one observation every10s instead of around every 0.5s.</p>
+<pre class="r"><code>dt &lt;- loadEthoscopeData(final_query, reference_hour=9.0, FUN=sleepAnnotation, verbose=F)
+print(colnames(dt))</code></pre>
+<pre><code>##  [1] &quot;machine_id&quot;         &quot;machine_name&quot;       &quot;date&quot;              
+##  [4] &quot;file&quot;               &quot;region_id&quot;          &quot;condition&quot;         
+##  [7] &quot;experiment_id&quot;      &quot;t&quot;                  &quot;max_velocity&quot;      
+## [10] &quot;moving&quot;             &quot;x&quot;                  &quot;y&quot;                 
+## [13] &quot;w&quot;                  &quot;h&quot;                  &quot;phi&quot;               
+## [16] &quot;xy_dist_log10x1000&quot; &quot;has_interacted&quot;     &quot;is_interpolated&quot;   
+## [19] &quot;asleep&quot;</code></pre>
+<pre class="r"><code>print(nrow(dt))</code></pre>
+<pre><code>## [1] 923233</code></pre>
+<p>This means <code>FUN</code> is a function (you can define your own) that will be applied on the data from each animal immediately after the data is loaded.</p>
+</div>
+<div id="speeding-up-data-import" class="section level2">
+<h2>Speeding up data import</h2>
+<p>There are different way to read data faster.</p>
+<p>The first one is to select only columns that you will (or your preprocessing function) need from the data. Here, for instance, we keep the <code>x</code> position and the variable used by <code>sleepAnnotation</code> to quantify motion(<code>xy_dist_log10x1000</code>).</p>
+<pre class="r"><code>dt &lt;- loadEthoscopeData(final_query,
+                        reference_hour=9.0,
+                        columns=c(&quot;xy_dist_log10x1000&quot;,&quot;x&quot;),
+                        FUN=sleepAnnotation,
+                        verbose=F)</code></pre>
+<p>Another way to speed up data reading is to use several cores in parallel. This can be achieved using <code>ncores=N</code>, where N is the number of parallel processes. Note that this will result in a <em>larger memory footprint</em>, but is it convenient when you have loads of RAM and little time.</p>
+<p>For completeness, I should also mention that there is a way to preload databases files and save them as native R objects, but this is a bit technical, so I will not go into detail. If you are interested, you can find information in <code>?cacheEthoscopeData</code>.</p>
 </div>
 
 
