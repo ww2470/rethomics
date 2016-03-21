@@ -282,14 +282,23 @@ buildEthoscopeQuery <- function(result_dir, query=NULL, use_cached=FALSE){
   valid_files <- sapply(fields,length) == 4
   
   all_db_files <- all_db_files[valid_files]
-  fields <- fields[valid_files]
   
+  
+  invalids = fields[!valid_files]
+  if(length(invalids) > 0){
+    warning("There are some invalid files:")
+    
+    for(i in 1:length(invalids)){
+      warning(paste(invalids[[i]]),sep='/')
+    }
+  }
+  fields <- fields[valid_files]
+  files_info <- do.call("rbind",fields)
   
   if(length(all_db_files) == 0){
     stop(sprintf("No .db files detected in the directory '%s'. Ensure it is not empty.",result_dir))
   }
-  
-  files_info <- do.call("rbind",fields[valid_files])
+  files_info <- do.call("rbind",fields)
   files_info <- as.data.table(files_info)
   setnames(files_info, c("machine_id", "machine_name", "date","file"))
 
