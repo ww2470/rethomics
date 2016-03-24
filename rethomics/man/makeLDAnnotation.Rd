@@ -5,7 +5,7 @@
 \title{Put white and black bars under a plot to show Dark and Light phases.}
 \usage{
 makeLDAnnotation(pl, time_conversion_unit = days, period = hours(24),
-  offset = 0, size = 0.02)
+  offset = 0, size = 0.02, colours = c("white", "black"))
 }
 \arguments{
 \item{pl}{A \code{ggplot} object to be annotated.}
@@ -14,9 +14,11 @@ makeLDAnnotation(pl, time_conversion_unit = days, period = hours(24),
 
 \item{period}{The period, in seconds}
 
-\item{offset}{A number, lower than the \code{period} to shift the bar left or right}
+\item{offset}{A number, between 0 and the \code{period} to shift the bars to the right}
 
 \item{size}{The hight of the bar. It is expressed in percent of the graph height}
+
+\item{colours}{A vector of two colours to be used for annotation (typically, white and black)}
 }
 \value{
 A \code{ggplot} object that can be plotted directly, or modified.
@@ -33,6 +35,8 @@ p <- makeLDAnnotation(p)
 print(p)
 p <- ethogramPlot(asleep,my_data,condition=sex,error_bar="sem")
 p <- makeLDAnnotation(p)
+print(p)
+p <- makeLDAnnotation(p, colours=c("grey", "black"))
 print(p)
 }
 
