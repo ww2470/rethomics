@@ -264,12 +264,15 @@ buildEthoscopeQuery <- function(result_dir, query=NULL, use_cached=FALSE){
   checkDirExists(result_dir)
   key <- c("date","machine_name")
   use_date <- F
+  hour_format <- F
   if(!is.null(query)){
     q <- copy(as.data.table(query))
     checkColumns(key, colnames(q))
     query_date <- q[, dateStrToPosix(date, tz="GMT")]
     q[, date := query_date]
     use_date <- T
+    #if the date contains un underscore that it means we want to use the hour format
+    hour_format <- grepl('_', q[1,date])
     setkeyv(q,key)
   }
   
@@ -301,11 +304,9 @@ buildEthoscopeQuery <- function(result_dir, query=NULL, use_cached=FALSE){
   files_info <- do.call("rbind",fields)
   files_info <- as.data.table(files_info)
   setnames(files_info, c("machine_id", "machine_name", "date","file"))
-
-  if(use_date)
+  
+  if(use_date & !hour_format)
     files_info[,date:=as.POSIXct(date, "%Y-%m-%d", tz="GMT")]
-  else
-    files_info[,date:=as.POSIXct(date, "%Y-%m-%d_%H-%M-%S", tz="GMT")]
   
   files_info[,path := paste(result_dir,all_db_files,sep="/")]
   setkeyv(files_info,key)
