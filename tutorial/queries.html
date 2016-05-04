@@ -7,7 +7,7 @@
 <meta charset="utf-8">
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
-<meta name="viewport" content="width=device-width, initial-scale=1">
+
 
 <meta name="author" content="Quentin Geissmann" />
 
@@ -39,25 +39,7 @@ if (window.hljs && document.readyState && document.readyState === "complete") {
 
 
 
-
-</head>
-
-<body>
-
 <style type="text/css">
-.main-container {
-  max-width: 940px;
-  margin-left: auto;
-  margin-right: auto;
-}
-code {
-  color: inherit;
-  background-color: rgba(0, 0, 0, 0.04);
-}
-img {
-  max-width:100%;
-  height: auto;
-}
 h1 {
   font-size: 34px;
 }
@@ -78,6 +60,30 @@ h5 {
 }
 h6 {
   font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type="text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
 }
 .tabbed-pane {
   padding-top: 12px;
@@ -108,7 +114,8 @@ $(document).ready(function () {
 <div class="fluid-row" id="header">
 
 
-<h1 class="title">Writing queries</h1>
+
+<h1 class="title toc-ignore">Writing queries</h1>
 <h4 class="author"><em>Quentin Geissmann</em></h4>
 <h4 class="date"><em>1 March 2016</em></h4>
 
@@ -159,46 +166,46 @@ q</code></pre>
       x=round(runif(10),2)),
     by=eval(colnames(q))]</code></pre>
 <pre><code>##                  path region_id sex genotype  t    x
-##  1: my_result_file.db         1   M        A  1 0.73
-##  2: my_result_file.db         1   M        A  2 0.92
-##  3: my_result_file.db         1   M        A  3 0.23
-##  4: my_result_file.db         1   M        A  4 0.25
-##  5: my_result_file.db         1   M        A  5 0.04
-##  6: my_result_file.db         1   M        A  6 0.29
-##  7: my_result_file.db         1   M        A  7 0.24
-##  8: my_result_file.db         1   M        A  8 0.35
-##  9: my_result_file.db         1   M        A  9 0.46
-## 10: my_result_file.db         1   M        A 10 0.36
-## 11: my_result_file.db         2   M        B  1 0.50
-## 12: my_result_file.db         2   M        B  2 0.11
-## 13: my_result_file.db         2   M        B  3 0.10
-## 14: my_result_file.db         2   M        B  4 0.66
-## 15: my_result_file.db         2   M        B  5 0.12
-## 16: my_result_file.db         2   M        B  6 0.69
-## 17: my_result_file.db         2   M        B  7 0.68
-## 18: my_result_file.db         2   M        B  8 0.33
-## 19: my_result_file.db         2   M        B  9 0.80
-## 20: my_result_file.db         2   M        B 10 0.87
-## 21: my_result_file.db         3   F        A  1 0.71
-## 22: my_result_file.db         3   F        A  2 0.35
+##  1: my_result_file.db         1   M        A  1 0.84
+##  2: my_result_file.db         1   M        A  2 0.31
+##  3: my_result_file.db         1   M        A  3 0.09
+##  4: my_result_file.db         1   M        A  4 0.83
+##  5: my_result_file.db         1   M        A  5 0.41
+##  6: my_result_file.db         1   M        A  6 0.92
+##  7: my_result_file.db         1   M        A  7 0.12
+##  8: my_result_file.db         1   M        A  8 0.79
+##  9: my_result_file.db         1   M        A  9 0.49
+## 10: my_result_file.db         1   M        A 10 0.95
+## 11: my_result_file.db         2   M        B  1 0.91
+## 12: my_result_file.db         2   M        B  2 0.38
+## 13: my_result_file.db         2   M        B  3 0.87
+## 14: my_result_file.db         2   M        B  4 0.50
+## 15: my_result_file.db         2   M        B  5 0.60
+## 16: my_result_file.db         2   M        B  6 0.78
+## 17: my_result_file.db         2   M        B  7 0.56
+## 18: my_result_file.db         2   M        B  8 0.88
+## 19: my_result_file.db         2   M        B  9 0.30
+## 20: my_result_file.db         2   M        B 10 0.57
+## 21: my_result_file.db         3   F        A  1 0.20
+## 22: my_result_file.db         3   F        A  2 0.43
 ## 23: my_result_file.db         3   F        A  3 0.70
-## 24: my_result_file.db         3   F        A  4 0.55
-## 25: my_result_file.db         3   F        A  5 0.42
+## 24: my_result_file.db         3   F        A  4 0.57
+## 25: my_result_file.db         3   F        A  5 0.83
 ## 26: my_result_file.db         3   F        A  6 0.20
-## 27: my_result_file.db         3   F        A  7 0.80
-## 28: my_result_file.db         3   F        A  8 0.07
-## 29: my_result_file.db         3   F        A  9 0.42
-## 30: my_result_file.db         3   F        A 10 0.06
-## 31: my_result_file.db         4   F        B  1 0.83
-## 32: my_result_file.db         4   F        B  2 0.77
-## 33: my_result_file.db         4   F        B  3 0.74
-## 34: my_result_file.db         4   F        B  4 0.31
-## 35: my_result_file.db         4   F        B  5 0.15
-## 36: my_result_file.db         4   F        B  6 0.12
-## 37: my_result_file.db         4   F        B  7 0.79
-## 38: my_result_file.db         4   F        B  8 0.65
-## 39: my_result_file.db         4   F        B  9 0.81
-## 40: my_result_file.db         4   F        B 10 0.79
+## 27: my_result_file.db         3   F        A  7 0.42
+## 28: my_result_file.db         3   F        A  8 0.31
+## 29: my_result_file.db         3   F        A  9 0.22
+## 30: my_result_file.db         3   F        A 10 0.71
+## 31: my_result_file.db         4   F        B  1 0.88
+## 32: my_result_file.db         4   F        B  2 0.55
+## 33: my_result_file.db         4   F        B  3 0.07
+## 34: my_result_file.db         4   F        B  4 0.06
+## 35: my_result_file.db         4   F        B  5 0.92
+## 36: my_result_file.db         4   F        B  6 0.93
+## 37: my_result_file.db         4   F        B  7 0.37
+## 38: my_result_file.db         4   F        B  8 0.02
+## 39: my_result_file.db         4   F        B  9 0.95
+## 40: my_result_file.db         4   F        B 10 0.35
 ##                  path region_id sex genotype  t    x</code></pre>
 </div>
 
