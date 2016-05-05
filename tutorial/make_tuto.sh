@@ -44,7 +44,7 @@ cp ~/tutorial/*.html tutorial/
 cp ~/tutorial/rethomics.pdf doc/
 
 git add tutorial
-git add doc
+git add doc/rethomics.pdf
 git commit -m "test autocommit after $TRAVIS_COMMIT [ci skip]"
 git status
 git push origin gh-pages        
