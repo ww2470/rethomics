@@ -512,7 +512,7 @@ loadOneROICached <- function( FILE,  region_id, min_time=0, max_time=Inf,  refer
   roi_dt[,region_id := region_id]
   
   if(!is.null(reference_hour)){
-    p <- as.POSIXct(as.numeric(metadata[field == "date_time",value]), origin="1970-01-01")
+    p <- as.POSIXct(as.numeric(metadata[field == "date_time",value]), origin="1970-01-01", tz= "GMT")
     hour_start <- as.numeric(format(p, "%H")) + as.numeric(format(p, "%M")) / 60 +  as.numeric(format(p, "%S")) / 3600
     ms_after_ref <- ((hour_start - reference_hour) %% 24) * 3600 * 1000
     roi_dt[, t:= (t + ms_after_ref) ]
