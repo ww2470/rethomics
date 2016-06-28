@@ -356,7 +356,7 @@ buildEthoscopeQuery <- function(result_dir, query=NULL, use_cached=FALSE){
 #' @seealso \code{\link{loadEthoscopeData}} to load raw data. 
 #' @export
 loadEthoscopeMetaData <- function(FILE){
-  con <- dbConnect(SQLite(), FILE)
+  con <- dbConnect(SQLite(), FILE, flags=SQLITE_RO)
   metadata <- dbGetQuery(con, "SELECT * FROM METADATA")
   dbDisconnect(con)
   v <- as.list(metadata$value)
@@ -367,7 +367,7 @@ loadEthoscopeMetaData <- function(FILE){
 }
 
 availableROIs <- function(FILE){
-  con <- dbConnect(SQLite(), FILE)
+  con <- dbConnect(SQLite(), FILE, flags=SQLITE_RO)
   roi_map <- as.data.table(dbGetQuery(con, "SELECT * FROM ROI_MAP"))
   setkey(roi_map, roi_idx)
   
@@ -423,7 +423,7 @@ loadOneROIFromRData <- function( FILE,  region_id, min_time=0, max_time=Inf,  re
 loadOneROI <- function( FILE,  region_id, min_time=0, max_time=Inf,  reference_hour=NULL, columns = NULL){
   
   metadata <- loadEthoscopeMetaData(FILE)
-  con <- dbConnect(SQLite(), FILE)
+  con <- dbConnect(SQLite(), FILE, flags=SQLITE_RO)
   var_map <- as.data.table(dbGetQuery(con, "SELECT * FROM VAR_MAP"))
   setkey(var_map, var_name)
   roi_map <- as.data.table(dbGetQuery(con, "SELECT * FROM ROI_MAP"))
@@ -594,7 +594,7 @@ sqliteTableToDataTable <- function(name,connection, dt, rm_inferred){
 }
 
 sqliteToRdb <- function(input_db, output_rdb,rm_inferred=TRUE){
-  con <- dbConnect(SQLite(), input_db)
+  con <- dbConnect(SQLite(), input_db, flags=SQLITE_RO)
   
   list_of_table <- dbGetQuery(con,"SELECT name FROM sqlite_master WHERE type='table'")$name
   dt_list <- lapply(list_of_table, sqliteTableToDataTable,con, rm_inferred=rm_inferred)
