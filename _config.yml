@@ -3,4 +3,6 @@ highlighter: rouge
 safe: true
 lsi: false
 baseurl: /rethomics
+gems:
+  - jekyll-redirect-from
 
