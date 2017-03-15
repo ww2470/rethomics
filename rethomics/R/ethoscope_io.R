@@ -226,6 +226,7 @@ NULL
 #' @param result_dir The location of the result directory (i.e. the folder containing all the data).
 #' @param use_cached whether cache files should be used
 #' @param query An optional query formatted as a dataframe (see details).
+#' @param index_file An optional file listing all experiments.
 #' @return
 #' The query extended with the requested paths. When \code{query} is not specified, the function returns a table with all available files.
 #' @details
@@ -260,8 +261,9 @@ NULL
 #' # now we have maped a query to a path:
 #' print(query)
 #' @export
-buildEthoscopeQuery <- function(result_dir, query=NULL, use_cached=FALSE){
-  checkDirExists(result_dir)
+buildEthoscopeQuery <- function(result_dir, query=NULL, use_cached=FALSE, index_file=NULL){
+  if(is.null(index_file))
+	checkDirExists(result_dir)
   key <- c("date","machine_name")
   use_date <- F
   if(!is.null(query)){
@@ -273,15 +275,21 @@ buildEthoscopeQuery <- function(result_dir, query=NULL, use_cached=FALSE){
     setkeyv(q,key)
   }
   
-  if(use_cached)
-    all_db_files <- list.files(result_dir,recursive=T, pattern="*\\.rdb$")
-  else
-    all_db_files <- list.files(result_dir,recursive=T, pattern="*\\.db$")
+  if(is.null(index_file)){
+	  if(use_cached)
+		all_db_files <- list.files(result_dir,recursive=T, pattern="*\\.rdb$")
+	  else
+		all_db_files <- list.files(result_dir,recursive=T, pattern="*\\.db$")
+	}
+  else{
+    all_db_files <- scan(index_file, what="character")
+   }
   
-  fields <- strsplit(all_db_files,"/")
-  valid_files <- sapply(fields,length) == 4
-  
-  all_db_files <- all_db_files[valid_files]
+	  fields <- strsplit(all_db_files,"/")
+	  valid_files <- sapply(fields,length) == 4
+	  
+	  all_db_files <- all_db_files[valid_files]
+	 
   
   
   invalids = fields[!valid_files]

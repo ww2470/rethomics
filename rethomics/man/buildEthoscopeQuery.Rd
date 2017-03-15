@@ -4,7 +4,8 @@
 \alias{buildEthoscopeQuery}
 \title{Build a query for loading ethoscope dat; using the date of experiments and devices name to retreive result files.}
 \usage{
-buildEthoscopeQuery(result_dir, query = NULL, use_cached = FALSE)
+buildEthoscopeQuery(result_dir, query = NULL, use_cached = FALSE,
+  index_file = NULL)
 }
 \arguments{
 \item{result_dir}{The location of the result directory (i.e. the folder containing all the data).}
@@ -12,6 +13,8 @@ buildEthoscopeQuery(result_dir, query = NULL, use_cached = FALSE)
 \item{query}{An optional query formatted as a dataframe (see details).}
 
 \item{use_cached}{whether cache files should be used}
+
+\item{index_file}{An optional file listing all experiments.}
 }
 \value{
 The query extended with the requested paths. When \code{query} is not specified, the function returns a table with all available files.
