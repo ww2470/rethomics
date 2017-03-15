@@ -36,6 +36,7 @@ print(p)
 p <- ethogramPlot(asleep,my_data,condition=sex,error_bar="sem")
 p <- makeLDAnnotation(p)
 print(p)
+# if you want to use subjective days (DD):
 p <- makeLDAnnotation(p, colours=c("grey", "black"))
 print(p)
 }

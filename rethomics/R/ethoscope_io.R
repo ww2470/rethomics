@@ -321,8 +321,8 @@ buildEthoscopeQuery <- function(result_dir, query=NULL, use_cached=FALSE, index_
   if(is.null(query))
     return(files_info)
   files_info[,n:=.N,by=key(files_info)]
-  
-  unique_fi = unique(files_info,fromLast = T)
+  unique_fi = files_info[,.SD[.N],by=key(files_info)]
+  #unique_fi = unique(files_info,fromLast = T)
   
   out <- unique_fi[q]
   
