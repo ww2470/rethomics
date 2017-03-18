@@ -75,7 +75,7 @@ loadDailyDAM2Data <- function(result_dir,
   }
   setkeyv(q,c("experiment_id"))
   
-  uniq_q <- unique(q)
+  uniq_q <- unique(q, by=key(q))
   uniq_q$region_id <- NULL
   setkeyv(uniq_q,c("experiment_id"))
   #setkeyv(uniq_q,c("experiment_id"))
@@ -172,7 +172,7 @@ loadDAM2Data <- function(query, FUN=NULL, ...){
     out
   }
   
-  out <- unique(q)[,
+  out <- unique(q,by=key(q))[,
                    wrapLoadDAM(path,start_date, stop_date,tz),
                    by=experiment_id]
   
@@ -306,7 +306,7 @@ loadSingleDAM2File <- function(FILE,
   dt_list[,datetime:=paste(day_month_year,time, sep=" ")]
   dt_list[,t:=as.POSIXct(strptime(datetime,"%d %b %y %H:%M:%S",tz=tz))]
   setkeyv(dt_list,"datetime")
-  dt_list <- unique(dt_list)
+  dt_list <- unique	(dt_list, by=key(dt_list))
   #clean table from unused variables (idx,time, datetime...)
   dt_list[,time:=NULL]
   dt_list[,datetime:=NULL]
