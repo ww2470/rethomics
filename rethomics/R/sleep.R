@@ -50,7 +50,7 @@ sleepAnnotation <- function(data,
     stop("Key in output of motion_classifier_FUN MUST be `t_round'")
   setnames(d_small,"t_round", "t")
   d$t <- NULL
-  d_small <- d_small[unique(d)]
+  d_small <- d_small[unique(d,by=key(d))]
   
   t_out <- seq(from=d_small[1,t], to=d_small[.N,t], by=time_window_length)
   

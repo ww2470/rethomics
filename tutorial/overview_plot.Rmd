@@ -44,7 +44,7 @@ dt <- sleep_sexual_dimorphism
 #lets have a look at the data
 print(colnames(dt))
 # this shows the first observation for each animal
-print(unique(dt))
+print(unique(dt, by=key(dt)))
 ```
 
 As you can see, there are several recorded variables.

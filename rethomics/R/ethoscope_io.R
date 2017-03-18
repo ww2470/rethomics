@@ -202,7 +202,7 @@ makeMasterTable <- function(what){
   
   setkeyv(master_table,c("experiment_id","region_id"))
   master_table[,n:=.N,by=key(master_table)]
-  master_table <- unique(master_table)
+  master_table <- unique(master_table, by=key(master_table))
   duplicated_rows <- master_table[n>1]
   
   if(nrow(duplicated_rows)>0){
