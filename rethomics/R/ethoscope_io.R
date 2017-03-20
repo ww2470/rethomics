@@ -59,14 +59,14 @@ NULL
 #' # Case 3: load ALL REGIONS from MULTIPLE FILES AND add CONDITIONS
 #' # Let us imagine that each file/experiment
 #' # was acquired under different experimental condition.
-#' # We can encode this information in a 'master-table' (i.e a data.frame) 
+#' # We can encode this information in a 'query' (i.e a data.frame) 
 #' # in which a column named \code{path} maps experimental condition(s). 
 #' # For instance, 2 different treatments:
-#' master_table <- data.frame(path=paths, treatment=c("control", "drug_A"))
+#' query <- data.frame(path=paths, treatment=c("control", "drug_A"))
 #' # Let us check our table:
-#' print(master_table)
+#' print(query)
 #' # The table looks OK, so we load the actual data
-#' dt <- loadEthoscopeData(master_table)
+#' dt <- loadEthoscopeData(query)
 #' # Note that `dt` now contains a column for your treatment.
 #' print(colnames(dt))
 #' # This makes it easier to perform things such as average per treatment.
@@ -74,27 +74,27 @@ NULL
 #' ###############
 #' # Case 4: load SELECTED REGIONS from MULTIPLE FILE, WITH CONDITIONS
 #' # Sometimes, different regions contain different conditions.
-#' # If the master table has a column named `region_id`, 
+#' # If the query has a column named `region_id`, 
 #' # only the specified regions will be returned.
 #' # Let us assume that we want to replicate case 3, 
 #' # but, now, we load only the first 20 regions.
-#' master_table <- data.table(path=paths, 
+#' query <- data.table(path=paths, 
 #'                            treatment=c("control", "drug_A"), 
 #'                            region_id=rep(1:20,each= 2))
 #' # We could also imagine that every even region contains a male,
 #' # whilst every odd one has a female:
-#' master_table[, sex := ifelse(region_id %% 2, "male", "female" )]
+#' query[, sex := ifelse(region_id %% 2, "male", "female" )]
 #' # Note that we have now two conditions.
 #' # Let us check our new table:
-#' print(master_table)
+#' print(query)
 #' # Then we can load our data:
-#' dt <- loadEthoscopeData(master_table)
+#' dt <- loadEthoscopeData(query)
 #' # This is simply a subset of data, so many regions are missing
 #' # lets display the regions we ended up with
 #' print(dt[,.(NA),by=key(dt)])
 #' 
 #' # For most complicated cases, you would probably have pre-generated the 
-#' # master-table (e.g. as a csv file) before analysing the results.
+#' # query (e.g. as a csv file) before analysing the results.
 #' @seealso \code{\link{loadEthoscopeMetaData}} To display global informations about a specific file. 
 #' @export
 loadEthoscopeData <- function(what,
