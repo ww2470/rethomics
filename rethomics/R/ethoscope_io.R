@@ -91,7 +91,7 @@ NULL
 #' dt <- loadEthoscopeData(query)
 #' # This is simply a subset of data, so many regions are missing
 #' # lets display the regions we ended up with
-#' print(dt[,.(NA),by=key(dt)])
+#' print(dt[,.N,by=key(dt)])
 #' 
 #' # For most complicated cases, you would probably have pre-generated the 
 #' # query (e.g. as a csv file) before analysing the results.
