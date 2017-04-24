@@ -7,10 +7,13 @@ before_install:
 before_script:
     - git config --global user.name "travis"
     - git config --global user.email "travis@example.org"
-r_binary_packages:
-    - ggplot2
+
 r_github_packages:
+    - hadley/devtools
+    - tidyverse/ggplot2
     - rstudio/rmarkdown
+    - Rdatatable/data.table
+    
 after_success:
     - cd ..
     # hides ghtoken from output
