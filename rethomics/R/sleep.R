@@ -19,12 +19,12 @@ NULL
 #' data(tube_monitor_validation)
 #' # We will start only with region 2:
 #' dt_region2 <- tube_monitor_validation[region_id==2,]
-#' sleep_dt <-  sleepAnnotation(dt_region2)
+#' sleep_dt <-  sleepAnnotation(dt_region2, masking_duration=0)
 #' print(sleep_dt)
 #' # We make a sleep `barecode'
 #' ggplot(sleep_dt, aes(t,region_id,fill=asleep)) + geom_tile()
 #' # A bit of data.table wizardry to apply that to each experiement and region:
-#' sleep_dt <-  tube_monitor_validation[,sleepAnnotation(.SD),by=key(tube_monitor_validation)]
+#' sleep_dt <-  tube_monitor_validation[,sleepAnnotation(.SD, masking_duration=0),by=key(tube_monitor_validation)]
 #' # The same bare code for all regions
 #' ggplot(sleep_dt, aes(t,region_id,fill=asleep)) + geom_tile()
 #' @seealso \code{\link{loadEthoscopeData}} to load data and optionally apply analysis on the fly.
@@ -32,7 +32,7 @@ NULL
 sleepAnnotation <- function(data,
                             time_window_length=10, #s
                             min_time_immobile=60*5, #s
-                            motion_classifier_FUN=maxVelocityClassifier,
+                            motion_classifier_FUN=maxVelocityClassifierMasked,
                             ...
 ){ 
   d <- copy(data)
@@ -43,7 +43,6 @@ sleepAnnotation <- function(data,
   
   d[, t_round := time_window_length * floor(d[,t] /time_window_length)]  
   setkeyv(d, "t_round")
-  
   d_small <- motion_classifier_FUN(d,...)
   
   if(key(d_small) != "t_round")
@@ -77,21 +76,80 @@ NULL
 #' @param velocity_threshold velocity above which an animal is classified as `moving'.
 #' @return a data table with the columns \code{moving} (logical, TRUE iff. motion was detected) and \code{t_round} (the `rounded' time). There is one row per rounded time point.
 #' @seealso \code{\link{sleepAnnotation}} to apply this function to all subsequent time windows.
+#' \code{\link{maxVelocityClassifierMasked}}, the emiprically corected FPS invariant version of this classifier.
 #' @export
-maxVelocityClassifier <- function(data,velocity_threshold=.006){
+maxVelocityClassifierLegacy <- function(data,velocity_threshold=.006){
 	d <- copy(data)
 	d[,dt := c(NA,diff(t))]
-	d[,max_velocity := 10^(xy_dist_log10x1000/1000)/dt ]
+	d[,velocity := 10^(xy_dist_log10x1000/1000)/dt ]
 	#d[,max_velocity := 10^(xy_dist_log10x1000/1000)/dt ]
 	d_small <- d[,.(
-  	        max_velocity = max(max_velocity)
+  	        max_velocity = max(velocity)
 						), by="t_round"]
-  
+
 	d_small[, moving :=  ifelse(max_velocity > velocity_threshold, TRUE,FALSE)]
 	d_small
 	}
 
 NULL
+
+#' Motion classifier based on maximum velocity, but with a correction factor for variable FPS.
+#' 
+#' Defines whether an animal is moving according to its subpixel velocity. 
+#' It requires a variable named \code{xy_dist_log10x1000} in the .db file.
+#' @param data the data.table containing behavioural features used for movement classification.
+#' @param velocity_correction_coef an empirical coefficient to correct velocity with respect to variable framerate
+#' @param masking_duration the number of second when any movement is ignored after an interaction (velocity is set to 0).
+#' @return a data table with the columns \code{moving} (logical, TRUE iff. motion was detected)
+#' and \code{t_round} (the `rounded' time). 
+#' There is one row per rounded time point.
+#' Also we return the whether an animal has crossed a virtual midline, at x=0.5 (\code{beam_crosses}).
+#' @seealso \code{\link{sleepAnnotation}} to apply this function to all subsequent time windows,
+#' \code{\link{maxVelocityClassifierLegacy}}, the uncorected/unmasked version.
+#' @export
+maxVelocityClassifierMasked  <- function(data,velocity_correction_coef =3e-3 , masking_duration=6){
+  d <- copy(data)
+  d[,dt := c(NA,diff(t))]
+  #d[,surface_change := xor_dist * 1e-3]
+  d[,dist := 10^(xy_dist_log10x1000/1000) ]
+  d[,velocity := dist/dt]
+  
+  a = velocity_correction_coef
+  
+  d[,beam_cross := abs(c(0,diff(sign(.5 - x))))]
+  d[,beam_cross := as.logical(beam_cross)]
+  
+  if ("has_interacted" %in% colnames(d)){
+    d[,interaction_id := cumsum(has_interacted)]  
+    d[,
+      masked := t < (t[1] + masking_duration),
+      by=interaction_id]
+    d[ ,velocity := ifelse(masked & interaction_id != 0, 0, velocity)]
+    d[,beam_cross := !masked & beam_cross]
+    d[,interaction_id := NULL]
+    d[,masked := NULL]
+  }
+  else{
+    print(masking_duration)
+    if(masking_duration >0) 
+      warning("Data does not contain an `has_interacted` column. Cannot apply masking!. Set `masking_duration=0` to ignore masking")
+  }
+  
+  d[, velocity_corrected :=  velocity  * dt  /a]
+  d_small <- d[,.(
+    max_velocity = max(velocity_corrected[2:.N]),
+    # dist = sum(dist[2:.N]),
+    beam_crosses = any(beam_cross)
+  ), by="t_round"]
+  
+  d_small[, moving :=  ifelse(max_velocity > 1, TRUE,FALSE)]
+  d_small
+}
+
+
+NULL
+
+
 #' Motion classifier based on beam crosses.
 #' 
 #' Defines whether an animal is moving. This is achieved by computing the number of crossed of
@@ -99,7 +157,7 @@ NULL
 #' This emulate the type of data generated by DAM2.
 #' @param data the data.table containing behavioural features used for movement classification.
 #' @return a data table with the columns \code{moving} (logical, TRUE iff. motion was detected) and \code{t_round} (the `rounded' time). There is one row per rounded time point.
-#' @seealso \code{\link{maxVelocityClassifier}} to defince movement by maximum velocity, which is more accurate, instead.
+#' @seealso \code{\link{maxVelocityClassifierMasked}} to define movement by maximum velocity, which is more accurate, instead.
 #' @export
 virtualBeamCrossClassif <- function(data){
   d <- copy(data)
