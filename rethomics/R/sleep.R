@@ -130,7 +130,6 @@ maxVelocityClassifierMasked  <- function(data,velocity_correction_coef =3e-3 , m
     d[,masked := NULL]
   }
   else{
-    print(masking_duration)
     if(masking_duration >0) 
       warning("Data does not contain an `has_interacted` column. Cannot apply masking!. Set `masking_duration=0` to ignore masking")
   }
