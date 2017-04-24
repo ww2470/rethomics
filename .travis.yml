@@ -9,7 +9,6 @@ before_script:
     - git config --global user.email "travis@example.org"
 r_binary_packages:
     - ggplot2
-    - data.table
 r_github_packages:
     - rstudio/rmarkdown
 after_success:
