@@ -320,15 +320,22 @@ bootCi <- function(x,
 #' p <- overviewPlot(asleep,my_data,condition=sex)
 #' p <- makeLDAnnotation(p)
 #' print(p)
-#' p <- ethogramPlot(asleep,my_data,condition=sex,error_bar="sem")
-#' p <- makeLDAnnotation(p)
-#' print(p)
+# p <- ethogramPlot(asleep,my_data,condition=sex,error_bar="sem")
+# p <- makeLDAnnotation(p)
+# print(p)
 #' # if you want to use subjective days (DD):
 #' p <- makeLDAnnotation(p, colours=c("grey", "black"))
 #' print(p)
 #' @export
 makeLDAnnotation <- function(pl, time_conversion_unit=days,period=hours(24), offset=0, size=.02, colours = c("white", "black")){
-  panel_ranges <- ggplot_build(pl)$panel$ranges[[1]]
+  
+  ggb <- ggplot_build(pl)
+  if("panel" %in% names(ggb)){
+    panel_ranges <- ggplot_build(pl)$panel$ranges[[1]]
+    warning("Please update ggplot2")
+  }
+  else
+    panel_ranges <-ggb$layout$panel_ranges[[1]]
   
   min_y <- panel_ranges$y.range[1]
   max_y <- panel_ranges$y.range[2]
@@ -338,7 +345,6 @@ makeLDAnnotation <- function(pl, time_conversion_unit=days,period=hours(24), off
   
   if(offset < 0 | offset > period)
     stop("offset should be between 0 and period")
-  
   steps <- rethomics:::offsettedSeq(min_x, max_x, by=period/2, offset)
   start_with_l = steps[1] %% period < period/2
   if(!start_with_l)
@@ -366,8 +372,8 @@ makeLDAnnotation <- function(pl, time_conversion_unit=days,period=hours(24), off
   pl + al + ad  + s1 + s2
 }
 
-
 offsettedSeq <- function(start, end, by,offset){
+		print(list(start, end, by,offset))
 		second <- by * ceiling(start/by) + offset
 		out <- seq(from = second, to=end, by=by)
 		return(unique(c(start,out,end)))
