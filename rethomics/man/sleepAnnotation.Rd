@@ -5,7 +5,7 @@
 \title{Determines whether an animal is asleep}
 \usage{
 sleepAnnotation(data, time_window_length = 10, min_time_immobile = 60 * 5,
-  motion_classifier_FUN = maxVelocityClassifier, ...)
+  motion_classifier_FUN = maxVelocityClassifierMasked, ...)
 }
 \arguments{
 \item{data}{the data (i.e a data.table) from a \emph{single} region. It must contain, at least,
@@ -34,12 +34,12 @@ The resulting data will only have one data point every \code{time_window_length}
 data(tube_monitor_validation)
 # We will start only with region 2:
 dt_region2 <- tube_monitor_validation[region_id==2,]
-sleep_dt <-  sleepAnnotation(dt_region2)
+sleep_dt <-  sleepAnnotation(dt_region2, masking_duration=0)
 print(sleep_dt)
 # We make a sleep `barecode'
 ggplot(sleep_dt, aes(t,region_id,fill=asleep)) + geom_tile()
 # A bit of data.table wizardry to apply that to each experiement and region:
-sleep_dt <-  tube_monitor_validation[,sleepAnnotation(.SD),by=key(tube_monitor_validation)]
+sleep_dt <-  tube_monitor_validation[,sleepAnnotation(.SD, masking_duration=0),by=key(tube_monitor_validation)]
 # The same bare code for all regions
 ggplot(sleep_dt, aes(t,region_id,fill=asleep)) + geom_tile()
 }
