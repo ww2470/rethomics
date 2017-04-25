@@ -45,6 +45,13 @@ sleepAnnotation <- function(data,
   setkeyv(d, "t_round")
   d_small <- motion_classifier_FUN(d,...)
   
+  # special variable "has interacted". We sum over it
+  if("has_interacted" %in% colnames(d)){
+    d_n_interations <- d[, .(n_interactions = sum(has_interacted)), by=key(d)]
+    d_small <- d_small[d_n_interations]
+    d[, has_interacted := NULL]
+  }
+  
   if(key(d_small) != "t_round")
     stop("Key in output of motion_classifier_FUN MUST be `t_round'")
   setnames(d_small,"t_round", "t")
