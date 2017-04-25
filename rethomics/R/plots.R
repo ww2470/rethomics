@@ -373,7 +373,6 @@ makeLDAnnotation <- function(pl, time_conversion_unit=days,period=hours(24), off
 }
 
 offsettedSeq <- function(start, end, by,offset){
-		print(list(start, end, by,offset))
 		second <- by * ceiling(start/by) + offset
 		out <- seq(from = second, to=end, by=by)
 		return(unique(c(start,out,end)))
