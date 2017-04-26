@@ -330,12 +330,16 @@ bootCi <- function(x,
 makeLDAnnotation <- function(pl, time_conversion_unit=days,period=hours(24), offset=0, size=.02, colours = c("white", "black")){
   
   ggb <- ggplot_build(pl)
+  print(names(ggb))
   if("panel" %in% names(ggb)){
+    print("panel")
     panel_ranges <- ggplot_build(pl)$panel$ranges[[1]]
     warning("Please update ggplot2")
   }
-  else
+  else{
+    print("panel_range")
     panel_ranges <-ggb$layout$panel_ranges[[1]]
+  }
   
   min_y <- panel_ranges$y.range[1]
   max_y <- panel_ranges$y.range[2]
@@ -345,7 +349,7 @@ makeLDAnnotation <- function(pl, time_conversion_unit=days,period=hours(24), off
   
   if(offset < 0 | offset > period)
     stop("offset should be between 0 and period")
-  steps <- rethomics:::offsettedSeq(min_x, max_x, by=period/2, offset)
+  steps <- offsettedSeq(min_x, max_x, by=period/2, offset)
   start_with_l = steps[1] %% period < period/2
   if(!start_with_l)
     steps <- c(steps[1], steps)
