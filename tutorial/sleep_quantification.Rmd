@@ -1,0 +1,66 @@
+---
+title: "Scoring sleep"
+author: "Quentin Geissmann"
+date: "5 May 2016"
+output: html_document
+---
+
+
+Aims
+----- 
+
+In this tutorial, we will learn:
+
+* The process of scoring sleep from immobility in fruit fly, using ethoscope data.
+* How to apply sleep scoring and load data at the same time
+* To visualise sleep amount over time
+* Compute summary statistics on sleep amount during light and dark phases
+
+Sleep scoring in fruit fly
+----------------------------------------
+In fruit fly, sleep is classically associated with bouts of **immobility** of **5min** or more.
+In practice, we want to annotate our data with an extra variable named `asleep` that will be `TRUE` if and only if the animal is scored as sleeping.
+In `rethomics`, the function`sleepAnnotation` can be used for this.
+It takes data from one animal, chop it in time chunks (by default of ten second), detect wether the animal has moved, at any point, within this time window. With this, it creates a columns called `moving` scoring activity.
+It the uses it to find imobility bouts of at least 5min (you can change this default value).
+By default, activity is scored by the function `maxVelocityClassifier`, which uses maximal speed to find out whether an fly is moving.
+
+In the end of the day, we summarise data by segments of 10s and add two columns to define movement and sleep.
+
+
+Perform sleep annotation in real life
+---------------------------------------
+Let us rebuild the query we had made in [this tutorial](ethoscope_data.html)
+```{r, include=FALSE}
+library(rethomics)
+```
+
+```{r}
+# we build the path to ethoscope results
+result_dir <- paste(TUTO_DATA_DIR,"ethoscope_results", sep="/")
+query_file <- paste(TUTO_DATA_DIR,"ethoscope_queries","sleep_query.csv",sep="/")
+primary_query <- fread(query_file)
+final_query <- buildEthoscopeQuery(result_dir, primary_query)
+```
+
+Voila, now, we can use this query to load data and annotate it as the same time:
+
+```{r}
+dt <- loadEthoscopeData(final_query,
+                        # we align all experiuments on ZT0
+                        reference_hour=9.0, 
+                        # we speed up import by using only two columns of data
+                        columns=c("xy_dist_log10x1000","x"),
+                        # We apply sleep annotation on the go
+                        FUN=sleepAnnotation,
+                        # we hide progress messages (for the tutorial, but you can show them for yourself)
+                        verbose=F)
+print(colnames(dt))
+```
+
+Let us look at those two variables:
+```{r, plot=TRUE}
+pl <- overviewPlot(moving, dt, condition, time_unit_conversion = days)
+pl <- ethogramPlot(moving, dt, condition, error_bar="sem", time_unit_conversion = days)
+pl <- ethogramPlot(asleep, dt, condition, error_bar="sem", time_unit_conversion = days)
+```
