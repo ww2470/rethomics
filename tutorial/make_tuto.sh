@@ -3,6 +3,7 @@ set -e
 GH_REPO="@github.com/gilestrolab/rethomics.git"
 FULL_REPO="https://$GH_TOKEN$GH_REPO"
 
+echo "Setting up"
 
 mkdir ~/rethomics_tuto
 cd ~/rethomics_tuto
@@ -15,8 +16,9 @@ git config user.name "rapporter-travis"
 git config user.email "travis"
 git checkout master
 
-echo "Getting data from $RETHOMIC_TUTO_DATA ..."
+echo "Getting data from $RETHOMICS_TUTO_DATA ..."
 wget $RETHOMICS_TUTO_DATA -O ~/rethomics_tutorial_data.zip -q
+echo "Unzipping ..."
 unzip ~/rethomics_tutorial_data.zip
 ls
 mv rethomics_tutorial_data ~
