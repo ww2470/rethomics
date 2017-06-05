@@ -25,8 +25,8 @@ before_script:
 after_success:
     - cd ..
     # hides ghtoken from output
-    #- echo the data lives at $RETHOMICS_TUTO_DATA
-    #- bash tutorial/make_tuto.sh 2>&1 | sed s/$GH_TOKEN/GH_TOKEN/g
+    - echo the data lives at $RETHOMICS_TUTO_DATA
+    - bash tutorial/make_tuto.sh 2>&1 | sed s/$GH_TOKEN/GH_TOKEN/g
 
 
 env:
