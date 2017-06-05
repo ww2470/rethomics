@@ -34,8 +34,9 @@ cd ..
 cp tutorial/ ~/tutorial -r 
 
 rm -f rethomics.pdf
-make rethomics.pdf
-cp rethomics.pdf ~/tutorial/
+# toggled out because of https://github.com/travis-ci/travis-ci/issues/7852
+#make rethomics.pdf
+#cp rethomics.pdf ~/tutorial/
 
 
 echo 'checkout to ghpage'
