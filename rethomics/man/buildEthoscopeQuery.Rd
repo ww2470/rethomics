@@ -60,4 +60,3 @@ print(query)
 \seealso{
 \code{\link{cacheEthoscopeData}} to build a cached data directory.
 }
-

@@ -18,4 +18,3 @@ Trivially converts minutes to seconds
 \seealso{
 \code{\link{days}} \code{\link{hours}}
 }
-

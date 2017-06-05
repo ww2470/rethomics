@@ -36,7 +36,7 @@ Collate:
     'utils_misc.R'
     'datasets.R'
 URL: https://github.com/gilestrolab/rethomics
-RoxygenNote: 5.0.1
+RoxygenNote: 6.0.1
 Suggests: 
     testthat,
     devtools,

@@ -19,4 +19,3 @@ It will essentially preload all data in a result directory into a cached directo
 .rdb and .idx fils are generated instead of .db file.
 In practice, this function will be run every day to fetch and cache new data.
 }
-

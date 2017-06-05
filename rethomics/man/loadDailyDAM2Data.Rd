@@ -55,4 +55,3 @@ the daily data should be saved in a hard-coded directory structure \code{root_di
 \seealso{
 \code{\link{loadDAM2Data}} to load data from a regular DAM2 file
 }
-

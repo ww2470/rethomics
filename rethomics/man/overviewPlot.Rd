@@ -66,4 +66,3 @@ p
 \seealso{
 \code{\link{ethogramPlot}} To show trend by aggregating individuals over time.
 }
-

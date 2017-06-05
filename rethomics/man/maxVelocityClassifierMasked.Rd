@@ -28,4 +28,3 @@ It requires a variable named \code{xy_dist_log10x1000} in the .db file.
 \code{\link{sleepAnnotation}} to apply this function to all subsequent time windows,
 \code{\link{maxVelocityClassifierLegacy}}, the uncorected/unmasked version.
 }
-

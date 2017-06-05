@@ -18,4 +18,3 @@ Trivially converts days to seconds
 \seealso{
 \code{\link{hours}} \code{\link{mins}}
 }
-

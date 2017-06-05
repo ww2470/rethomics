@@ -95,4 +95,3 @@ p
 \seealso{
 \code{\link{overviewPlot}} to show per-individual patterns
 }
-

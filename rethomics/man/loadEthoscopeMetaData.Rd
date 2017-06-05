@@ -25,4 +25,3 @@ names(out)
 \seealso{
 \code{\link{loadEthoscopeData}} to load raw data.
 }
-

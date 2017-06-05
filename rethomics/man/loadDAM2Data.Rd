@@ -53,4 +53,3 @@ ethogramPlot(asleep,dt,condition) + scale_x_continuous(breaks=0:10/2)
 \seealso{
 \code{\link{loadSingleDAM2File}} to load DAM data that is saved by day
 }
-

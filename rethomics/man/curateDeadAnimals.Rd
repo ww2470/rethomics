@@ -43,4 +43,3 @@ lifespan_dt <- dt_curated[,
 \seealso{
 \code{\link{sleepAnnotation}} and \code{\link{sleepDAMAnnotation}} to define movement and add a \code{moving} column.
 }
-

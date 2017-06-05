@@ -18,4 +18,3 @@ conventinal rethomics data.table (i.e. has \code{experiment_id}, \code{region_id
 \author{
 Quentin Geissmann, 2015-06-13
 }
-

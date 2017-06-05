@@ -46,4 +46,3 @@ ggplot(sleep_dt, aes(t,region_id,fill=asleep)) + geom_tile()
 \seealso{
 \code{\link{loadEthoscopeData}} to load data and optionally apply analysis on the fly.
 }
-

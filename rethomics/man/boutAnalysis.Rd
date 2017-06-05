@@ -37,4 +37,3 @@ print(summary)
 \seealso{
 \code{rle} to perform a run length transform manually
 }
-

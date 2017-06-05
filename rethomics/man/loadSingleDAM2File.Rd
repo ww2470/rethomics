@@ -42,4 +42,3 @@ print(conditions)
 \seealso{
 \code{\link{loadDAM2Data}} To load data from a query.
 }
-

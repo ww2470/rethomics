@@ -37,4 +37,3 @@ print(p)
 p <- makeLDAnnotation(p, colours=c("grey", "black"))
 print(p)
 }
-

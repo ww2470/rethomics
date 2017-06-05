@@ -119,4 +119,3 @@ print(dt[,.N,by=key(dt)])
 \seealso{
 \code{\link{loadEthoscopeMetaData}} To display global informations about a specific file.
 }
-

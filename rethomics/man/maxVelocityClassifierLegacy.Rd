@@ -22,4 +22,3 @@ It requires a variable named \code{xy_dist_log10x1000} in the .db file.
 \code{\link{sleepAnnotation}} to apply this function to all subsequent time windows.
 \code{\link{maxVelocityClassifierMasked}}, the emiprically corected FPS invariant version of this classifier.
 }
-

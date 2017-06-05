@@ -19,4 +19,3 @@ It provides a way to access raw data  (e.g. db files and dam text files) contain
 \seealso{
 \code{\link{loadEthoscopeData}} to read raw experimental data.
 }
-

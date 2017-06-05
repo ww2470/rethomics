@@ -14,4 +14,3 @@ checkColumns(expected_colnames, cols)
 \description{
 Checks if the expected columns are all in a given character vector. Through error if not
 }
-

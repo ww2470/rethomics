@@ -18,4 +18,3 @@ conventinal rethomics data.table (i.e. has \code{experiment_id}, \code{region_id
 \author{
 Diana Bicazan, 2015-08-05
 }
-

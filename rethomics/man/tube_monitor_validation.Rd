@@ -19,4 +19,3 @@ Only raw tracking values are present in dataset.
 \author{
 Quentin Geissmann, 2015-05-02
 }
-

@@ -19,4 +19,3 @@ A dummy variable, \code{condition}, was also added for illustration purposes.
 \author{
 Anne Petzold, 2015-07-02
 }
-

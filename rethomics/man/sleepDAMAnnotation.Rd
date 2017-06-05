@@ -35,4 +35,3 @@ dam_data[,
 \seealso{
 \code{\link{loadDAM2Data}} To load DAM2 data first/ apply this function to each animal.
 }
-
