@@ -45,7 +45,7 @@ rm -f rethomics.pdf
 echo 'checkout to ghpage'
 git checkout gh-pages
 cp ~/tutorial/*.html tutorial/
-cp ~/tutorial/rethomics.pdf doc/
+#cp ~/tutorial/rethomics.pdf doc/
 
 git add tutorial
 git add doc/rethomics.pdf
