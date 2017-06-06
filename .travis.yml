@@ -22,7 +22,7 @@ before_script:
     #~ - rstudio/rmarkdown
     #~ - Rdatatable/data.table
     
-after_success:
+after_script:
     - cd ..
     # hides ghtoken from output
     - echo the data lives at $RETHOMICS_TUTO_DATA
