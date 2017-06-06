@@ -17,7 +17,8 @@ git config user.email "travis"
 git checkout master
 
 echo "Getting data from $RETHOMICS_TUTO_DATA ..."
-wget $RETHOMICS_TUTO_DATA -O ~/rethomics_tutorial_data.zip -q
+echo "saving as ~/rethomics_tutorial_data.zip"
+wget $RETHOMICS_TUTO_DATA -O ~/rethomics_tutorial_data.zip
 echo "Unzipping ..."
 unzip ~/rethomics_tutorial_data.zip
 ls
