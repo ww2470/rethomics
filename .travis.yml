@@ -22,11 +22,13 @@ before_script:
     #~ - rstudio/rmarkdown
     #~ - Rdatatable/data.table
     
-after_script:
-    - cd .. \
+script:
+    - R CMD build .
+    - R CMD check *tar.gz
+    - cd .. 
     # hides ghtoken from output
-     && echo the data lives at $RETHOMICS_TUTO_DATA \
-     && bash tutorial/make_tuto.sh 2>&1
+    - echo the data lives at $RETHOMICS_TUTO_DATA 
+    - bash tutorial/make_tuto.sh 2>&1
     
     #| sed s/$GH_TOKEN/GH_TOKEN/g
 
