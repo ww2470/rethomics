@@ -5,7 +5,7 @@ FULL_REPO="https://$GH_TOKEN@$GH_REPO"
 
 echo "Setting up..."
 
-echo $GH_TOKEN | md5
+echo $GH_TOKEN | md5sum
 mkdir ~/rethomics_tuto
 cd ~/rethomics_tuto
 
