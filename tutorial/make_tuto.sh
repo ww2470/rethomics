@@ -4,8 +4,8 @@ GH_REPO="@github.com/gilestrolab/rethomics.git"
 FULL_REPO="https://$GH_TOKEN$GH_REPO"
 
 echo "Setting up..."
-echo "md5 of token:"
-echo $GH_TOKEN | md5sum
+
+echo $GH_TOKEN |  sed s/0/*/g
 mkdir ~/rethomics_tuto
 cd ~/rethomics_tuto
 
