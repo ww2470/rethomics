@@ -26,17 +26,11 @@ script:
     - R CMD build .
     - R CMD check *tar.gz
     - cd .. 
-    # hides ghtoken from output
     - echo the data lives at $RETHOMICS_TUTO_DATA 
     - bash tutorial/make_tuto.sh 2>&1
     
-    #| sed s/$GH_TOKEN/GH_TOKEN/g
-
-
 env:
-  matrix:
-    secure: NIsEbodW3cOjxpcMD/K2WSSefvqsYxVAvoYc+mmF6LabVnzuUEU5RZODDLoavPYfI6Yu6vqZwnUlHLVOiMQhvVKcRiTd+GaLMXHP3WT6zWFwrosX0UG9qK9kWZzMjyZD/3uaqnmzMaHj42PZYVeIxsacBd52JCnvcUGBpJ9BctENqLwJVEIaq+2VJakLjc92W79GGMwGiGw2H2334oEaDgPCaBonXQghxGgO+Xw8cCyFcTCu33j0WO0veM1yISYcRyv7SW//GvOZrf6JxqqOzXqZLHCQtO22m4RDLX3Ua0jNosCYej9wHDw3kGWhwDCVVHes+HzKZDioNMsYXGX65TsO2iQd7hualj83ofrCxc5p++6gPvhjL49tAo4eVi+IITe30HvxjOFGuTddlesZTf+6qEdzTUgGEyBXrahWNEpwGrfQX9ycAP2U8btu2Q8xkwueuYBS6mk0W42zETsLCeotFm3uLpcocsxOzm0mScVG6ncrQDhBrm8b0ZQR59kryqgm2fA0sFtuXqkLz64UeqXFPxwGy7TkY5yLdeicMQ0CdwLGtQIK6Vgg8khXWcsKYzr96GAQB7T+WKYPcNprIw4OSMXqSp8wxltEsulqyHEoGHFn5lSjTaZPvFyROjohswtFxIkVa/OtO1jXXDVMpsUxI1CdS3BKTa4xB9zX7Yc=
-  global:
-      #- RETHOMICS_TUTO_DATA=https://imperialcollegelondon.box.com/shared/static/isclax9racubuce3f16sp375ji06p41m.zip
-      - RETHOMICS_TUTO_DATA=https://imperialcollegelondon.box.com/shared/static/t7osbe1rcoba7tpj262l9xsnje5b9mov.zip
-    
+    matrix:
+        secure: j9NRGsg28uyY4bF0ANVfmspeAFRz7gZOXf1EpKOR7+L+BdxAjK+8VuS5uHMDjb2kwJy6HxVUfCaTGmn+PzjL/I5i098pl8ZXVHrd481zkYBTGubu633f4O6ADXJpx44jkkM2BVtdjS9jgqwLOojncPt2zAtsyduaV43lowU7Q2MNLQcPPt2y+uiy28ya0fEwX6ydHnJla4xIhxMH8XW2FHr1IvQrCG37oAC4ETtP8mEnQ83tlYvvJFbdke/eHOFv/UVINteoiUEk/xn59Lr5pdceyv/+zo0Brl/sru8F1zASZcnwvMFFAA1mrZJ9GFzE45283z8y+d5Mrrg32LtNGgx9dfJsL9uyat32vtiagDn6VClBdUoD2GZ5ZR6vBLmNlJvujqTr/ps7mFRmcuNcOBT6Fw4oZm+56p4EGcNGN/2mnrqWsxf3Ck97mzn6/DKJEBF0gq3a7TKDqAsDVELpxNJAaRfBh03mIgp0xlm8kzuskSP8x5QRf0Q3+vnUvBPX7Q4Iast+UfGtDo4Kb9V+o6mDI88dzxsfKLMQ9pzAC7SBZa6d6Xp4J1kHKzEqLXR5aa6p474gm0bOc6OKRT39Flsmi/g6cEEgQ0PRlp71RqCSmVSVHfzF0G/WTOsIkN7M04qzZZ+/mrSYC3z1w/jMoafmiBerkNpcCSgFBr1ff3Y=
+    global:
+        - RETHOMICS_TUTO_DATA=https://imperialcollegelondon.box.com/shared/static/t7osbe1rcoba7tpj262l9xsnje5b9mov.zip

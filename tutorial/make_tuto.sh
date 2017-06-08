@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e 
-GH_REPO="@github.com/gilestrolab/rethomics.git"
-FULL_REPO="https://$GH_TOKEN$GH_REPO"
+GH_REPO="github.com/gilestrolab/rethomics.git"
+FULL_REPO="https://$GH_TOKEN@$GH_REPO"
 
 echo "Setting up"
 
@@ -36,15 +36,15 @@ make clean && make TUTO_DATA_DIR=~/rethomics_tutorial_data all
 cd ..
 cp tutorial/ ~/tutorial -r 
 
-rm -f rethomics.pdf
 # toggled out because of https://github.com/travis-ci/travis-ci/issues/7852
+rm -f rethomics.pdf
 #make rethomics.pdf
 #cp rethomics.pdf ~/tutorial/
 
 
 echo 'checkout to ghpage'
 git checkout gh-pages
-cp ~/tutorial/*.html tutorial/
+mv ~/tutorial/*.html tutorial/
 #cp ~/tutorial/rethomics.pdf doc/
 
 git add tutorial
