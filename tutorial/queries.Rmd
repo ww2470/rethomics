@@ -29,7 +29,7 @@ A query is a simple table where:
 * each row is describes and animal
 * each column is a condition
 
-`rethomics` uses queries to locate and load data, so in most case queries will *compulsory columns* such as `region_id`, `path` to the result file...
+`rethomics` uses queries to locate and load data, so in most case queries will have *compulsory columns* such as `region_id`, `path` to the result file...
 
 
 An imaginary example of query
@@ -57,17 +57,19 @@ q
 Here, you can see each row defines, unambiguously, an animal. Note that sometimes, you may have redundant variables.
 In our example, the column `path` does not change because all data comes from the same result file.
 
-According th the specific acquisition platform, you would use a different way to load the data, but the end goal is
-always to use the query to map condition to time series.
+According the specific acquisition platform, you would use a different way to load the data, but the end goal is
+always to use the query to *map conditions* to time series.
 
-Say our hypothetical acquisition platform simply generated 10 time point per animal and observed a single variable
-(here random) named `x`, the resulting dt would look like:
+For instance, imagine a hypothetical acquisition platfrom that would have recorded a variable `x` over time (`t`). Also, let's say that it recorded ten point per animal. When we apply this query, we expect ten point per annimal, but we also kept the conditions that are in the query (each will be repeted ten times).
+So n the end, we could have something like this:
 
-```{r}
+```{r, echo=FALSE}
 q[,
     .(t=1:10,
       x=round(runif(10),2)),
     by=eval(colnames(q))]
 ```
 
+
+This exemple describes the general context of query, but we will see in more details how to apply it to real data very soon!
 
