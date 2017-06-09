@@ -330,7 +330,6 @@ bootCi <- function(x,
 makeLDAnnotation <- function(pl, time_conversion_unit=days,period=hours(24), offset=0, size=.02, colours = c("white", "black")){
   
   ggb <- ggplot_build(pl)
-  print(names(ggb))
   panel_ranges <- ggplot_build(pl)$panel$ranges[[1]]
   
   min_y <- panel_ranges$y.range[1]
@@ -346,9 +345,6 @@ makeLDAnnotation <- function(pl, time_conversion_unit=days,period=hours(24), off
   }
   else{
     panel_ranges <-ggb$layout$panel_ranges[[1]]
-    print(names(ggb))
-    print(names(ggb$layout))
-    print(panel_ranges)
   }
   
   min_y <- panel_ranges$y.range[1]
@@ -392,16 +388,3 @@ offsettedSeq <- function(start, end, by,offset){
 		return(unique(c(start,out,end)))
 }
 
-#' #' 
-#'  data(sleep_sexual_dimorphism)
-#'  my_data <- sleep_sexual_dimorphism
-#' #' #' # Fraction of animal asleep over time:
-#'  p <- overviewPlot(asleep,my_data,condition=sex)
-#' #' #' p <- makeLDAnnotation(p)
-#' #' #' print(p)
-#' #' #' p <- ethogramPlot(asleep,my_data,condition=sex,error_bar="sem")
-#' #' #' p <- makeLDAnnotation(p)
-#' #' #' print(p)
-#' p <- makeLDAnnotation(p, colours=c("grey", "black"), offset = -hours(10))
-#' #' #' print(p)
-#' 
