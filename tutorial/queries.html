@@ -140,7 +140,7 @@ $(document).ready(function () {
 <li>each row is describes and animal</li>
 <li>each column is a condition</li>
 </ul>
-<p><code>rethomics</code> uses queries to locate and load data, so in most case queries will <em>compulsory columns</em> such as <code>region_id</code>, <code>path</code> to the result file…</p>
+<p><code>rethomics</code> uses queries to locate and load data, so in most case queries will have <em>compulsory columns</em> such as <code>region_id</code>, <code>path</code> to the result file…</p>
 </div>
 <div id="an-imaginary-example-of-query" class="section level2">
 <h2>An imaginary example of query</h2>
@@ -160,54 +160,51 @@ q</code></pre>
 ## 3: my_result_file.db         3   F        A
 ## 4: my_result_file.db         4   F        B</code></pre>
 <p>Here, you can see each row defines, unambiguously, an animal. Note that sometimes, you may have redundant variables. In our example, the column <code>path</code> does not change because all data comes from the same result file.</p>
-<p>According th the specific acquisition platform, you would use a different way to load the data, but the end goal is always to use the query to map condition to time series.</p>
-<p>Say our hypothetical acquisition platform simply generated 10 time point per animal and observed a single variable (here random) named <code>x</code>, the resulting dt would look like:</p>
-<pre class="r"><code>q[,
-    .(t=1:10,
-      x=round(runif(10),2)),
-    by=eval(colnames(q))]</code></pre>
+<p>According the specific acquisition platform, you would use a different way to load the data, but the end goal is always to use the query to <em>map conditions</em> to time series.</p>
+<p>For instance, imagine a hypothetical acquisition platfrom that would have recorded a variable <code>x</code> over time (<code>t</code>). Also, let’s say that it recorded ten point per animal. When we apply this query, we expect ten point per annimal, but we also kept the conditions that are in the query (each will be repeted ten times). So n the end, we could have something like this:</p>
 <pre><code>##                  path region_id sex genotype  t    x
-##  1: my_result_file.db         1   M        A  1 0.39
-##  2: my_result_file.db         1   M        A  2 0.15
-##  3: my_result_file.db         1   M        A  3 0.05
-##  4: my_result_file.db         1   M        A  4 0.06
-##  5: my_result_file.db         1   M        A  5 0.76
-##  6: my_result_file.db         1   M        A  6 0.92
-##  7: my_result_file.db         1   M        A  7 0.45
-##  8: my_result_file.db         1   M        A  8 0.64
-##  9: my_result_file.db         1   M        A  9 0.81
-## 10: my_result_file.db         1   M        A 10 0.08
-## 11: my_result_file.db         2   M        B  1 0.30
-## 12: my_result_file.db         2   M        B  2 0.77
-## 13: my_result_file.db         2   M        B  3 0.40
-## 14: my_result_file.db         2   M        B  4 0.48
-## 15: my_result_file.db         2   M        B  5 0.74
-## 16: my_result_file.db         2   M        B  6 0.89
-## 17: my_result_file.db         2   M        B  7 0.13
-## 18: my_result_file.db         2   M        B  8 0.93
-## 19: my_result_file.db         2   M        B  9 0.26
-## 20: my_result_file.db         2   M        B 10 0.19
-## 21: my_result_file.db         3   F        A  1 0.82
-## 22: my_result_file.db         3   F        A  2 0.69
-## 23: my_result_file.db         3   F        A  3 0.12
-## 24: my_result_file.db         3   F        A  4 0.92
-## 25: my_result_file.db         3   F        A  5 0.12
-## 26: my_result_file.db         3   F        A  6 0.56
-## 27: my_result_file.db         3   F        A  7 0.24
-## 28: my_result_file.db         3   F        A  8 0.09
-## 29: my_result_file.db         3   F        A  9 0.51
-## 30: my_result_file.db         3   F        A 10 0.17
-## 31: my_result_file.db         4   F        B  1 0.74
-## 32: my_result_file.db         4   F        B  2 0.14
-## 33: my_result_file.db         4   F        B  3 0.61
-## 34: my_result_file.db         4   F        B  4 0.44
-## 35: my_result_file.db         4   F        B  5 0.10
-## 36: my_result_file.db         4   F        B  6 0.33
-## 37: my_result_file.db         4   F        B  7 0.49
-## 38: my_result_file.db         4   F        B  8 0.94
-## 39: my_result_file.db         4   F        B  9 0.11
-## 40: my_result_file.db         4   F        B 10 0.42
+##  1: my_result_file.db         1   M        A  1 0.17
+##  2: my_result_file.db         1   M        A  2 0.43
+##  3: my_result_file.db         1   M        A  3 0.41
+##  4: my_result_file.db         1   M        A  4 0.63
+##  5: my_result_file.db         1   M        A  5 0.77
+##  6: my_result_file.db         1   M        A  6 0.90
+##  7: my_result_file.db         1   M        A  7 0.79
+##  8: my_result_file.db         1   M        A  8 0.87
+##  9: my_result_file.db         1   M        A  9 0.87
+## 10: my_result_file.db         1   M        A 10 0.39
+## 11: my_result_file.db         2   M        B  1 0.38
+## 12: my_result_file.db         2   M        B  2 0.72
+## 13: my_result_file.db         2   M        B  3 0.03
+## 14: my_result_file.db         2   M        B  4 0.38
+## 15: my_result_file.db         2   M        B  5 0.27
+## 16: my_result_file.db         2   M        B  6 0.80
+## 17: my_result_file.db         2   M        B  7 0.59
+## 18: my_result_file.db         2   M        B  8 0.88
+## 19: my_result_file.db         2   M        B  9 0.50
+## 20: my_result_file.db         2   M        B 10 0.35
+## 21: my_result_file.db         3   F        A  1 0.79
+## 22: my_result_file.db         3   F        A  2 0.86
+## 23: my_result_file.db         3   F        A  3 0.97
+## 24: my_result_file.db         3   F        A  4 0.51
+## 25: my_result_file.db         3   F        A  5 0.13
+## 26: my_result_file.db         3   F        A  6 0.36
+## 27: my_result_file.db         3   F        A  7 0.27
+## 28: my_result_file.db         3   F        A  8 0.59
+## 29: my_result_file.db         3   F        A  9 0.19
+## 30: my_result_file.db         3   F        A 10 0.23
+## 31: my_result_file.db         4   F        B  1 0.12
+## 32: my_result_file.db         4   F        B  2 0.17
+## 33: my_result_file.db         4   F        B  3 0.25
+## 34: my_result_file.db         4   F        B  4 0.43
+## 35: my_result_file.db         4   F        B  5 0.50
+## 36: my_result_file.db         4   F        B  6 0.36
+## 37: my_result_file.db         4   F        B  7 0.22
+## 38: my_result_file.db         4   F        B  8 0.89
+## 39: my_result_file.db         4   F        B  9 0.84
+## 40: my_result_file.db         4   F        B 10 0.24
 ##                  path region_id sex genotype  t    x</code></pre>
+<p>This exemple describes the general context of query, but we will see in more details how to apply it to real data very soon!</p>
 </div>
 
 
