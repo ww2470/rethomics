@@ -199,7 +199,8 @@ dt <- loadEthoscopeData(final_query,
                         reference_hour=9.0,
                         columns=c("xy_dist_log10x1000","x"),
                         FUN=sleepAnnotation,
-                        verbose=F)
+                        verbose=F,
+                        masking_duration=0)
 ```
 
 Another way to speed up data reading is to use several cores in parallel. This can be achieved using `ncores=N`, where N is the number of parallel processes.
