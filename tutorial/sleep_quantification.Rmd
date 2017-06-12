@@ -32,7 +32,6 @@ Perform sleep annotation in real life
 ---------------------------------------
 Let us rebuild the query we had made in [this tutorial](ethoscope_data.html)
 ```{r, include=FALSE}
-TUTO_DATA_DIR="/data/rethomics_tutorial_data/"
 library(rethomics)
 source("rprint.R")
 ```
