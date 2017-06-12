@@ -5,7 +5,7 @@ FULL_REPO="https://$GH_TOKEN@$GH_REPO"
 
 echo "Setting up..."
 
-echo $GH_TOKEN | md5sum
+#echo $GH_TOKEN | md5sum
 mkdir ~/rethomics_tuto
 cd ~/rethomics_tuto
 
@@ -28,6 +28,7 @@ ls ~
 
 R -e "install.packages('rmarkdown', repos='http://cran.us.r-project.org')"
 R -e "install.packages('devtools', repos='http://cran.us.r-project.org')"
+R -e "install.packages('DT', repos='http://cran.us.r-project.org')"
 R -e "library(devtools); install_github('gilestrolab/rethomics',subdir='rethomics')"
 
 
