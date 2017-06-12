@@ -21,19 +21,22 @@ Sleep scoring in fruit fly
 In fruit fly, sleep is classically associated with bouts of **immobility** of **5min** or more.
 In practice, we want to annotate our data with an extra variable named `asleep` that will be `TRUE` if and only if the animal is scored as sleeping.
 In `rethomics`, the function`sleepAnnotation` can be used for this.
-It takes data from one animal, chop it in time chunks (by default of ten second), detect wether the animal has moved, at any point, within this time window. With this, it creates a columns called `moving` scoring activity.
-It the uses it to find imobility bouts of at least 5min (you can change this default value).
+It takes data from one animal, chops it in time chunks (by default of ten second), detect whether the animal has moved, at any point, within this time window. This creates a columns called `moving` which scores activity.
+This variable is used to find imobility bouts of at least 5min (you can change this value if you want).
 By default, activity is scored by the function `maxVelocityClassifier`, which uses maximal speed to find out whether an fly is moving.
 
-In the end of the day, we summarise data by segments of 10s and add two columns to define movement and sleep.
+At the end of the day, we summarise raw tracking data by epochs of 10s and add two columns to define movement and sleep.
 
 
 Perform sleep annotation in real life
 ---------------------------------------
 Let us rebuild the query we had made in [this tutorial](ethoscope_data.html)
 ```{r, include=FALSE}
+TUTO_DATA_DIR="/data/rethomics_tutorial_data/"
 library(rethomics)
+source("rprint.R")
 ```
+
 
 ```{r}
 # we build the path to ethoscope results
@@ -54,13 +57,179 @@ dt <- loadEthoscopeData(final_query,
                         # We apply sleep annotation on the go
                         FUN=sleepAnnotation,
                         # we hide progress messages (for the tutorial, but you can show them for yourself)
-                        verbose=F)
+                        verbose=F,
+                        masking_duration=0)
 print(colnames(dt))
 ```
 
-Let us look at those two variables:
+Visualise sleep data
+------------------------
+
+The first thing we want to do is look at *single animal behaviour*. This procedure allows us to thoughougly check for data consistency. This way we can detect things like missing data, individual death/escape, time missalignment (which we would not be able to see at the population level). To do that, we run an `overviewPlot`:
+
+
 ```{r, plot=TRUE}
 pl <- overviewPlot(moving, dt, condition, time_unit_conversion = days)
-pl <- ethogramPlot(moving, dt, condition, error_bar="sem", time_unit_conversion = days)
-pl <- ethogramPlot(asleep, dt, condition, error_bar="sem", time_unit_conversion = days)
+pl
 ```
+
+See the [relevant tutorial](overview_plot.html) for detail about the overview plot.
+
+
+Sometimes, we want to focus on some relevant data. For instance, we want to exclude the first day of tracking, or concentrate analysis on one machine or treatment. This can be done by subseting our `data.table` just like we described in [this tutorial](data_tables.html).
+
+For example, here, we exclude the fist day:
+
+```{r, plot=TRUE}
+dt_curated <- dt[t > days(1)]
+```
+
+Now `dt_curated` is a subset of `dt` with wich we can work.
+
+Often, we would like to average sleep between populations. To visualise population averages, we can use `ethogramPlot`:
+
+```{r, plot=TRUE}
+pl <- ethogramPlot(asleep,              # we look at sleep
+                    dt_curated,         # we use the curated data (dt minus first day)
+                    condition,           # we want to look at the effect of condition
+                    time_unit_conversion = days, # we want the x axis, time, to be in days (not hours)
+                    error_bar = "sem")
+pl
+```
+
+
+
+
+Summarise data
+------------------------
+
+Most of the time, we would like to compute several *sleep variables* per animal.
+For that, we can use the `by` argument of `data.table`. for instance, average sleep would be:
+
+```{r}
+summary_dt <- dt_curated[, 
+                          .(mean_sleep = mean(asleep)),
+                          by=key(dt)]
+print(summary_dt)
+```
+
+
+Sometimes, we also want day (L phase) sleep vs night (D phase) sleep. 
+For this, we start by adding a new column to our data that defines phase (L vs D):
+
+```{r}
+dt_curated[, phase := ifelse(t %% hours(24) < hours(12), "L", "D")]
+```
+
+Now the column `phase` has the values "L" or "D" during day and night, respectively.
+We can use this information to make our summary a bit more informative:
+
+```{r}
+summary_dt <- dt_curated[, 
+                          .(mean_sleep = mean(asleep),
+                          mean_sleep_l = mean(asleep[phase=="L"]),
+                          mean_sleep_d = mean(asleep[phase=="D"])),
+                          by=key(dt)]
+print(summary_dt)
+```
+
+Then, we can plot either of these variables (just by changing the `y` value in `ggplot`):
+
+```{r, plot=TRUE}
+ggplot(summary_dt, aes(x=condition, y=mean_sleep  )) + geom_boxplot()
+ggplot(summary_dt, aes(x=condition, y=mean_sleep_l)) + geom_boxplot()
+ggplot(summary_dt, aes(x=condition, y=mean_sleep_d)) + geom_boxplot()
+```
+
+You can also do more fancy things like looking at the correlation between night and day sleep for different treatment/conditions:
+
+
+```{r, plot=TRUE}
+ggplot(summary_dt, aes(x=mean_sleep_d, y=mean_sleep_l, colour=condition, fill=condition)) +
+                                                            geom_smooth(method="lm") + 
+                                                            geom_point()
+```
+Here, each point is an animal, and the lines are linear regressions.
+
+
+
+Sleep architecture
+------------------------
+
+Sometimes, you will be interested in thinging about sleep data in terms of sleep episodes. For instance, may want compare number, average lenght or latency of sleep bouts.
+To do so, we can convert data in bouts:
+
+```{r}
+bout_dt = boutAnalysis(asleep, dt_curated)
+print(bout_dt[1:100])
+```
+As you can see, *every row is a bout*. It is defined by a length and a start time (both in seconds).
+It also keeps the infromation relative to each animal (key). By default, `boutAnalysis` computes bouts for all possible values of `y`. In our example, we have both sleep and wake bouts. If we are interested nly in sleep bouts, we can simply define a subset:
+
+```{r}
+sleep_bout_dt <- bout_dt[asleep == TRUE] 
+```
+
+Then, we can compute summaries on this subset
+
+```{r}
+summary_bout_dt <- sleep_bout_dt[,
+                                 .(  n_bout = .N, 
+                                     mean_duration = mean(length),
+                                     latency = .SD[1,start_time]
+                                     ), 
+                                 by=key(sleep_bout_dt)]
+print(summary_bout_dt)
+```
+
+
+Maybe you would also like to make a difference between night and day.
+
+```{r}
+sleep_bout_dt[, phase := ifelse(start_time %% hours(24) < hours(12), "L", "D")]
+```
+
+
+```{r,results='asis'}
+summary_bout_dt <- sleep_bout_dt[,
+                                 .(  n_bout = .N,                    # alltogether
+                                     mean_duration = mean(length),   
+                                     n_bout_l = nrow(.SD[phase=="L"]),                   # day
+                                     mean_duration_l = mean(length[phase=="L"]),
+                                     latency_l = .SD[phase=="L"][1,start_time] - days(1),
+                                     n_bout_d = nrow(.SD[phase=="L"]),                   # night
+                                     mean_duration_d = mean(length[phase=="D"]),
+                                     latency_d = .SD[phase=="D"][1,start_time] - days(1.5)
+                                     ), 
+                                 by=key(sleep_bout_dt)]
+print(summary_bout_dt)
+```
+
+**About latency**. 
+Note that I normalised latency to express it as a duration from the first time lights turns on (`t = days(1)`) of off (`t = days(1)`). Tose latency are only for the first 24h instead of an average over several days (which is beound the scope of this turorial).
+
+Putting it all together
+---------------------------
+We have two summaries `summary_dt` (average sleep amounts) and `summary_bout_dt` (sleep architecture) which both contain several variables and have one row per animal. It would make sense to merge them:
+
+```{r}
+summary_dt <- summary_dt[summary_bout_dt]
+print(summary_dt)
+```
+
+Going further
+---------------
+
+Frome here you could: 
+
+* Perform standard statitics on this summary data within `R`
+* Use `R` to plot these data
+* Export this data as a CSV file (using `write.csv`)
+
+
+
+
+
+
+
+

@@ -31,10 +31,10 @@ The variable of interest is averaged over a specific time window. Each row of th
 This should make more sense with an example:
 
 
-
 ```{r, include=FALSE}
 library(rethomics)
 ```
+
 
 We load data from the package:
 
@@ -91,3 +91,14 @@ pl
 It is important to understand that you can perform overview plot on any quantitative or logical variable in your table.
 For instance, try it with the `asleep` variable.
 More options, such as changing the lenght of the average time window, are available, so feel free to read the documentation of this function.
+
+Changing the default time window
+-----------------------------------
+
+By default, each cell in this plot represents an average over 30 minutes. Sometimes, you would like to summarise your data over different time window. For that, we can change the argument `summary_time_window`:
+
+```{r, plot=TRUE, fig.width = 15, fig.height = 15}
+pl <- overviewPlot(moving, dt, sex, summary_time_window= hours(1))
+pl
+```
+
