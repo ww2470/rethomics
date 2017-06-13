@@ -1,0 +1,147 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage[table,xcdraw]{xcolor}
+
+\usepackage{amstext} % for \text macro
+\usepackage{array}   % for \newcolumntype macro
+\newcolumntype{L}{>{$}l<{$}}
+
+\begin{document}
+
+
+% Please add the following required packages to your document preamble:
+% \usepackage[table,xcdraw]{xcolor}
+% If you use beamer only pass "xcolor=table" option, i.e. \documentclass[xcolor=table]{beamer}
+% Please add the following required packages to your document preamble:
+% \usepackage[table,xcdraw]{xcolor}
+% If you use beamer only pass "xcolor=table" option, i.e. \documentclass[xcolor=table]{beamer}
+\begin{table}[]
+\centering
+\caption{Query}
+\label{query}
+\begin{tabular}{|r|L|L|L|L|}
+\hline
+\rowcolor[HTML]{EFEFEF} 
+{\color[HTML]{333333} \textbf{animal}} & {\color[HTML]{333333} \textbf{condition}} & {\color[HTML]{333333} \textbf{sex}} & {\color[HTML]{333333} \textbf{...}} & {\color[HTML]{333333} \textbf{p}} \\ \hline
+\rowcolor[HTML]{FE996B} 
+1                                      & A                                         & M                                   & ...                                 & p_1                              \\ \hline
+\rowcolor[HTML]{FE996B} 
+2                                      & B                                         & M                                   & ...                                 & p_2                              \\ \hline
+\rowcolor[HTML]{FE996B} 
+3                                      & A                                         & F                                   & ...                                 & p_3                              \\ \hline
+\rowcolor[HTML]{FE996B} 
+...                                    & ...                                       & ...                                 & ...                                 & ...                               \\ \hline
+\rowcolor[HTML]{FE996B} 
+n                                      & condition_n                              & sex_n                              & ...                                 & p_n                              \\ \hline
+\end{tabular}
+\end{table}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{table}[]
+\centering
+\caption{$Data_1$}
+\label{data}
+\begin{tabular}{|r|L|L|L|L|}
+\hline
+\rowcolor[HTML]{EFEFEF} 
+{\color[HTML]{333333} \textbf{t}} & {\color[HTML]{333333} \textbf{x}} & {\color[HTML]{333333} \textbf{y}} & {\color[HTML]{333333} \textbf{...}} & {\color[HTML]{333333} \textbf{k}} \\ \hline
+10                                & 0.9                               & 0.2                               & ...                                 & k_{10}                            \\ \hline
+20                                & 0.8                               & 0.4                               & ...                                 & k_{20}                            \\ \hline
+30                                & 0.6                               & 0.3                               & ...                                 & k_{30}                            \\ \hline
+40                                & 0.4                               & 0.1                               & ...                                 & k_{40}                            \\ \hline
+50                                & 0.5                               & 0.5                               & ...                                 & k_{50}                            \\ \hline
+...                               & ...                               & ...                               & ...                                 & ...                                \\ \hline
+t                                 & x_t                               & y_t                               & ...                                 & k_{t}                             \\ \hline
+\end{tabular}
+\end{table}
+
+
+
+\begin{table}[]
+\centering
+\caption{$Data_2$}
+\label{data}
+\begin{tabular}{|r|L|L|L|L|}
+\hline
+\rowcolor[HTML]{EFEFEF} 
+{\color[HTML]{333333} \textbf{t}} & {\color[HTML]{333333} \textbf{x}} & {\color[HTML]{333333} \textbf{y}} & {\color[HTML]{333333} \textbf{...}} & {\color[HTML]{333333} \textbf{k}} \\ \hline
+10                                & 0.4                               & 0.3                               & ...                                 & k_{10}                            \\ \hline
+20                                & 0.5                               & 0.7                               & ...                                 & k_{20}                            \\ \hline
+30                                & 0.3                               & 0.1                               & ...                                 & k_{30}                            \\ \hline
+40                                & 0.7                               & 0.5                               & ...                                 & k_{40}                            \\ \hline
+50                                & 0.3                               & 0.4                               & ...                                 & k_{50}                            \\ \hline
+...                               & ...                               & ...                               & ...                                 & ...                                \\ \hline
+t                                 & x_t                               & y_t                               & ...                                 & k_{t}                             \\ \hline
+\end{tabular}
+\end{table}
+
+
+\begin{table}[]
+\centering
+\caption{$Data_3$}
+\label{data}
+\begin{tabular}{|r|L|L|L|L|}
+\hline
+\rowcolor[HTML]{EFEFEF} 
+{\color[HTML]{333333} \textbf{t}} & {\color[HTML]{333333} \textbf{x}} & {\color[HTML]{333333} \textbf{y}} & {\color[HTML]{333333} \textbf{...}} & {\color[HTML]{333333} \textbf{k}} \\ \hline
+10                                & 0.2                               & 0.6                               & ...                                 & k_{10}                            \\ \hline
+20                                & 0.2                               & 0.3                               & ...                                 & k_{20}                            \\ \hline
+30                                & 0.3                               & 0.3                               & ...                                 & k_{30}                            \\ \hline
+40                                & 0.5                               & 0.4                               & ...                                 & k_{40}                            \\ \hline
+50                                & 0.7                               & 0.5                               & ...                                 & k_{50}                            \\ \hline
+...                               & ...                               & ...                               & ...                                 & ...                                \\ \hline
+t                                 & x_t                               & y_t                               & ...                                 & k_{t}                             \\ \hline
+\end{tabular}
+\end{table}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+\begin{table}[]
+\centering
+\caption{test}
+\label{test}
+\begin{tabular}{|r|L|L|L|L|L|L|L|}
+\hline
+\rowcolor[HTML]{EFEFEF} 
+{\color[HTML]{333333} \textbf{animal}} & {\color[HTML]{333333} \textbf{condition}} & {\color[HTML]{333333} \textbf{sex}} & {\color[HTML]{333333} \textbf{t}} & {\color[HTML]{333333} \textbf{x}} & {\color[HTML]{333333} \textbf{y}} & {\color[HTML]{333333} \textbf{...}} & {\color[HTML]{333333} \textbf{k}} \\ \hline
+\rowcolor[HTML]{FE996B} 
+1                                      & A                                         & M                                   &  10                                & 0.9                               & 0.2                               & ...                                 & k_{10}                            \\ \hline
+\rowcolor[HTML]{FE996B} 
+1                                      & A                                         & M                                   &  20                                & 0.8                               & 0.4                               & ...                                 & k_{20}                            \\ \hline
+\rowcolor[HTML]{FE996B} 
+1                                      & A                                         & M                                   &  30                                & 0.6                               & 0.3                               & ...                                 & k_{30}                            \\ \hline
+\rowcolor[HTML]{FE996B} 
+1                                      & A                                         & M                                   &  40                                & 0.4                               & 0.1                               & ...                                 & k_{40}                            \\ \hline
+\rowcolor[HTML]{FE996B} 
+1                                      & A                                         & M                                   &  50                                & 0.5                               & 0.5                               & ...                                 & k_{50}                            \\ \hline
+...                               & ...                               & ...                               & ...                               & ...                               & ...                               & ...                                 & ...                                \\ \hline
+\rowcolor[HTML]{FE996B} 
+2                                      & B                                         & M                                   &  10                                & 0.4                               & 0.3                               & ...                                 & k_{10}                            \\ \hline
+\rowcolor[HTML]{FE996B} 
+2                                      & B                                         & M                                   &  20                                & 0.5                               & 0.7                               & ...                                 & k_{20}                            \\ \hline
+\rowcolor[HTML]{FE996B} 
+2                                      & B                                         & M                                   &  30                                & 0.3                               & 0.1                               & ...                                 & k_{30}                            \\ \hline
+\rowcolor[HTML]{FE996B} 
+2                                      & B                                         & M                                   &  40                                & 0.7                               & 0.5                               & ...                                 & k_{40}                            \\ \hline
+\rowcolor[HTML]{FE996B} 
+2                                      & B                                         & M                                   &  50                                & 0.3                               & 0.4                               & ...                                 & k_{50}                            \\ \hline
+...                               & ...                               & ...                               &  ...                               & ...                               & ...                               & ...                                 & ...                                \\ \hline
+\rowcolor[HTML]{FE996B} 
+3                                      & A                                         & F                                   &  10                                & 0.2                               & 0.6                               & ...                                 & k_{10}                            \\ \hline
+\rowcolor[HTML]{FE996B} 
+3                                      & A                                         & F                                   &  20                                & 0.2                               & 0.3                               & ...                                 & k_{20}                            \\ \hline
+\rowcolor[HTML]{FE996B} 
+3                                      & A                                         & F                                   &  30                                & 0.3                               & 0.3                               & ...                                 & k_{30}                            \\ \hline
+\rowcolor[HTML]{FE996B} 
+3                                      & A                                         & F                                   &  40                                & 0.5                               & 0.4                               & ...                                 & k_{40}                            \\ \hline
+\rowcolor[HTML]{FE996B} 
+3                                      & A                                         & F                                   &  50                                & 0.7                               & 0.5                               & ...                                 & k_{50}                            \\ \hline
+...                               & ...                               & ...                               & ...                               & ...                               & ...                               & ...                                 & ...                                \\ \hline
+ 
+\end{tabular}
+\end{table}
+\end{document}

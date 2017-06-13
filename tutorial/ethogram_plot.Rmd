@@ -24,6 +24,7 @@ The function `ethogramPlot` works very much like overview plots, but it makes av
 
 ```{r, include=FALSE}
 library(rethomics)
+source("rprint.R")
 ```
 
 We use the same data as before:

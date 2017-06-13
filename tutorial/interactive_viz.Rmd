@@ -1,0 +1,64 @@
+---
+title: "Interactive visualisation"
+author: "Quentin Geissmann"
+date: "13 June 2017"
+output: html_document
+---
+
+
+Aims
+----- 
+
+In this tutorial, we will learn:
+
+* How to use `plotly` to display graphs 
+
+
+The mariage `plotly` and `ggplot`
+----------------------------------------
+
+In `rethomics`, the graphs aere generated as `ggplot` objects. 
+These can be exported as pdf which is great for publication-quality graph. 
+However, sometimes, we want some degree of interactivenes with the figures, so we can zoom, exclude some data etc.
+The packages `plotly` can take pretty much any ggplot object and make it interactive.
+
+```{r, include=FALSE}
+library(rethomics)
+library(plotly)
+source("rprint.R")
+```
+
+
+
+```{r, eval=FALSE}
+install.packages("plotly")
+library("plotly")
+```
+
+
+
+First, lets make an ethogram as a static figure [see here](ethogram_plot.html):
+
+```{r, plot=TRUE}
+data(sleep_sexual_dimorphism)
+dt <- sleep_sexual_dimorphism
+pl <- ethogramPlot(moving, dt, sex, error_bar="sem")
+pl
+```
+
+
+This `pl` object is a static figure, so is is just displayed as an image.
+
+Now by just using `ggplotly()` function, we can make the following:
+```{r, plot=TRUE}
+ggplotly(pl)
+```
+
+A few useful thing we can do here:
+
+* By clicking on the legend, we can toggle out some groups
+* By hovering on some point, we can get read `xy` values
+* By selecting areas, we can zoom-in
+
+For more info, have a look at the [plotly package](https://plot.ly/) itself.
+

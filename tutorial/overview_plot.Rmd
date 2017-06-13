@@ -33,6 +33,7 @@ This should make more sense with an example:
 
 ```{r, include=FALSE}
 library(rethomics)
+source("rprint.R")
 ```
 
 

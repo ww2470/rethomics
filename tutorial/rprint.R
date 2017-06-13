@@ -19,7 +19,7 @@ rPrint <- function(data){
   #return(datatable(data))
   k <- key(data)
   if(length(k) > 0)
-    out = out %>% formatStyle(k,  color = 'red', backgroundColor = 'orange', fontWeight = 'bold')
+    out = out %>% formatStyle(k,  color = 'black', backgroundColor = 'orange', fontWeight = 'bold')
 
   s <- sapply(data,
               function(x){
