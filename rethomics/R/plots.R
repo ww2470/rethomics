@@ -342,7 +342,7 @@ makeLDAnnotation <- function(pl, time_conversion_unit=days,period=hours(24), off
     warning("Please update ggplot2")
   }
   else{
-    if("pannel_range" %in% names(ggb$layout))
+    if("panel_ranges" %in% names(ggb$layout))
       panel_ranges <-ggb$layout$panel_ranges[[1]]
     else
       panel_ranges <-ggb$layout$panel_params[[1]]

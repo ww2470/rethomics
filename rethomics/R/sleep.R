@@ -24,7 +24,9 @@ NULL
 #' # We make a sleep `barecode'
 #' ggplot(sleep_dt, aes(t,region_id,fill=asleep)) + geom_tile()
 #' # A bit of data.table wizardry to apply that to each experiement and region:
-#' sleep_dt <-  tube_monitor_validation[,sleepAnnotation(.SD, masking_duration=0),by=key(tube_monitor_validation)]
+#' sleep_dt <-  tube_monitor_validation[,
+#'                                        sleepAnnotation(.SD, masking_duration=0),
+#'                                        by=key(tube_monitor_validation)]
 #' # The same bare code for all regions
 #' ggplot(sleep_dt, aes(t,region_id,fill=asleep)) + geom_tile()
 #' @seealso \code{\link{loadEthoscopeData}} to load data and optionally apply analysis on the fly.
