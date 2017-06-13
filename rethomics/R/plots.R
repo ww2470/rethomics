@@ -328,7 +328,6 @@ bootCi <- function(x,
 #' print(p)
 #' @export
 makeLDAnnotation <- function(pl, time_conversion_unit=days,period=hours(24), offset=0, size=.02, colours = c("white", "black")){
-  
   ggb <- ggplot_build(pl)
   panel_ranges <- ggplot_build(pl)$panel$ranges[[1]]
   
@@ -338,14 +337,17 @@ makeLDAnnotation <- function(pl, time_conversion_unit=days,period=hours(24), off
   min_x <- time_conversion_unit(panel_ranges$x.range[1])
   max_x <- time_conversion_unit(panel_ranges$x.range[2])
   
-  
   if("panel" %in% names(ggb)){
-    panel_ranges <- ggplot_build(pl)$panel$ranges[[1]]
+    panel_ranges <- ggb$panel$ranges[[1]]
     warning("Please update ggplot2")
   }
   else{
-    panel_ranges <-ggb$layout$panel_ranges[[1]]
+    if("pannel_range" %in% names(ggb$layout))
+      panel_ranges <-ggb$layout$panel_ranges[[1]]
+    else
+      panel_ranges <-ggb$layout$panel_params[[1]]
   }
+  
   
   min_y <- panel_ranges$y.range[1]
   max_y <- panel_ranges$y.range[2]
@@ -381,7 +383,6 @@ makeLDAnnotation <- function(pl, time_conversion_unit=days,period=hours(24), off
   s2 <- annotate("segment", x=min(steps), xend=max(steps), y=bottom_annotation, yend= bottom_annotation  , colour=c("black"))
   pl + al + ad  + s1 + s2
 }
-
 offsettedSeq <- function(start, end, by,offset){
 		second <- by * ceiling(start/by) + offset
 		out <- seq(from = second, to=end, by=by)
