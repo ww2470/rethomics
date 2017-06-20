@@ -42,6 +42,83 @@ StatPopEtho <- ggproto("StatPopEtho", Stat,
 )
 
 
+ldAnnotation <- function(x, period=1, phase=0){
+  if(!(abs(phase) <= period))
+    stop("Phase should be lower or equal to period!")
+  left <- min(x)
+  right <- max(x)
+  p2 <- period/2
+  box_pos <- p2 * floor(seq(from=left-p2, to=right+p2, by=p2) /p2) + phase %%period
+  ld <- ifelse(((box_pos - phase) %% period)/p2, "L","D")
+  out <- data.table(ld=ld, xmin=box_pos, xmax=box_pos + p2)
+  out <- out[left < xmax & right >xmin]
+  out[1, xmin := left]
+  out[.N, xmax := right]
+  out  
+}
+
+StatLDAnnotation <- ggproto("StatLDannotation", Stat,
+                            default_aes = aes(colour = "black", size = 0.5, linetype = 1,
+                                              alpha = .66),
+                            setup_params = function(data, params){
+                              out <- ldAnnotation(data$x,params$period,params$phase)
+                              if(params$ypos != "auto")
+                                out[,ypos:=params$ypos]
+                              else{
+                                range <- max(data$y) - min(data$y)
+                                out[,ypos := min(data$y) - range * .05]
+                              }
+                              if(params$height != "auto")
+                                out[,height:=params$height]
+                              else{
+                                range <- max(data$y) - min(data$y)
+                                out[, height :=  range * .02]
+                              }
+                              out[,ymin:= ypos-height/2]
+                              out[,ymax:= ypos+height/2]
+                              params$ld_boxes <-out
+                              params
+                            },
+                            
+                            compute_group = function(data, scales,ld_colours, ld_boxes,ypos,
+                                                     height,phase,period,...) {
+                              ld_boxes
+                            },
+                            
+                            finish_layer = function(data, params) {
+                              data$fill <- params$ld_colours[(data$ld=="L")+1]
+                            },
+                            required_aes = c("x","y"),
+                            draw_key = draw_key_polygon
+)
+
+
+
+GeomRectLD <- ggproto("GeomLD", GeomRect,
+                      default_aes = aes(colour = "black",fill="blue", size = 0.5, linetype = 1,
+                                        alpha = .66))
+
+
+stat_ld_annotation <- function (mapping = NULL,
+                                data = NULL,
+                                position = "identity",
+                                ld_colours = c("white", "black"),
+                                ypos = "auto",
+                                height = "auto",
+                                period = 1,
+                                phase = 0,
+                                ..., 
+                                na.rm = FALSE,
+                                show.legend = FALSE,
+                                inherit.aes = TRUE) 
+{
+  layer(data = data, mapping = mapping, stat = StatLDAnnotation, 
+        geom = GeomRectLD,
+        #geom = GeomRect, 
+        position = position, show.legend = show.legend, inherit.aes = inherit.aes, 
+        params = list(na.rm = na.rm, ld_colours=ld_colours, ypos=ypos,height=height,
+                      phase=phase, period=period,ld_boxes=NULL, ...))
+}
 
 
 
@@ -112,94 +189,5 @@ dt <- dt[!(machine_name == "GGSM-004" & t > hours(20))]
 pl3 <- ggetho2(asleep, dt, aes(t,asleep,colour=sex)) +
        stat_pop_etho(aes(),method=mean_se) + facet_grid(. ~ machine_name)
 
-
-
-pl3
-
-ldAnnotation <- function(x, period=1, phase=0){
-  
-  if(!(phase <= period))
-    stop("Phase should be lower or equal to period!")
-  left <- min(x)
-  right <- max(x)
-  p2 <- period/2
-  
-  out <- phase + floor(seq(from= left, to= right, by=p2) /p2) * p2
-  out <- data.table(xmin=out, xmax=out+p2)
-  out[1,xmin := min(x)]
-  out[.N,xmax := max(x)]
-  return(out)
-  
-}
-
-StatLDAnnotation <- ggproto("StatLDannotation", Stat,
-                           default_aes = aes(colour = "black", size = 0.5, linetype = 1,
-                                             alpha = .66),
-                           setup_params = function(data, params){
-                              
-                              out <- ldAnnotation(data$x,params$period,params$phase)
-                              if(params$y != "auto")
-                                out[,y:=params$y]
-                              else
-                                stop("Not IMPLEMENTED")
-                              if(params$height != "auto")
-                                out[,height:=params$height]
-                              else
-                                stop("Not IMPLEMENTED")
-                                
-                              
-                              out[,ymin:= y-height/2]
-                              out[,ymax:= y+height/2]
-                              
-                              out[, fill:=rep(params$ld_colours, length.out=.N)]
-                              params$ld_boxes <-out
-                              print(params)
-                           },
-                           
-                           compute_group = function(data, scales,ld_colours, ld_boxes,y,
-                                                    height,phase,period,...) {
-                             ld_boxes
-                           },
-                          required_aes = c("x"),
-                           draw_key = draw_key_polygon
-)
-
-
-
-GeomRectLD <- ggproto("GeomLD", GeomRect,
-                           default_aes = aes(colour = "black",fill="blue", size = 0.5, linetype = 1,
-                                             alpha = .66))
-
-
-stat_ld_annotation <- function (mapping = NULL,
-                                data = NULL,
-                                position = "identity",
-                                ld_colours = c("white", "black"),
-                                y = "auto",
-                                height = "auto",
-                                period = 1,
-                                phase = 0,
-                                ..., 
-                                na.rm = FALSE,
-                                show.legend = FALSE,
-                                inherit.aes = FALSE) 
-{
-  layer(data = data, mapping = mapping, stat = StatLDAnnotation, geom = GeomRectLD, 
-        position = position, show.legend = show.legend, inherit.aes = inherit.aes, 
-        params = list(na.rm = na.rm, ld_colours=ld_colours, y=y,height=height,
-                      phase=phase, period=period,ld_boxes=NULL, ...))
-}
-
-pl3 + stat_ld_annotation(aes(x=t),colour="black", y=-.1, height=.05, period=24, phase=0)
-
-d
-#pl3 + stat_ld_annotation(data=d,mapping=aes(xmin=x1, xmax=x2, ymin=y1, ymax=y2, fill=t),inherit.aes = F)
-
-
-
-pl4 <- ggetho2(asleep, dt, aes(t,asleep)) +
-  stat_pop_etho(aes(),method=mean_se) 
-
-grid:::rectGrob()
-
-?ggproto
+pl3 + 
+  stat_ld_annotation(colour="black",  period=24, phase=0)

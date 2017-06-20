@@ -50,6 +50,7 @@ git checkout gh-pages
 mv ~/tutorial/*.html tutorial/
 #cp ~/tutorial/rethomics.pdf doc/
 
+git pull origin gh-pages
 git add tutorial
 git add doc/rethomics.pdf
 git commit -m "test autocommit after $TRAVIS_COMMIT [ci skip]"
