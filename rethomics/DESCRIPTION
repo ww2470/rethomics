@@ -1,6 +1,6 @@
 Package: rethomics
 Type: Package
-Title: Rethomics, a package to analyse high-throughput animal behaviour data
+Title: Rethomics, a package to analyse high-throughput animal behavioural data
 Version: 0.1
 Date: 2015-01-29
 Authors@R: c(
@@ -24,18 +24,16 @@ Depends:
     ggplot2,
     reshape2,
     tools
+    hms
 LazyLoad: TRUE
 Collate:
-    'ethoscope_io.R'
-    'dam_io.R'
-    'helpers.R'
-    'plots.R'
-    'sleep.R'
-    'utils_time.R'
-    'utils_path.R'
-    'utils_misc.R'
-    'datasets.R'
+    'ggetho.R'
+    'utils-time.R'
+    'stat-pop-etho.R'
+    'stat-ld-annotations.R'
+    'synthetic-data.R'
 URL: https://github.com/gilestrolab/rethomics
+Roxygen: list(markdown = TRUE)
 RoxygenNote: 6.0.1
 Suggests: 
     testthat,
