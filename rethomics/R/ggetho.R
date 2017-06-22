@@ -8,8 +8,6 @@
 #' @param mapping Default list of aesthetic mappings to use for plot.
 #' @param summary_FUN Method (function) used to summarise `variable` over time (typically, the mean). 
 #' @param summary_time_window Width (in seconds) of the time window to compute a summary on.
-#' @param time_conversion Method (function) to convert time (from second) in the x axis. 
-#' Typically, [days], [hours] or [mins].
 #' @param time_wrap Time (in seconds) used to wrap the data (see details).
 #' @param time_offset Time offset (i.e. phase, in seconds) when using `time_wrap`.
 #' @param ... Additional arguments to be passed to [ggplot2::ggplot()]
@@ -46,7 +44,7 @@ ggetho <- function(variable,
                     mapping,
                     summary_FUN = mean,
                     summary_time_window = mins(30),
-                    time_conversion=hours,
+                    #time_conversion=hours,
                     time_wrap=NULL,
                     time_offset=NULL,
                     # todo add time wrap offset / double plotting
@@ -68,7 +66,7 @@ ggetho <- function(variable,
   setnames(dd,y_char, "..y..")
   sdt <- dd[, .(..y.. = summary_FUN(..y..)), by=c(k, "..t..")]
   setnames(sdt,c("..y..","..t.."), c(y_char, "t"))
-  sdt[,t := t / time_conversion(1)]
+  #sdt[,t := t / time_conversion(1)]
   
   mapping_list <- lapply(mapping, as.character) 
   
@@ -84,5 +82,7 @@ ggetho <- function(variable,
     mapping_list$fill = y_char
   
   mapping = do.call(aes_string,mapping_list)
-  ggplot(sdt, mapping,...)
+  ggplot(sdt, mapping,...) + scale_x_time()
 }
+
+  

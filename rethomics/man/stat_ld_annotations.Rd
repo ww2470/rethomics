@@ -38,8 +38,7 @@ The default is white and black.}
 \item{ypos, height}{The position and height of the annotation on the y axis.
 The defaults, "auto" will put the labels below any data.}
 
-\item{period, phase}{the period and phase of the LD cycle.
-The units are the same as on the x axis (). #todo chould be in s}
+\item{period, phase}{Period and phase (in seconds) of the LD cycle.}
 
 \item{...}{other arguments passed on to \code{\link[=layer]{layer()}}. These are
 often aesthetics, used to set an aesthetic to a fixed value, like
@@ -59,7 +58,7 @@ that define both data and aesthetics and shouldn't inherit behaviour from
 the default plot specification, e.g. \code{\link[=borders]{borders()}}.}
 }
 \description{
-This function is used to show ight and dark phases as boxes on a plot.
+This function is used to show light and dark phases as boxes on a plot.
 }
 \examples{
 # we start by making a to dataset with 20 animals
@@ -69,12 +68,14 @@ query <- data.table(experiment_id="toy_experiment",
 dt <- toyActivityData(query,3)
 # We build a plot object
 pl <-  ggetho(asleep, dt, aes(x=t, y=asleep)) + stat_pop_etho()
-pl + stat_ld_annotations(period=24)
+pl + stat_ld_annotations(aes(t), period=hours(24))
+pl + stat_ld_annotations(aes(t), period=hours(22))
 }
 \seealso{
 Useful links:
 \itemize{
-\item Tutorial for this function \url{http://gilestrolab.github.io/rethomics/tutorial}
+\item \link{ggetho} to generate a plot object
+\item Tutorial for this function \url{http://gilestrolab.github.io/rethomics/tutorial/todo}
 }
 
 Other layers: \code{\link{stat_pop_etho}}

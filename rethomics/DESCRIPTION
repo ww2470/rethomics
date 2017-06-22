@@ -5,11 +5,7 @@ Version: 0.1
 Date: 2015-01-29
 Authors@R: c(
     person("Quentin", "Geissmann", role = c("aut", "cre"),email ="qgeissmann@gmail.com"),
-    person("Girogio", "Gilestro", role = "ctb"),
-    person("Luis", "Garcia", role = "ctb", email="luis.garcia@polygonaltree.co.uk"),
-    person("Anne", "Petzold", role = "ctb", email="a.petzold13@imperial.ac.uk"),
-    person("Diana ", "Bicazan", role = "ctb", email="diana.bicazan12@imperial.ac.uk"),
-    person("Joe", "Gallagher", role = "ctb",email = "boa07jg@sheffield.ac.uk"))
+    person("Luis", "Garcia", role = "ctb", email="luis.garcia@polygonaltree.co.uk"))
 Author: Quentin Geissmann
 Maintainer: Quentin Geissmann <qgeissmann@gmail.com>
 Description: This package was primarily developed to study sleep and circadian
@@ -23,7 +19,7 @@ Depends:
     data.table,
     ggplot2,
     reshape2,
-    tools
+    tools,
     hms
 LazyLoad: TRUE
 Collate:
@@ -32,6 +28,8 @@ Collate:
     'stat-pop-etho.R'
     'stat-ld-annotations.R'
     'synthetic-data.R'
+    'load-dam2-data.R'
+    'load-ethoscope-data.R'
 URL: https://github.com/gilestrolab/rethomics
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 6.0.1

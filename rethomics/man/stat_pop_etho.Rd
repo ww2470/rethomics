@@ -85,7 +85,7 @@ pl + stat_pop_etho()
 \seealso{
 \itemize{
 \item \link{ggetho} to generate a plot object
-\item Tutorial for this function \url{http://gilestrolab.github.io/rethomics/tutorial}
+\item Tutorial for this function \url{http://gilestrolab.github.io/rethomics/tutorial/todo}
 }
 
 Other layers: \code{\link{stat_ld_annotations}}

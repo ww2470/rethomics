@@ -2,7 +2,7 @@
 % Please edit documentation in R/synthetic-data.R
 \name{toyActivityData}
 \alias{toyActivityData}
-\title{Generate toy activity and sleep data micmicking Drosophila behaviour in tubes}
+\title{Generate toy activity and sleep data mimiking Drosophila behaviour in tubes}
 \usage{
 toyActivityData(query = NULL, seed = 1, rate_range = 1/c(60, 10),
   duration = days(5), sampling_period = 10, ...)

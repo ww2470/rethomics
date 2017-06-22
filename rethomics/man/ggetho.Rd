@@ -5,8 +5,8 @@
 \title{Prepare a ggplot object to represent behavioural data}
 \usage{
 ggetho(variable, data, mapping, summary_FUN = mean,
-  summary_time_window = mins(30), time_conversion = hours,
-  time_wrap = NULL, time_offset = NULL, ...)
+  summary_time_window = mins(30), time_wrap = NULL, time_offset = NULL,
+  ...)
 }
 \arguments{
 \item{variable}{Variable of interest.}
@@ -18,9 +18,6 @@ ggetho(variable, data, mapping, summary_FUN = mean,
 \item{summary_FUN}{Method (function) used to summarise \code{variable} over time (typically, the mean).}
 
 \item{summary_time_window}{Width (in seconds) of the time window to compute a summary on.}
-
-\item{time_conversion}{Method (function) to convert time (from second) in the x axis.
-Typically, \link{days}, \link{hours} or \link{mins}.}
 
 \item{time_wrap}{Time (in seconds) used to wrap the data (see details).}
 

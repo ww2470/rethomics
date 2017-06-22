@@ -1,5 +1,32 @@
 #@include
-#' Generate toy activity and sleep data micmicking Drosophila behaviour in tubes
+#'
+#' Generate toy ethoscope data
+#' 
+#' This function generates random data that emulates data as it is read from ethoscope files.
+#' This is designed **exclusively to provide material for examples and tests** since it generates  "realistic" datasets of arbitrary length.
+#' 
+#' @param query Query (i.e. a `data.table` where every row defines an animal). 
+#' Typically queries have, at least, the columns `experiment_id` and `region_id`. 
+#' The default value (`NULL`), will generate data for a single animal.
+#' @param ... Additional arguments to be passed to [toyActivityData]
+#' @return A behavioural `data.table` with the query columns as key and 
+#' the behavioural variables `xy_dist_log10x1000`, `has_interacted` and `x`
+#' @examples
+#' query<- data.table(experiment_id="toy_experiment",
+#'                    region_id=1:4, 
+#'                    condition=c("A","B"))
+#' print(query)
+#' dt <- toyEthoscopeData(query,duration=days(3))
+#' print(dt)
+#' @author Quentin Geissmann (\email{qgeissmann@@gmail.com})
+#' @export
+toyEthoscopeData <- function(query=NULL, 
+                            ...){
+  activity_dt <- toyActivityData(query, ...)
+  out <- activity_dt[,velocityFromMovement(.SD),by=key(activity_dt)]
+  out
+}
+#' Generate toy activity and sleep data mimiking Drosophila behaviour in tubes
 #' 
 #' This function generates random data that emulates some of the features of fruit fly activity and sleep.
 #' This is designed **exclusively to provide material for examples and tests** since it generates  "realistic" datasets of arbitrary length.
@@ -62,4 +89,36 @@ sleepContiguous <- function(moving,fs,min_valid_time=5*60){
   valid_runs <-  r_sleep$length > min_len 
   r_sleep$values <- valid_runs & r_sleep$value
   inverse.rle(r_sleep)
+}
+
+
+
+velocityFromMovement <- function(data,
+                                 fs=2){
+  velocity_correction_coef=3e-3
+  exp_rate_immobile = 12
+  norm_sd_moving =.75
+  new_t <- seq(from=data[,min(t)], to=data[,max(t)], by=1/fs)
+  new_dt <- data.table(t=new_t, key="t")
+  out <- data[new_dt, on="t", roll=T]
+  out[,dt := c(t[2]-t[1],diff(t))]
+  immo_data <- rexp(nrow(out),exp_rate_immobile)
+  moving_data <- rnorm(nrow(out),3,norm_sd_moving)
+  
+  out[, velocity_corrected := ifelse(moving,moving_data,immo_data)]
+  out[, velocity := velocity_corrected * velocity_correction_coef/dt]
+  out[, dist := velocity * dt]
+  out[, dist := ifelse(dist <=0, 1e-6,dist)]
+  out[, xy_dist_log10x1000 := round(log10(dist) * 1e3)]
+  out[, has_interacted := 0]
+  out[,x := cumsum(dist) %% 1]
+  out[,x := abs(x-0.5)*2]
+  out[,x := ifelse(x > 0.9, 0.9, x)]
+  out[,x := ifelse(x < 0.1, 0.1, x)]
+  out[, moving:=NULL]
+  out[, asleep:=NULL]
+  out[, velocity:=NULL]
+  out[, velocity_corrected:=NULL]
+  out[, dist:=NULL]
+  out[, dt:=NULL]
 }

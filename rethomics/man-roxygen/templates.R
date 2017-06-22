@@ -1,1 +1,0 @@
-#' <%=ifelse(exists("tuto_url") && tuto_url, "tuto_url <- "http://gilestrolab.github.io/rethomics/tutorial", "") %>

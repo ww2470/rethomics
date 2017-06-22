@@ -1,17 +1,16 @@
 #@include
 #' Compute and display light/dark annotations onto a plot object
 #' 
-#' This function is used to show ight and dark phases as boxes on a plot.
+#' This function is used to show light and dark phases as boxes on a plot.
 #' 
 #' @family layers
 #' @inheritParams ggplot2::layer
 #' @inheritParams ggplot2::geom_rect
-#' #' @param ld_colours Character vector of length 2 naming the colours for light and dark phases, respectively.
+#' @param ld_colours Character vector of length 2 naming the colours for light and dark phases, respectively.
 #' The default is white and black.
 #' @param ypos,height The position and height of the annotation on the y axis. 
 #' The defaults, "auto" will put the labels below any data.
-#' @param period,phase the period and phase of the LD cycle. 
-#' The units are the same as on the x axis (). #todo chould be in s
+#' @param period,phase Period and phase (in seconds) of the LD cycle. 
 #' @examples 
 #' # we start by making a to dataset with 20 animals
 #' query <- data.table(experiment_id="toy_experiment",
@@ -20,8 +19,8 @@
 #' dt <- toyActivityData(query,3)
 #' # We build a plot object
 #' pl <-  ggetho(asleep, dt, aes(x=t, y=asleep)) + stat_pop_etho()
-#' pl + stat_ld_annotations(aes(t), period=24)
-#' pl + stat_ld_annotations(aes(t), period=22)
+#' pl + stat_ld_annotations(aes(t), period=hours(24))
+#' pl + stat_ld_annotations(aes(t), period=hours(22))
 #' @seealso  Useful links:
 #' * [ggetho] to generate a plot object
 #' * Tutorial for this function \url{http://gilestrolab.github.io/rethomics/tutorial/todo}
@@ -40,7 +39,7 @@ stat_ld_annotations <- function (mapping = NULL,
                                  inherit.aes = TRUE) 
 {
   layer(data = data, mapping = mapping, stat = StatLDAnnotation, 
-        geom = GeomRectLD,
+        geom = GeomRect,
         #geom = GeomRect, 
         position = position, show.legend = show.legend, inherit.aes = inherit.aes, 
         params = list(na.rm = na.rm, ld_colours=ld_colours, ypos=ypos,height=height,
@@ -77,17 +76,12 @@ StatLDAnnotation <- ggproto("StatLDannotation", Stat,
                             
                             finish_layer = function(data, params) {
                               data$fill <- params$ld_colours[(data$ld=="L")+1]
+                              data$colour="black"
                               data
                             },
                             required_aes = c("x","y"),
                             draw_key = draw_key_polygon
 )
-
-
-
-GeomRectLD <- ggproto("GeomLD", GeomRect,
-                      default_aes = aes(colour = "black",fill="blue", size = 0.5, linetype = 1,
-                                        alpha = .66))
 
 ldAnnotation <- function(x, period=1, phase=0){
   if(!(abs(phase) <= period))
