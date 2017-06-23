@@ -1,31 +1,3 @@
-#@include
-#'
-#' Generate toy ethoscope data
-#' 
-#' This function generates random data that emulates data as it is read from ethoscope files.
-#' This is designed **exclusively to provide material for examples and tests** since it generates  "realistic" datasets of arbitrary length.
-#' 
-#' @param query Query (i.e. a `data.table` where every row defines an animal). 
-#' Typically queries have, at least, the columns `experiment_id` and `region_id`. 
-#' The default value (`NULL`), will generate data for a single animal.
-#' @param ... Additional arguments to be passed to [toyActivityData]
-#' @return A behavioural `data.table` with the query columns as key and 
-#' the behavioural variables `xy_dist_log10x1000`, `has_interacted` and `x`
-#' @examples
-#' query<- data.table(experiment_id="toy_experiment",
-#'                    region_id=1:4, 
-#'                    condition=c("A","B"))
-#' print(query)
-#' dt <- toyEthoscopeData(query,duration=days(3))
-#' print(dt)
-#' @author Quentin Geissmann (\email{qgeissmann@@gmail.com})
-#' @export
-toyEthoscopeData <- function(query=NULL, 
-                            ...){
-  activity_dt <- toyActivityData(query, ...)
-  out <- activity_dt[,velocityFromMovement(.SD),by=key(activity_dt)]
-  out
-}
 #' Generate toy activity and sleep data mimiking Drosophila behaviour in tubes
 #' 
 #' This function generates random data that emulates some of the features of fruit fly activity and sleep.
@@ -43,9 +15,19 @@ toyEthoscopeData <- function(query=NULL,
 #' @return A behavioural `data.table` with the query columns as key and two activity variables (`moving` and `asleep`).
 #' @examples
 #' query<- data.table(experiment_id="toy_experiment",
-#'                    region_id=1:20, 
+#'                    region_id=1:10, 
 #'                    condition=c("A","B"))
-#' print(query)
+#' 
+#' 
+#' # Data that could come from loadEthoscopeData:
+#' dt <- toyEthoscopeData(query,duration=days(1))
+#' print(dt)
+#' 
+#' # Some DAM-like data
+#' dt <- toyDAMData(query,seed=2,duration=days(3))
+#' print(dt)
+#'
+#' # some data that would come from `sleepAnnotation` or `sleepDAMAnnotation`
 #' dt <- toyActivityData(query,3)
 #' print(dt)
 #' @author Quentin Geissmann (\email{qgeissmann@@gmail.com})
@@ -65,6 +47,31 @@ toyActivityData <- function(query=NULL,
   setkeyv(out, names(query))
 }
 
+
+# @return A behavioural `data.table` with the query columns as key and 
+# the behavioural variables `xy_dist_log10x1000`, `has_interacted` and `x`
+#' @rdname toyActivityData
+#' @export
+toyEthoscopeData <- function(...){
+  activity_dt <- toyActivityData(...)
+  out <- activity_dt[,velocityFromMovement(.SD),by=key(activity_dt)]
+  out
+}
+
+#' @rdname toyActivityData
+#' @export
+toyDAMData <- function(...){
+  activity_dt <- toyActivityData(...)
+  out <- activity_dt[,velocityFromMovement(.SD),by=key(activity_dt)]
+  out[, t_round := floor(t/mins(1)) * mins(1)]
+  out[,beam_cross := abs(c(0,diff(sign(.5 - x)))), by=key(activity_dt)]
+  out[,beam_cross := as.logical(beam_cross)]
+  out <- out[,list(activity = sum(beam_cross)), by=c(key(activity_dt),"t_round")]
+  
+  setnames(out, c("t_round"), c("t"))
+  out
+}
+
 simulateAnimalActivity <- function(max_t=days(5), sampling_period=10, method=activityPropensity,...){
   t <- seq(from=0, to = max_t, by=sampling_period)
   propensity <- method(t,...)
@@ -82,15 +89,6 @@ activityPropensity <- function(t, scale=1, rate=mins(1)){
   a <- a * delta_t
   a
 }
-
-sleepContiguous <- function(moving,fs,min_valid_time=5*60){
-  min_len <- fs * min_valid_time
-  r_sleep <- rle(!moving)
-  valid_runs <-  r_sleep$length > min_len 
-  r_sleep$values <- valid_runs & r_sleep$value
-  inverse.rle(r_sleep)
-}
-
 
 
 velocityFromMovement <- function(data,

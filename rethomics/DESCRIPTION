@@ -25,11 +25,15 @@ LazyLoad: TRUE
 Collate:
     'ggetho.R'
     'utils-time.R'
+    'utils-misc.R'
     'stat-pop-etho.R'
     'stat-ld-annotations.R'
-    'synthetic-data.R'
+    'toy-data.R'
+    'sleep-annotation.R'
     'load-dam2-data.R'
     'load-ethoscope-data.R'
+    'bout-analysis.R'
+    'motion-classifiers.R'
 URL: https://github.com/gilestrolab/rethomics
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 6.0.1

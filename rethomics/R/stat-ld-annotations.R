@@ -1,4 +1,3 @@
-#@include
 #' Compute and display light/dark annotations onto a plot object
 #' 
 #' This function is used to show light and dark phases as boxes on a plot.
@@ -19,8 +18,11 @@
 #' dt <- toyActivityData(query,3)
 #' # We build a plot object
 #' pl <-  ggetho(asleep, dt, aes(x=t, y=asleep)) + stat_pop_etho()
-#' pl + stat_ld_annotations(aes(t), period=hours(24))
-#' pl + stat_ld_annotations(aes(t), period=hours(22))
+#' pl + stat_ld_annotations()
+#' # different colours (e.g. DD)
+#' pl + stat_ld_annotations(ld_colour=c("grey", "black"))
+#' # shorter period
+#' pl + stat_ld_annotations(period=hours(22), phase=hours(3))
 #' @seealso  Useful links:
 #' * [ggetho] to generate a plot object
 #' * Tutorial for this function \url{http://gilestrolab.github.io/rethomics/tutorial/todo}
@@ -31,7 +33,7 @@ stat_ld_annotations <- function (mapping = NULL,
                                  ld_colours = c("white", "black"),
                                  ypos = "auto",
                                  height = "auto",
-                                 period = 1,
+                                 period = hours(24),
                                  phase = 0,
                                  ..., 
                                  na.rm = FALSE,

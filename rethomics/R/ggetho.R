@@ -1,4 +1,3 @@
-#@include
 #' Prepare a ggplot object to represent behavioural data
 #' 
 #' This function summarises a variable of interest 
@@ -23,7 +22,7 @@
 #'                    region_id=1:20, 
 #'                    condition=c("A","B"))
 #' dt <- toyActivityData(query,3)
-#' # We build a plot object
+#' # We build a plot object with nothing inside (just the axis)
 #' pl <-  ggetho(asleep,     # the variable of interest
 #'          dt,              # our original data
 #'          aes(
@@ -31,12 +30,15 @@
 #'              y=asleep     # and asleep on the y axis
 #'              )     
 #'          ) 
+#' pl
 #' # Sometimes, the variable of interest in not on the y.
-#' When we do not provide a y axis,
-#' ggetho will make a ID fo each animal and display them on separate rows
+#' # When we do not provide a y axis,
+#' # ggetho will make a ID fo each animal and display them on separate rows
 #' pl <-  ggetho(asleep,dt, aes(x=t)) 
-#' 
-#' @seealso [stat_pop_etho] To show trend by aggregating individuals over time.
+#' pl
+#' @seealso
+#' * [stat_pop_etho] To show trend by aggregating individuals over time.
+#' * TODO to see each individual on a "tyle-style" plot
 #' @export
 #' @author Quentin Geissmann (\email{qgeissmann@@gmail.com})
 ggetho <- function(variable, 
@@ -66,7 +68,7 @@ ggetho <- function(variable,
   setnames(dd,y_char, "..y..")
   sdt <- dd[, .(..y.. = summary_FUN(..y..)), by=c(k, "..t..")]
   setnames(sdt,c("..y..","..t.."), c(y_char, "t"))
-  #sdt[,t := t / time_conversion(1)]
+  sdt[,t := as.hms(t) ]
   
   mapping_list <- lapply(mapping, as.character) 
   
@@ -82,7 +84,7 @@ ggetho <- function(variable,
     mapping_list$fill = y_char
   
   mapping = do.call(aes_string,mapping_list)
-  ggplot(sdt, mapping,...) + scale_x_time()
+  ggplot(sdt, mapping,...)
 }
 
   

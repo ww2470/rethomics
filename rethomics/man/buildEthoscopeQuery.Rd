@@ -2,7 +2,7 @@
 % Please edit documentation in R/load-ethoscope-data.R
 \name{buildEthoscopeQuery}
 \alias{buildEthoscopeQuery}
-\title{Build a query for loading ethoscope data; using the date of experiments and device names
+\title{Build a functional query for loading ethoscope data using the date of experiments and device names
 to retreive result files}
 \usage{
 buildEthoscopeQuery(result_dir, query = NULL, use_cached = FALSE,

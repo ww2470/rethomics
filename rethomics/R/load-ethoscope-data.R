@@ -15,7 +15,7 @@
 #' @param columns Optionnal vector of columns to be selected from the db file.
 #' Time (t) is always implicitely selected.
 #' @param ncores Number of cores to use for optionnal parallel processing.
-#' @param FUN Optional function to transform the data from each `region_id` (i.e. a `data.table``)
+#' @param FUN Optional function to transform the data from each `region_id` (i.e. a `data.table`)
 #' immediately after is has been loaded. 
 #' @param ... Extra arguments to be passed to `FUN`
 #' @return A data.table where every row is an individual measurement. 
@@ -41,7 +41,7 @@
 #' 
 #' @examples
 #' \donttest{
-# #################
+# ################
 #' # Case 1: load ALL REGIONS from a SINGLE FILE
 #' # we can download a file from a repo:
 #' #TODO
@@ -186,7 +186,7 @@ makeMasterTable <- function(what){
       experiment_id=experiment_id),by=path]
   }
   else if(is.data.frame(what)){
-    checkColumns("path", colnames(what))
+    checkColumns("path", what)
     
     master_table <- copy(as.data.table(what))
     #fixme check uniqueness of file/use path as key?
@@ -206,7 +206,7 @@ makeMasterTable <- function(what){
     stop("Unexpected `what` argument!")
   }
   
-  checkColumns(c("experiment_id","region_id","path"),colnames(master_table))
+  checkColumns(c("experiment_id","region_id","path"), master_table)
   
   setkeyv(master_table,c("experiment_id","region_id"))
   master_table[,n:=.N,by=key(master_table)]
@@ -226,8 +226,8 @@ makeMasterTable <- function(what){
 }
 
 NULL
-#'  Build a query for loading ethoscope data; using the date of experiments and device names
-#'   to retreive result files
+#' Build a functional query for loading ethoscope data using the date of experiments and device names
+#' to retreive result files
 #' 
 #' This function is designed to list and select experimental files. 
 #' In general, end-users will want to retrieve  path to their experimental files
@@ -284,7 +284,7 @@ buildEthoscopeQuery <- function(result_dir, query=NULL, use_cached=FALSE, index_
   use_date <- F
   if(!is.null(query)){
     q <- copy(as.data.table(query))
-    checkColumns(key, colnames(q))
+    checkColumns(key, q)
     query_date <- q[, dateStrToPosix(date, tz="GMT")]
     q[, date := query_date]
     use_date <- T

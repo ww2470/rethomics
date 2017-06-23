@@ -7,6 +7,8 @@
 boot_ci(y, r = 5000, ci = 0.95)
 }
 \arguments{
+\item{y}{Numeric vector}
+
 \item{r}{Number of replicates to draw.}
 
 \item{ci}{Confidence interval to draw from the empirical distribution.}

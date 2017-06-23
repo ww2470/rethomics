@@ -45,7 +45,7 @@ query<- data.table(experiment_id="toy_experiment",
                    region_id=1:20, 
                    condition=c("A","B"))
 dt <- toyActivityData(query,3)
-# We build a plot object
+# We build a plot object with nothing inside (just the axis)
 pl <-  ggetho(asleep,     # the variable of interest
          dt,              # our original data
          aes(
@@ -53,14 +53,18 @@ pl <-  ggetho(asleep,     # the variable of interest
              y=asleep     # and asleep on the y axis
              )     
          ) 
+pl
 # Sometimes, the variable of interest in not on the y.
-When we do not provide a y axis,
-ggetho will make a ID fo each animal and display them on separate rows
+# When we do not provide a y axis,
+# ggetho will make a ID fo each animal and display them on separate rows
 pl <-  ggetho(asleep,dt, aes(x=t)) 
-
+pl
 }
 \seealso{
-\link{stat_pop_etho} To show trend by aggregating individuals over time.
+\itemize{
+\item \link{stat_pop_etho} To show trend by aggregating individuals over time.
+\item TODO to see each individual on a "tyle-style" plot
+}
 }
 \author{
 Quentin Geissmann (\email{qgeissmann@gmail.com})

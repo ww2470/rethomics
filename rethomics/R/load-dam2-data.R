@@ -85,7 +85,6 @@ loadDAM2Data <- function(query, FUN=NULL, ...){
   if(!is.null(FUN)){
     out <- out[, FUN(.SD,...),by=key(out)]
   }
-  
   setkeyv(out, union(key(out),colnames(q)))
   out
 }

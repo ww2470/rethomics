@@ -13,7 +13,8 @@
 #' query<- data.table(experiment_id="toy_experiment",
 #'                    region_id=1:20, 
 #'                    condition=c("A","B"))
-#' dt <- toyActivityData(query,3)
+#' print(query)
+#' dt <- toyActivityData(query,seed=3)
 #' # We build a plot object
 #' pl <-  ggetho(asleep, dt, aes(x=t, y=asleep))
 #' # A standard plot of the whole population:
@@ -24,7 +25,7 @@
 #' # Instead, we can use different colour for separate conditions:
 #' pl <-  ggetho(asleep, dt, aes(x=t, y=asleep, fill=condition, colour=condition))
 #' pl + stat_pop_etho()              
-#' # sometimes we want to aggreate several days of data to one circadian day
+#' # sometimes we want to aggreate several days of data to one circadian day (i.e. time wrapping)
 #' pl <-  ggetho(moving, 
 #'               dt,
 #'               aes(x=t, y=moving),
@@ -78,6 +79,7 @@ StatPopEtho <- ggproto("StatPopEtho", Stat,
 #' 
 #' Compute the mean of a variable, and the quantiles after bootstrap resampling.
 #' 
+#' @param y Numeric vector
 #' @param r Number of replicates to draw.
 #' @param ci Confidence interval to draw from the empirical distribution.
 #' @export

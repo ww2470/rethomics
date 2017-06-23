@@ -27,7 +27,7 @@ Time (t) is always implicitely selected.}
 
 \item{ncores}{Number of cores to use for optionnal parallel processing.}
 
-\item{FUN}{Optional function to transform the data from each \code{region_id} (i.e. a `data.table``)
+\item{FUN}{Optional function to transform the data from each \code{region_id} (i.e. a \code{data.table})
 immediately after is has been loaded.}
 
 \item{...}{Extra arguments to be passed to \code{FUN}}

@@ -63,7 +63,8 @@ Compute and display a population aggregate for a behavioural variable of interes
 query<- data.table(experiment_id="toy_experiment",
                    region_id=1:20, 
                    condition=c("A","B"))
-dt <- toyActivityData(query,3)
+print(query)
+dt <- toyActivityData(query,seed=3)
 # We build a plot object
 pl <-  ggetho(asleep, dt, aes(x=t, y=asleep))
 # A standard plot of the whole population:
@@ -74,7 +75,7 @@ pl + stat_pop_etho() + facet_grid(condition ~ .)
 # Instead, we can use different colour for separate conditions:
 pl <-  ggetho(asleep, dt, aes(x=t, y=asleep, fill=condition, colour=condition))
 pl + stat_pop_etho()              
-# sometimes we want to aggreate several days of data to one circadian day
+# sometimes we want to aggreate several days of data to one circadian day (i.e. time wrapping)
 pl <-  ggetho(moving, 
               dt,
               aes(x=t, y=moving),

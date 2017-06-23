@@ -6,8 +6,8 @@
 \usage{
 stat_ld_annotations(mapping = NULL, data = NULL, position = "identity",
   ld_colours = c("white", "black"), ypos = "auto", height = "auto",
-  period = 1, phase = 0, ..., na.rm = FALSE, show.legend = FALSE,
-  inherit.aes = TRUE)
+  period = hours(24), phase = 0, ..., na.rm = FALSE,
+  show.legend = FALSE, inherit.aes = TRUE)
 }
 \arguments{
 \item{mapping}{Set of aesthetic mappings created by \code{\link[=aes]{aes()}} or
@@ -68,8 +68,11 @@ query <- data.table(experiment_id="toy_experiment",
 dt <- toyActivityData(query,3)
 # We build a plot object
 pl <-  ggetho(asleep, dt, aes(x=t, y=asleep)) + stat_pop_etho()
-pl + stat_ld_annotations(aes(t), period=hours(24))
-pl + stat_ld_annotations(aes(t), period=hours(22))
+pl + stat_ld_annotations()
+# different colours (e.g. DD)
+pl + stat_ld_annotations(ld_colour=c("grey", "black"))
+# shorter period
+pl + stat_ld_annotations(period=hours(22), phase=hours(3))
 }
 \seealso{
 Useful links:
