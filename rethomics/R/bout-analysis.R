@@ -13,6 +13,7 @@
 #' Bout analysis will be performed by biological individual. 
 #' Individuals are defined by the `data.table` key.
 #' @examples 
+#' library(data.table)
 #' set.seed(1)
 #' # 1000 points the first 500 points should have higher chance to be 1 than the last 500:
 #' y_var <- round(c(runif(500,0,1),
@@ -24,8 +25,8 @@
 #' print(dt)
 #' bout_dt <- boutAnalysis(y,dt)
 #' print(bout_dt)
-#' average duration and number of bouts for both individuals and 
-#' bouts of y=0 or y=1
+#' # average duration and number of bouts for both individuals and 
+#' # bouts of y=0 or y=1
 #' summary_dt <- bout_dt[,
 #'         .(n=.N,
 #'           mean_duration=mean(length))

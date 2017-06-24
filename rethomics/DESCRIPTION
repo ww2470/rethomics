@@ -10,13 +10,14 @@ Author: Quentin Geissmann
 Maintainer: Quentin Geissmann <qgeissmann@gmail.com>
 Description: This package was primarily developed to study sleep and circadian
     rhythm in fruit flies in combination with the ethoscope platform (http://
-    gilestrolab.github.io/ethoscope/).
+    gilestrolab.github.io/rethomics).
+BugReports: https://github.com/gilestrolab/rethomics/issues
 License: GPL (>=3.0)
 Depends:
     R (>= 2.15.0),
+Imports:
     MASS,
     RSQLite,
-    data.table,
     ggplot2,
     reshape2,
     tools,

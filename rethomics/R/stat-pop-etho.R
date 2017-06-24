@@ -60,7 +60,7 @@ stat_pop_etho <- function(mapping = NULL, data = NULL,
 }
 
 
-StatPopEtho <- ggproto("StatPopEtho", Stat,
+StatPopEtho <- ggplot2::ggproto("StatPopEtho", ggplot2::Stat,
                        compute_group = function(data, scales,method, method.args = list()) {
                          data <- as.data.table(data)
                          foo <- function(y){

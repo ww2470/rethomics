@@ -41,15 +41,15 @@ stat_ld_annotations <- function (mapping = NULL,
                                  inherit.aes = TRUE) 
 {
   layer(data = data, mapping = mapping, stat = StatLDAnnotation, 
-        geom = GeomRect,
+        geom = ggplot2::GeomRect,
         #geom = GeomRect, 
         position = position, show.legend = show.legend, inherit.aes = inherit.aes, 
         params = list(na.rm = na.rm, ld_colours=ld_colours, ypos=ypos,height=height,
                       phase=phase, period=period,ld_boxes=NULL, ...))
 }
 
-StatLDAnnotation <- ggproto("StatLDannotation", Stat,
-                            default_aes = aes(colour = "black", size = 0.5, linetype = 1,
+StatLDAnnotation <- ggplot2::ggproto("StatLDannotation", ggplot2::Stat,
+                            default_aes = ggplot2::aes(colour = "black", size = 0.5, linetype = 1,
                                               alpha = .66),
                             setup_params = function(data, params){
                               out <- ldAnnotation(data$x,params$period,params$phase)
@@ -82,7 +82,7 @@ StatLDAnnotation <- ggproto("StatLDannotation", Stat,
                               data
                             },
                             required_aes = c("x","y"),
-                            draw_key = draw_key_polygon
+                            draw_key = ggplot2::draw_key_polygon
 )
 
 ldAnnotation <- function(x, period=1, phase=0){

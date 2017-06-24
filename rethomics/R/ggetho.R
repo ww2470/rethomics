@@ -68,7 +68,7 @@ ggetho <- function(variable,
   setnames(dd,y_char, "..y..")
   sdt <- dd[, .(..y.. = summary_FUN(..y..)), by=c(k, "..t..")]
   setnames(sdt,c("..y..","..t.."), c(y_char, "t"))
-  sdt[,t := as.hms(t) ]
+  sdt[,t := hms::as.hms(t) ]
   
   mapping_list <- lapply(mapping, as.character) 
   
