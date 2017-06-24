@@ -18,11 +18,10 @@ vignettes/*.pdf
 # Example code in package build process
 *-Ex.R
 
-rethomics/*.pdf
 *.pdf
 *.html
 
-rethomics/.RData
+.RData
 *.Rcheck/
 *.tar.gz
 .Rproj.user

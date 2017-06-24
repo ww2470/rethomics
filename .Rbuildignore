@@ -1,0 +1,13 @@
+^.*\.Rproj$
+^\.Rproj\.user$
+^\.travis\.yml$
+^/\.gitattributes$
+^cran-comments.md$
+^data-raw$
+^ISSUE_TEMPLATE\.md$
+^NEWS$
+^revdep$
+^tutorial$
+^README\.Rmd$
+^appveyor\.yml$
+^Makefile$
