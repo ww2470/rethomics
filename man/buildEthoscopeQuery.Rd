@@ -49,21 +49,11 @@ The ethoscope platform store data in a hard-coded directory structure
 \item \code{machine_name} a human friendly name for acquisition device. In practice, this is expected to be unique within laboratory.
 \item \code{datetime} the date and time of the start of the experiment
 }
-
-@seealso todo
 }
-\examples{
-\donttest{
-# Some sample data are store in the package:
-sample_dir <- getSampleDataPath(get_sample_dir =  TRUE)
-result_dir <- paste(sample_dir,"ethoscope",sep="/")
-
-query <- data.table(
-   machine_name = c("E_029","E_014", "E_014"),
-   date = c("2016-01-25","2016-01-25", "2016-02-17")
-   )
-query_path <- buildEthoscopeQuery(result_dir, query)
-# now we have maped a query to a path:
-print(query)
+\seealso{
+\itemize{
+\item \link{loadEthoscopeData}, example case #3
+\item Tutorial for this function \url{http://gilestrolab.github.io/rethomics/tutorial/todo}
+\item What queries are \url{http://gilestrolab.github.io/rethomics/tutorial/todo}
 }
 }

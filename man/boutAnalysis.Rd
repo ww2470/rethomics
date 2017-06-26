@@ -28,7 +28,6 @@ Bout analysis will be performed by biological individual.
 Individuals are defined by the \code{data.table} key.
 }
 \examples{
-library(data.table)
 set.seed(1)
 # 1000 points the first 500 points should have higher chance to be 1 than the last 500:
 y_var <- round(c(runif(500,0,1),

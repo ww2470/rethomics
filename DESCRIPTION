@@ -12,13 +12,14 @@ Description: This package was primarily developed to study sleep and circadian
     rhythm in fruit flies in combination with the ethoscope platform (http://
     gilestrolab.github.io/rethomics).
 BugReports: https://github.com/gilestrolab/rethomics/issues
-License: GPL (>=3.0)
+License: GPL-3
+Encoding: UTF-8
 Depends:
     R (>= 2.15.0),
-Imports:
     MASS,
     RSQLite,
     ggplot2,
+    data.table,
     reshape2,
     tools,
     hms
@@ -27,6 +28,7 @@ Collate:
     'ggetho.R'
     'utils-time.R'
     'utils-misc.R'
+    'utils-path.R'
     'stat-pop-etho.R'
     'stat-ld-annotations.R'
     'toy-data.R'

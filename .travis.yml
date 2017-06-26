@@ -34,4 +34,4 @@ env:
     matrix:
         secure: "km2nnb6pPFDPRyd3QqUn0TMvsVk5dyw+GgrJpF3gPv4ko5lQf1lmfGvpIGHZ2fiPelQlanWqIb19lnc8E6v8ZvI1ZXSb9hA8HE+J9DY9HSFsEXha0CO1Dp05nHLEModM98hOxYszLkp9HlvTi883rnHEmXh1ZbEyOPCdaoVZe+WQdPcyUu+CG61Drh8hFAZePS0ROgTsWImBrWrkHS9FeyhbPsWnLCOxmuGGGATMWOBSNEQlvseDIerBOFbQMvTX7n5mq/ofgYkxPAn02DatFt3CBe8M3+QmPe98/JVwzBkO59M3WR4yAceiLSiFqSeMXbj1Il5Sx0Dfm+fPueSpczABfdzYsW/KkAFpcbgMjDbEGe7eOTOhm8JDQ28CACfX+yEsQdluVjsud2/XAUoTS9LJSBPpjpq/p0doF5Jgcmd/PwWNiaTt+Wvx/GPIlK9LpknvTXIGwA33LGA745wDuOFEh1dersCjTVw1Cp1VEqKdNq//awCyqLYqbryRfGDzxczxaPKcgvWeyKRypF+k6y8yeQ6xzJpdZy3FzLQYuQciwdCbl6YoMWJPT9I3AurR5X9r8G1DvwN9QTvAPRV6XQe2droL2vDrw3XUOH4TDW62Ndt9qP9qeqr2Ca9wZbvNbiKPtT1u2aAoqrizw2O7cAF4uJvG1jeGnFDt4d0bz/M="
     global:
-        - RETHOMICS_TUTO_DATA=https://imperialcollegelondon.box.com/shared/static/t7osbe1rcoba7tpj262l9xsnje5b9mov.zip
+        - RETHOMICS_TUTO_DATA=https://imperialcollegelondon.box.com/shared/static/ckr50g5yh11swmip30ivieuwavg86urb.zip

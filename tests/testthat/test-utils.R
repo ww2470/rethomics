@@ -15,9 +15,8 @@ test_that("Check directory function does NOT through error if a directory exists
 
 test_that("Check columns function throughs an error if a column does NOT exist", {
   df <- data.frame(a=1:3, b=3:5,c=19,z_1=NA)
-  names <- colnames(df)
-  expect_error(rethomics:::checkColumns("d", names), "The following columns are needed, but not found: d")
-  expect_error(rethomics:::checkColumns(c("c","d"), names), "The following columns are needed, but not found: d")
+  expect_error(rethomics:::checkColumns("d", df), "The following columns are needed, but not found: d")
+  expect_error(rethomics:::checkColumns(c("c","d"), df), "The following columns are needed, but not found: d")
   
 })
 # 
@@ -25,12 +24,11 @@ test_that("Check columns function throughs an error if a column does NOT exist",
 
 test_that("Check columns function does NOT through ant error if all columns do exist", {
   df <- data.frame(a=1:3, b=3:5,c=19,z_1=NA)
-  names <- colnames(df)
-  expect_silent(rethomics:::checkColumns("a", names))
-  expect_silent(rethomics:::checkColumns("b", names))
-  expect_silent(rethomics:::checkColumns("c", names))
-  expect_silent(rethomics:::checkColumns( "z_1", names))
-  expect_silent(rethomics:::checkColumns(c("b","a","z_1","c"), names))
+  expect_silent(rethomics:::checkColumns("a", df))
+  expect_silent(rethomics:::checkColumns("b", df))
+  expect_silent(rethomics:::checkColumns("c", df))
+  expect_silent(rethomics:::checkColumns( "z_1", df))
+  expect_silent(rethomics:::checkColumns(c("b","a","z_1","c"), df))
 })
 
 

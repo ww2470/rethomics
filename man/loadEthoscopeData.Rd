@@ -64,21 +64,54 @@ they will result in creation of custom columns in the output of this function.
 }
 \examples{
 \donttest{
+# download the tutorial data
+TUTO_DATA_URL <- paste0("https://imperialcollegelondon.box.com/shared/static/",
+                        "ckr50g5yh11swmip30ivieuwavg86urb.zip")
+ZIP_DATA <- tempfile(fileext=".zip")
+TUTO_DATA_DIR <- tempdir()
+download.file(TUTO_DATA_URL, ZIP_DATA)
+unzip(ZIP_DATA, exdir= TUTO_DATA_DIR)
+unlink(ZIP_DATA)
+ETHOSCOPE_RESULTS_DIR <- paste(TUTO_DATA_DIR,"rethomics_tutorial_data/ethoscope/results",sep="/")
+QUERY <- paste(TUTO_DATA_DIR,"rethomics_tutorial_data/ethoscope/queries/query.csv",sep="/")
 # Case 1: load ALL REGIONS from a SINGLE FILE
 # we can download a file from a repo:
-#TODO
-data_file <- "/somewhere/in/my/computer/file.db"
+all_db_files <- list.files(ETHOSCOPE_RESULTS_DIR, 
+                          recursive = TRUE, 
+                          pattern = "\\\\.db", 
+                          full.names = TRUE)
+one_db_file <- all_db_files[1]
+print(one_db_file)
 # `validation_data_file` is simply the path to the .db file in your computer
-dt <- loadEthoscopeData(validation_data_file)
+dt <- loadEthoscopeData(one_db_file)
 print(dt)
 # Case 2: load ALL REGIONS from MULTIPLE FILES
 # we pass all the files we want to load as the `what` argument
-dt <- loadEthoscopeData(paths)
+# note that we load only three hours of data for the sake of the example
+dt <- loadEthoscopeData(all_db_files,max_time = hours(3))
 # Note the column `experiment_id` in dt. It tells us which file/experiment 
 # each measurement originates from.
 print(dt)
-}
 
+###############
+# Case 3: load  BY REGIONS from MULTIPLE FILES AND add CONDITIONS
+# In a real life scenario, you will have different treatments in several
+#  machines, dates and regions. Altogether, this can be encoded in a query like:
+query <- fread(QUERY)
+print(query)
+# In this table, each row is an individual, that is one region, in one machine, at one date/time.
+# We use the folowing line to make a secondary query --
+# that effectively find the path of requester files and adds it as
+# new columns:
+query2 <- buildEthoscopeQuery(ETHOSCOPE_RESULTS_DIR, query)
+dt <- loadEthoscopeData(query2, max=hours(3))
+# Note that `dt` now keeps information relative to the conditions you defined.
+print(colnames(dt))
+# This makes it easier to perform things such as average per treatment.
+print(dt[,.(mean_x = mean(x)),by="sex"])
+# We clean up (data not needed anymore):
+unlink(TUTO_DATA_DIR, recursive=T)
+}
 }
 \seealso{
 \itemize{

@@ -42,64 +42,56 @@
 #' 
 #' @examples
 #' \donttest{
+#' # download the tutorial data
+#' TUTO_DATA_URL <- paste0("https://imperialcollegelondon.box.com/shared/static/",
+#'                         "ckr50g5yh11swmip30ivieuwavg86urb.zip")
+#' ZIP_DATA <- tempfile(fileext=".zip")
+#' TUTO_DATA_DIR <- tempdir()
+#' download.file(TUTO_DATA_URL, ZIP_DATA)
+#' unzip(ZIP_DATA, exdir= TUTO_DATA_DIR)
+#' unlink(ZIP_DATA)
+#' ETHOSCOPE_RESULTS_DIR <- paste(TUTO_DATA_DIR,"rethomics_tutorial_data/ethoscope/results",sep="/")
+#' QUERY <- paste(TUTO_DATA_DIR,"rethomics_tutorial_data/ethoscope/queries/query.csv",sep="/")
 # ################
 #' # Case 1: load ALL REGIONS from a SINGLE FILE
 #' # we can download a file from a repo:
-#' #TODO
-#' data_file <- "/somewhere/in/my/computer/file.db"
+#' all_db_files <- list.files(ETHOSCOPE_RESULTS_DIR, 
+#'                           recursive = TRUE, 
+#'                           pattern = "\\.db", 
+#'                           full.names = TRUE)
+#' one_db_file <- all_db_files[1]
+#' print(one_db_file)
 #' # `validation_data_file` is simply the path to the .db file in your computer
-#' dt <- loadEthoscopeData(validation_data_file)
+#' dt <- loadEthoscopeData(one_db_file)
 #' print(dt)
 # ###############
 #' # Case 2: load ALL REGIONS from MULTIPLE FILES
 #' # we pass all the files we want to load as the `what` argument
-#' dt <- loadEthoscopeData(paths)
+#' # note that we load only three hours of data for the sake of the example
+#' dt <- loadEthoscopeData(all_db_files,max_time = hours(3))
 #' # Note the column `experiment_id` in dt. It tells us which file/experiment 
 #' # each measurement originates from.
 #' print(dt)
-#
-# ###############
-# # Case 3: load ALL REGIONS from MULTIPLE FILES AND add CONDITIONS
-# # Let us imagine that each file/experiment
-# # was acquired under different experimental condition.
-# # We can encode this information in a 'query' (i.e a data.frame) 
-# # in which a column named \code{path} maps experimental condition(s). 
-# # For instance, 2 different treatments:
-# query <- data.frame(path=paths, treatment=c("control", "drug_A"))
-# # Let us check our table:
-# print(query)
-# # The table looks OK, so we load the actual data
-# dt <- loadEthoscopeData(query)
-# # Note that `dt` now contains a column for your treatment.
-# print(colnames(dt))
-# # This makes it easier to perform things such as average per treatment.
-# print(dt[,.(mean_x = mean(x)),by="treatment"])
-# ###############
-# # Case 4: load SELECTED REGIONS from MULTIPLE FILE, WITH CONDITIONS
-# # Sometimes, different regions contain different conditions.
-# # If the query has a column named `region_id`, 
-# # only the specified regions will be returned.
-# # Let us assume that we want to replicate case 3, 
-# # but, now, we load only the first 20 regions.
-# query <- data.table(path=paths, 
-#                            treatment=c("control", "drug_A"), 
-#                            region_id=rep(1:20,each= 2))
-# # We could also imagine that every even region contains a male,
-# # whilst every odd one has a female:
-# query[, sex := ifelse(region_id %% 2, "male", "female" )]
-# # Note that we have now two conditions.
-# # Let us check our new table:
-# print(query)
-# # Then we can load our data:
-# dt <- loadEthoscopeData(query)
-# # This is simply a subset of data, so many regions are missing
-# # lets display the regions we ended up with
-# print(dt[,.N,by=key(dt)])
-# 
-# # For most complicated cases, you would probably have pre-generated the 
-# # query (e.g. as a csv file) before analysing the results.
-#' }
 #'
+#' ###############
+#' # Case 3: load  BY REGIONS from MULTIPLE FILES AND add CONDITIONS
+#' # In a real life scenario, you will have different treatments in several
+#' #  machines, dates and regions. Altogether, this can be encoded in a query like:
+#' query <- fread(QUERY)
+#' print(query)
+#' # In this table, each row is an individual, that is one region, in one machine, at one date/time.
+#' # We use the folowing line to make a secondary query --
+#' # that effectively find the path of requester files and adds it as
+#' # new columns:
+#' query2 <- buildEthoscopeQuery(ETHOSCOPE_RESULTS_DIR, query)
+#' dt <- loadEthoscopeData(query2, max=hours(3))
+#' # Note that `dt` now keeps information relative to the conditions you defined.
+#' print(colnames(dt))
+#' # This makes it easier to perform things such as average per treatment.
+#' print(dt[,.(mean_x = mean(x)),by="sex"])
+#' # We clean up (data not needed anymore):
+#' unlink(TUTO_DATA_DIR, recursive=T)
+#'}
 #' @seealso
 #' * [buildEthoscopeQuery] to generate a query with the `path` of the data file
 #' * Tutorial for this function \url{http://gilestrolab.github.io/rethomics/tutorial/todo}
@@ -189,7 +181,7 @@ makeMasterTable <- function(what){
   else if(is.data.frame(what)){
     checkColumns("path", what)
     
-    master_table <- copy(as.data.table(what))
+    master_table <- copy(data.table::as.data.table(what))
     #fixme check uniqueness of file/use path as key?
     master_table[,path := as.character(path)]
     master_table[,experiment_id := basename(path)]
@@ -260,23 +252,10 @@ NULL
 #'  * `machine_name` a human friendly name for acquisition device. In practice, this is expected to be unique within laboratory.
 #'  * `datetime` the date and time of the start of the experiment
 #'  
-#'  @seealso todo
-# @seealso \code{\link{cacheEthoscopeData}} to build a cached data directory.
-
-#' @examples
-#' \donttest{
-#' # Some sample data are store in the package:
-#' sample_dir <- getSampleDataPath(get_sample_dir =  TRUE)
-#' result_dir <- paste(sample_dir,"ethoscope",sep="/")
-#'
-#' query <- data.table(
-#'    machine_name = c("E_029","E_014", "E_014"),
-#'    date = c("2016-01-25","2016-01-25", "2016-02-17")
-#'    )
-#' query_path <- buildEthoscopeQuery(result_dir, query)
-#' # now we have maped a query to a path:
-#' print(query)
-#' }
+#' @seealso
+#' * [loadEthoscopeData], example case #3
+#' * Tutorial for this function \url{http://gilestrolab.github.io/rethomics/tutorial/todo}
+#' * What queries are \url{http://gilestrolab.github.io/rethomics/tutorial/todo}
 #' @export
 buildEthoscopeQuery <- function(result_dir, query=NULL, use_cached=FALSE, index_file=NULL){
   if(is.null(index_file))
@@ -284,7 +263,7 @@ buildEthoscopeQuery <- function(result_dir, query=NULL, use_cached=FALSE, index_
   key <- c("date","machine_name")
   use_date <- F
   if(!is.null(query)){
-    q <- copy(as.data.table(query))
+    q <- copy(data.table::as.data.table(query))
     checkColumns(key, q)
     query_date <- q[, dateStrToPosix(date, tz="GMT")]
     q[, date := query_date]
@@ -324,7 +303,7 @@ buildEthoscopeQuery <- function(result_dir, query=NULL, use_cached=FALSE, index_
     stop(sprintf("No .db files detected in the directory '%s'. Ensure it is not empty.",result_dir))
   }
   files_info <- do.call("rbind",fields)
-  files_info <- as.data.table(files_info)
+  files_info <- data.table::as.data.table(files_info)
   setnames(files_info, c("machine_id", "machine_name", "date","file"))
 
   if(use_date)
@@ -374,14 +353,8 @@ buildEthoscopeQuery <- function(result_dir, query=NULL, use_cached=FALSE, index_
 #'
 #' @param FILE the name of the input file.
 #' @return A list containing fields for metadata entries
-#' @examples
-#' \dontrun{
-#' FILE <- "ethoscope/014/E_014/2016-01-25_21-36-04/2016-01-25_21-36-04_014.db"
-#' path <- getSampleDataPath(FILE)
-#' out <- loadEthoscopeMetaData(path)
-#' names(out)
-#' }
-#' @seealso todo
+#' @seealso 
+#' * [loadEthoscopeData] to load the actual data
 #' @export
 loadEthoscopeMetaData <- function(FILE){
   con <- dbConnect(SQLite(), FILE, flags=SQLITE_RO)
@@ -396,11 +369,10 @@ loadEthoscopeMetaData <- function(FILE){
 
 availableROIs <- function(FILE){
   con <- dbConnect(SQLite(), FILE, flags=SQLITE_RO)
-  roi_map <- as.data.table(dbGetQuery(con, "SELECT * FROM ROI_MAP"))
-  setkey(roi_map, roi_idx)
-  
-  available_rois  <- roi_map[ ,roi_idx]
+  roi_map <- data.table::as.data.table(dbGetQuery(con, "SELECT * FROM ROI_MAP"))
   dbDisconnect(con)
+  setkey(roi_map, roi_idx)
+  available_rois  <- roi_map[ ,roi_idx]
   return(available_rois)
 }
 
@@ -449,13 +421,14 @@ loadOneROI <- function( FILE,  region_id, min_time=0, max_time=Inf,  reference_h
   
   metadata <- loadEthoscopeMetaData(FILE)
   con <- dbConnect(SQLite(), FILE, flags=SQLITE_RO)
-  var_map <- as.data.table(dbGetQuery(con, "SELECT * FROM VAR_MAP"))
+  var_map <- data.table::as.data.table(dbGetQuery(con, "SELECT * FROM VAR_MAP"))
   setkey(var_map, var_name)
-  roi_map <- as.data.table(dbGetQuery(con, "SELECT * FROM ROI_MAP"))
+  roi_map <- data.table::as.data.table(dbGetQuery(con, "SELECT * FROM ROI_MAP"))
   
   roi_row <- roi_map[roi_idx == region_id,]
   if(nrow(roi_row) == 0 ){
     warning(sprintf("ROI %i does not exist, skipping",region_id))
+    dbDisconnect(con)
     return(NULL)
   }
   if(max_time == Inf)
@@ -482,9 +455,8 @@ loadOneROI <- function( FILE,  region_id, min_time=0, max_time=Inf,  reference_h
   }
   
   sql_query <- sprintf("SELECT %s FROM ROI_%i WHERE t >= %e %s",selected_cols, region_id,min_time, max_time_condition )
-  
-  roi_dt <- as.data.table(dbGetQuery(con, sql_query))
-  
+  roi_dt <- data.table::as.data.table(dbGetQuery(con, sql_query))
+  dbDisconnect(con)
   if("id" %in% colnames(roi_dt))
     roi_dt$id <- NULL
   roi_dt[, region_id := region_id]
@@ -610,7 +582,7 @@ cacheEthoscopeData <- function(result_dir, cached_dir, dry_run=F){
 
 sqliteTableToDataTable <- function(name,connection, dt, rm_inferred){
   dt <- dbGetQuery(connection, sprintf("SELECT * FROM %s",name))
-  dt <- as.data.table(dt)
+  dt <- data.table::as.data.table(dt)
   if(rm_inferred & "is_inferred" %in% colnames(dt)){
     dt <- dt[is_inferred == FALSE]
     dt[,is_inferred := NULL]
@@ -620,8 +592,8 @@ sqliteTableToDataTable <- function(name,connection, dt, rm_inferred){
 
 sqliteToRdb <- function(input_db, output_rdb,rm_inferred=TRUE){
   con <- dbConnect(SQLite(), input_db, flags=SQLITE_RO)
-  
   list_of_table <- dbGetQuery(con,"SELECT name FROM sqlite_master WHERE type='table'")$name
+  dbDisconnect(con)
   dt_list <- lapply(list_of_table, sqliteTableToDataTable,con, rm_inferred=rm_inferred)
   names(dt_list) <- list_of_table
   rdata_file <- sprintf("%s.RData",output_rdb)
