@@ -4,6 +4,7 @@ GH_REPO="github.com/gilestrolab/rethomics.git"
 FULL_REPO="https://$GH_TOKEN@$GH_REPO"
 
 echo "Setting up..."
+echo "Working on branch $TRAVIS_BRANCH"
 
 #echo $GH_TOKEN | md5sum
 mkdir ~/rethomics_tuto
@@ -15,7 +16,7 @@ git remote add origin $FULL_REPO
 git fetch
 git config user.name "rapporter-travis"
 git config user.email "travis"
-git checkout master
+git checkout $TRAVIS_BRANCH
 
 echo "Getting data from $RETHOMICS_TUTO_DATA ..."
 echo "saving as ~/rethomics_tutorial_data.zip"
@@ -24,7 +25,6 @@ echo "Unzipping ..."
 unzip ~/rethomics_tutorial_data.zip
 ls
 mv rethomics_tutorial_data ~
-ls ~
 
 R -e "install.packages('rmarkdown', repos='http://cran.us.r-project.org')"
 R -e "install.packages('devtools', repos='http://cran.us.r-project.org')"
@@ -38,21 +38,21 @@ cd tutorial
 make clean && make TUTO_DATA_DIR=~/rethomics_tutorial_data all
 cd ..
 cp tutorial/ ~/tutorial -r 
-
-# toggled out because of https://github.com/travis-ci/travis-ci/issues/7852
 rm -f rethomics.pdf
-#make rethomics.pdf
-#cp rethomics.pdf ~/tutorial/
 
 
-echo 'checkout to ghpage'
-git checkout gh-pages
-mv ~/tutorial/*.html tutorial/
-#cp ~/tutorial/rethomics.pdf doc/
-
-git pull origin gh-pages
-git add tutorial
-git add doc/rethomics.pdf
-git commit -m "test autocommit after $TRAVIS_COMMIT [ci skip]"
-git status
-git push origin gh-pages        
+# we try to push only for master!
+if [ "$TRAVIS_BRANCH" == "master" ]
+then 
+  echo 'checkout to ghpage'
+  git checkout gh-pages
+  mv ~/tutorial/*.html tutorial/
+  #cp ~/tutorial/rethomics.pdf doc/
+  
+  git pull origin gh-pages
+  git add tutorial
+  git add doc/rethomics.pdf
+  git commit -m "test autocommit after $TRAVIS_COMMIT [ci skip]"
+  git status
+  git push origin gh-pages        
+fi
