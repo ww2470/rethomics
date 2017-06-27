@@ -5,6 +5,7 @@ FULL_REPO="https://$GH_TOKEN@$GH_REPO"
 
 echo "Setting up..."
 echo "Working on branch $TRAVIS_BRANCH"
+echo "R version: $TRAVIS_R_VERSION"
 
 #echo $GH_TOKEN | md5sum
 mkdir ~/rethomics_tuto
@@ -42,6 +43,7 @@ rm -f rethomics.pdf
 
 
 # we try to push only for master!
+#if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_R_VERSION" == "" ]
 if [ "$TRAVIS_BRANCH" == "master" ]
 then 
   echo 'checkout to ghpage'

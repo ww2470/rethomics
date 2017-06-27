@@ -11,8 +11,8 @@ latex: true
 
 warnings_are_errors: true
 
-before_install:
-    - cd rethomics
+#before_install:
+#    - cd rethomics
 before_script:
     - git config --global user.name "travis"
     - git config --global user.email "travis@example.org"
