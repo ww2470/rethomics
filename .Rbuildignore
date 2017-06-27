@@ -11,3 +11,5 @@
 ^README\.Rmd$
 ^appveyor\.yml$
 ^Makefile$
+^bak$
+^.*\.tar\.gz$

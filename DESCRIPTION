@@ -17,11 +17,12 @@ Encoding: UTF-8
 Depends:
     R (>= 2.15.0),
     MASS,
-    RSQLite,
     ggplot2,
     data.table,
     reshape2,
+Imports:    
     tools,
+    RSQLite,
     hms
 LazyLoad: TRUE
 Collate:

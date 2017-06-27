@@ -357,8 +357,8 @@ buildEthoscopeQuery <- function(result_dir, query=NULL, use_cached=FALSE, index_
 #' * [loadEthoscopeData] to load the actual data
 #' @export
 loadEthoscopeMetaData <- function(FILE){
-  con <- dbConnect(SQLite(), FILE, flags=SQLITE_RO)
-  metadata <- dbGetQuery(con, "SELECT * FROM METADATA")
+  con <- RSQLite::dbConnect(SQLite(), FILE, flags=RSQLite::SQLITE_RO)
+  metadata <- RSQLite::dbGetQuery(con, "SELECT * FROM METADATA")
   dbDisconnect(con)
   v <- as.list(metadata$value)
   names(v) <- metadata$field
@@ -368,9 +368,9 @@ loadEthoscopeMetaData <- function(FILE){
 }
 
 availableROIs <- function(FILE){
-  con <- dbConnect(SQLite(), FILE, flags=SQLITE_RO)
-  roi_map <- data.table::as.data.table(dbGetQuery(con, "SELECT * FROM ROI_MAP"))
-  dbDisconnect(con)
+  con <- RSQLite::dbConnect(RSQLite::SQLite(), FILE, flags=RSQLite::SQLITE_RO)
+  roi_map <- data.table::as.data.table(RSQLite::dbGetQuery(con, "SELECT * FROM ROI_MAP"))
+  RSQLite::dbDisconnect(con)
   setkey(roi_map, roi_idx)
   available_rois  <- roi_map[ ,roi_idx]
   return(available_rois)
@@ -418,9 +418,8 @@ parseOneROI <- function(i, master_table,min_time, max_time, reference_hour,verbo
 # a helper function to load data from a single region
 
 loadOneROI <- function( FILE,  region_id, min_time=0, max_time=Inf,  reference_hour=NULL, columns = NULL){
-  
   metadata <- loadEthoscopeMetaData(FILE)
-  con <- dbConnect(SQLite(), FILE, flags=SQLITE_RO)
+  con <- RSQLite::dbConnect(RSQLite::SQLite(), FILE, flags=RSQLite::SQLITE_RO)
   var_map <- data.table::as.data.table(dbGetQuery(con, "SELECT * FROM VAR_MAP"))
   setkey(var_map, var_name)
   roi_map <- data.table::as.data.table(dbGetQuery(con, "SELECT * FROM ROI_MAP"))
@@ -428,7 +427,7 @@ loadOneROI <- function( FILE,  region_id, min_time=0, max_time=Inf,  reference_h
   roi_row <- roi_map[roi_idx == region_id,]
   if(nrow(roi_row) == 0 ){
     warning(sprintf("ROI %i does not exist, skipping",region_id))
-    dbDisconnect(con)
+    RSQLite::dbDisconnect(con)
     return(NULL)
   }
   if(max_time == Inf)
@@ -456,7 +455,7 @@ loadOneROI <- function( FILE,  region_id, min_time=0, max_time=Inf,  reference_h
   
   sql_query <- sprintf("SELECT %s FROM ROI_%i WHERE t >= %e %s",selected_cols, region_id,min_time, max_time_condition )
   roi_dt <- data.table::as.data.table(dbGetQuery(con, sql_query))
-  dbDisconnect(con)
+  RSQLite::dbDisconnect(con)
   if("id" %in% colnames(roi_dt))
     roi_dt$id <- NULL
   roi_dt[, region_id := region_id]
@@ -591,9 +590,9 @@ sqliteTableToDataTable <- function(name,connection, dt, rm_inferred){
 }
 
 sqliteToRdb <- function(input_db, output_rdb,rm_inferred=TRUE){
-  con <- dbConnect(SQLite(), input_db, flags=SQLITE_RO)
-  list_of_table <- dbGetQuery(con,"SELECT name FROM sqlite_master WHERE type='table'")$name
-  dbDisconnect(con)
+  con <- RSQLite::dbConnect(RSQLite::SQLite(), input_db, flags=RSQLite::SQLITE_RO)
+  list_of_table <- RSQLite::dbGetQuery(con,"SELECT name FROM sqlite_master WHERE type='table'")$name
+  RSQLite::dbDisconnect(con)
   dt_list <- lapply(list_of_table, sqliteTableToDataTable,con, rm_inferred=rm_inferred)
   names(dt_list) <- list_of_table
   rdata_file <- sprintf("%s.RData",output_rdb)
