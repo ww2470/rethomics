@@ -42,9 +42,9 @@ cp tutorial/ ~/tutorial -r
 rm -f rethomics.pdf
 
 
-# we try to push only for master!
-#if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_R_VERSION" == "" ]
-if [ "$TRAVIS_BRANCH" == "master" ]
+# we try to push only for master and release R version!
+if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_R_VERSION" == "release" ]
+#if [ "$TRAVIS_BRANCH" == "master" ]
 then 
   echo 'checkout to ghpage'
   git checkout gh-pages
