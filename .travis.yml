@@ -26,7 +26,6 @@ before_script:
 script:
     - R CMD build .
     - R CMD check *tar.gz
-    - cd .. 
     - echo the data lives at $RETHOMICS_TUTO_DATA 
     - bash tutorial/make_tuto.sh 2>&1
     
