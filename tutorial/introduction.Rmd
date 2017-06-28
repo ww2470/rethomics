@@ -1,0 +1,78 @@
+---
+title: "Getting started"
+author: "Quentin Geissmann"
+date: "9 June 2017"
+output: html_document
+---
+  
+  
+Aims
+----- 
+  
+In this tutorial, we will learn:
+
+* What is `rethomics` 
+* How to install it
+* The basic principles of the package
+
+`R` and ethomics
+-------------------
+Science is becoming higher and higher throuput, and the analysis of animal behaviour is taking the same direction.
+When dealing with large data sets, it is important to choose a analysis framework that is flexible performant and modular. `R` is the open-source *de facto* state-of-the-art statistical framework, and is used in many area of sciences because it fulfills these criteria.
+We developped an `R` package (i.e. toolbox) that allows experimentalist to load their behavioural data, visualise them, and perform subsequent analysis (such as sleep an circadian rythm).
+
+At this point, **if you are not familiar with `R`**, I would strongly recommend to:
+
+* Install [R](https://cran.r-project.org/) and [Rstudio](https://www.rstudio.com/products/rstudio/)
+* Learn the basics of `R`. There are hundreads of tutorials, books and lectures online. A good stating point is given [here](https://support.rstudio.com/hc/en-us/articles/201141096-Getting-Started-with-R)
+
+
+
+Installing `rethomics`
+----------------------------------------
+
+### Through CRAN:
+
+Rethomics is not yet on CRAN. Hopefully, this will happen soon!!
+
+### Using `devtools`
+
+`devtools` is an `R` package that facilitates, amonst other things, installation unofficial packages.
+First, we can install `devtools` and load it:
+
+```{r, eval=FALSE}
+install.packages("devtools")
+library("devtools")
+```
+
+Then, we use the `install_github()` function to fetch the latest stable version of `rethomics` directly from our repository:
+
+```{r, eval=FALSE}
+install_github("gilestrolab/rethomics", subdir="rethomics")
+```
+
+Finally, we should be able to load rethomics:
+
+```{r, eval=FALSE}
+library("rethomics")
+```
+
+Basic concepts
+-------------------
+
+This figure represent the typical behavioural analysis workflow.
+Regardless of what you want to do with `rethomics`, you will mostl likely go through these steps:
+
+
+![](./img/workflow.png)
+
+
+
+There are three important notions to highlight at this stage:
+
+* Several types of behavioural data -- from different platforms -- can be loaded (e.g., DAM vs Ethoscope).
+* Data are loaded though the **query** mechanism, wich is conveninent in an experimental context.
+* Once loaded, data from different platforms share the **same internal structure** (`data.table`), so similar plots and analysis can be used regardless of the input type.
+
+
+In other pages of this tutorial, we will learn [how to write format queries](queries.html), how [behavioural data is stored](data_structure.html) and how to load specific types of behavioural data.
