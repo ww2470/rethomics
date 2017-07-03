@@ -155,7 +155,7 @@ Here, each point is an animal, and the lines are linear regressions.
 Sleep architecture
 ------------------------
 
-Sometimes, you will be interested in thinging about sleep data in terms of sleep episodes. For instance, may want compare number, average lenght or latency of sleep bouts.
+Sometimes, you will be interested in thinking about sleep data in terms of sleep episodes. For instance, may want compare number, average lenght or latency of sleep bouts.
 To do so, we can convert data in bouts:
 
 ```{r}
@@ -163,7 +163,7 @@ bout_dt = boutAnalysis(asleep, dt_curated)
 print(bout_dt[1:100])
 ```
 As you can see, *every row is a bout*. It is defined by a length and a start time (both in seconds).
-It also keeps the infromation relative to each animal (key). By default, `boutAnalysis` computes bouts for all possible values of `y`. In our example, we have both sleep and wake bouts. If we are interested nly in sleep bouts, we can simply define a subset:
+It also keeps the information relative to each animal (key). By default, `boutAnalysis` computes bouts for all possible values of `y`. In our example, we have both sleep and wake bouts. If we are interested only in sleep bouts, we can simply define a subset:
 
 ```{r}
 sleep_bout_dt <- bout_dt[asleep == TRUE] 
@@ -205,7 +205,7 @@ print(summary_bout_dt)
 ```
 
 **About latency**. 
-Note that I normalised latency to express it as a duration from the first time lights turns on (`t = days(1)`) of off (`t = days(1)`). Tose latency are only for the first 24h instead of an average over several days (which is beound the scope of this turorial).
+Note that I normalised latency to express it as a duration from the first time lights turns on (`t = days(1)`) or off (`t = days(1)`). Tose latency are only for the first 24h instead of an average over several days (which is beyond the scope of this turorial).
 
 Putting it all together
 ---------------------------
