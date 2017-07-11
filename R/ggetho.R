@@ -67,8 +67,9 @@ ggetho <- function(variable,
   
   setnames(dd,y_char, "..y..")
   sdt <- dd[, .(..y.. = summary_FUN(..y..)), by=c(k, "..t..")]
+  sdt[,..t.. := hms::as.hms(..t..) ]
+  setkeyv(sdt,c("..t..",k))
   setnames(sdt,c("..y..","..t.."), c(y_char, "t"))
-  sdt[,t := hms::as.hms(t) ]
   
   mapping_list <- lapply(mapping, as.character) 
   
@@ -84,7 +85,19 @@ ggetho <- function(variable,
     mapping_list$fill = y_char
   
   mapping = do.call(aes_string,mapping_list)
+#  return(list(sdt,mapping))
   ggplot(sdt, mapping,...)
 }
 
-  
+#ggetho(asleep, dt, aes(t,asleep), time_wrap = hours(24))
+# query<- data.table(experiment_id="toy_experiment",
+#                    region_id=1:20,
+#                    condition=c("A","B"),
+#                    age=c(1, 5, 10, 20))
+# dt <- toyActivityData(query,seed=3)
+# dt <- dt[t> hours(25)]
+# pl <-  ggetho(moving,
+#               dt,
+#               aes(x=t, y=moving, fill=age, colour=age))
+# pl[[2]]
+# ggplot(pl[[1]], aes(t,moving,fill=as.factor(age),colour=as.factor(age))) + stat_pop_etho()

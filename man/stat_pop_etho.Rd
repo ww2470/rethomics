@@ -9,31 +9,31 @@ stat_pop_etho(mapping = NULL, data = NULL, geom = "smooth",
   show.legend = NA, inherit.aes = TRUE)
 }
 \arguments{
-\item{mapping}{Set of aesthetic mappings created by \code{\link[=aes]{aes()}} or
-\code{\link[=aes_]{aes_()}}. If specified and \code{inherit.aes = TRUE} (the
+\item{mapping}{Set of aesthetic mappings created by \code{\link{aes}} or
+\code{\link{aes_}}. If specified and \code{inherit.aes = TRUE} (the
 default), it is combined with the default mapping at the top level of the
 plot. You must supply \code{mapping} if there is no plot mapping.}
 
 \item{data}{The data to be displayed in this layer. There are three
-options:
+   options:
 
-If \code{NULL}, the default, the data is inherited from the plot
-data as specified in the call to \code{\link[=ggplot]{ggplot()}}.
+   If \code{NULL}, the default, the data is inherited from the plot
+   data as specified in the call to \code{\link{ggplot}}.
 
-A \code{data.frame}, or other object, will override the plot
-data. All objects will be fortified to produce a data frame. See
-\code{\link[=fortify]{fortify()}} for which variables will be created.
+   A \code{data.frame}, or other object, will override the plot
+   data. All objects will be fortified to produce a data frame. See
+   \code{\link{fortify}} for which variables will be created.
 
-A \code{function} will be called with a single argument,
-the plot data. The return value must be a \code{data.frame.}, and
-will be used as the layer data.}
+   A \code{function} will be called with a single argument,
+   the plot data. The return value must be a \code{data.frame.}, and
+   will be used as the layer data.}
 
 \item{geom}{The geometric object to use display the data}
 
 \item{position}{Position adjustment, either as a string, or the result of
 a call to a position adjustment function.}
 
-\item{...}{other arguments passed on to \code{\link[=layer]{layer()}}. These are
+\item{...}{other arguments passed on to \code{\link{layer}}. These are
 often aesthetics, used to set an aesthetic to a fixed value, like
 \code{color = "red"} or \code{size = 3}. They may also be parameters
 to the paired geom/stat.}
@@ -53,7 +53,7 @@ function defined by \code{method}.}
 \item{inherit.aes}{If \code{FALSE}, overrides the default aesthetics,
 rather than combining with them. This is most useful for helper functions
 that define both data and aesthetics and shouldn't inherit behaviour from
-the default plot specification, e.g. \code{\link[=borders]{borders()}}.}
+the default plot specification, e.g. \code{\link{borders}}.}
 }
 \description{
 Compute and display a population aggregate for a behavioural variable of interest
@@ -62,7 +62,8 @@ Compute and display a population aggregate for a behavioural variable of interes
 # we start by making a to dataset with 20 animals
 query<- data.table(experiment_id="toy_experiment",
                    region_id=1:20, 
-                   condition=c("A","B"))
+                   condition=c("A","B"),
+                   age=c(1, 5, 10, 20))
 print(query)
 dt <- toyActivityData(query,seed=3)
 # We build a plot object
@@ -73,7 +74,11 @@ pl + stat_pop_etho()
 pl + stat_pop_etho() + facet_grid(condition ~ .)
 
 # Instead, we can use different colour for separate conditions:
-pl <-  ggetho(asleep, dt, aes(x=t, y=asleep, fill=condition, colour=condition))
+pl <-  ggetho(asleep, dt, aes(x=t, y=asleep, fill=age, colour=age))
+pl + stat_pop_etho()
+
+#sometimes, we also have numeric condition (e.g. age)
+pl <-  ggetho(asleep, dt, aes(x=t, y=asleep, fill=age, colour=age))
 pl + stat_pop_etho()              
 # sometimes we want to aggreate several days of data to one circadian day (i.e. time wrapping)
 pl <-  ggetho(moving, 

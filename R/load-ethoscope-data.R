@@ -357,9 +357,9 @@ buildEthoscopeQuery <- function(result_dir, query=NULL, use_cached=FALSE, index_
 #' * [loadEthoscopeData] to load the actual data
 #' @export
 loadEthoscopeMetaData <- function(FILE){
-  con <- RSQLite::dbConnect(SQLite(), FILE, flags=RSQLite::SQLITE_RO)
+  con <- RSQLite::dbConnect(RSQLite::SQLite(), FILE, flags=RSQLite::SQLITE_RO)
   metadata <- RSQLite::dbGetQuery(con, "SELECT * FROM METADATA")
-  dbDisconnect(con)
+  RSQLite::dbDisconnect(con)
   v <- as.list(metadata$value)
   names(v) <- metadata$field
   #fixme explicitly GMT
