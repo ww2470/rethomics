@@ -196,7 +196,7 @@ summary_bout_dt <- sleep_bout_dt[,
                                      n_bout_l = nrow(.SD[phase=="L"]),                   # day
                                      mean_duration_l = mean(length[phase=="L"]),
                                      latency_l = .SD[phase=="L"][1,start_time] - days(1),
-                                     n_bout_d = nrow(.SD[phase=="L"]),                   # night
+                                     n_bout_d = nrow(.SD[phase=="D"]),                   # night
                                      mean_duration_d = mean(length[phase=="D"]),
                                      latency_d = .SD[phase=="D"][1,start_time] - days(1.5)
                                      ), 
