@@ -1,0 +1,240 @@
+---
+title: "Loading Ethoscope Data"
+author: "Quentin Geissmann"
+date: "2 March 2016"
+output: html_document
+---
+
+
+Aims
+----- 
+
+In this tutorial, we will learn:
+
+* How to load data from the ethoscope platform.
+* How to use reference time to align experimental times
+* How to apply functions on data as they are loaded
+* Ways we can speed-up data import
+
+
+
+Prerequisites
+--------------
+
+* Familiarity with R and statistical analysis
+* Understand what [queries](queries.html) are in the context of `rethomics`
+* Some familiarity with `data.table` package (at least have read the [tutorial](http://user2014.stat.ucla.edu/files/tutorial_Matt.pdf) and [getting started](https://github.com/Rdatatable/data.table/wiki/Getting-started))
+* Having dowloaded the [data samples](sample_data.html) in `TUTO_DATA_DIR`
+
+
+Ethoscope platform
+----------------------------------------
+Like `rethomics`, the [ethoscope platform](http://gilestrolab.github.io/ethoscope/) is a tool
+developed in the [Gilestro lab](http://lab.gilest.ro/), so they should integrate very well.
+
+When working with the ethoscope platform, you will most likely end up with experiments with several devices at different times.
+The platform saves one data file per experiment (*i.e.* one machine at one time) in an individual `.db` file (an sqlite3 db).
+The files are all organised in a canonical hierarchy:
+
+```
+/machine-id/machine-name/datetime/datetime_machine-id.db
+```
+
+Listing experiments
+----------------------------------------
+
+```{r, include=FALSE}
+library(rethomics)
+source("rprint.R")
+```
+
+You have aleready downloaded and exttracted the sample data following the instructions [here](sample_data.html).
+So we just define where the extracted data lives:
+```{r,eval=FALSE}
+# here, you need to write the path to the tutorial folder on your system
+TUTO_DATA_DIR <- "/the/path/to/rethomics_tutorial_data"
+```
+
+```{r}
+# we build the path to ethoscope results
+# Note that you could just as well write the complete path yourself here.
+result_dir <- paste(TUTO_DATA_DIR,"ethoscope", "results", sep="/")
+# we check the folder exist
+# if an error occurs here, FIX IT before going any further
+if(!dir.exists(result_dir))
+    stop(sprintf("No such directory: %s", result_dir))
+```
+
+By using `buildEthoscopeQuery` without any query, we can already list all the experiments:
+
+```{r}
+exp_list <- buildEthoscopeQuery(result_dir)
+print(exp_list)
+```
+
+This tables shows six experiments(rows) and identify them by machine id, machine name, date and time, and the name of the file that stores the data.
+You can see that it also contains the complete path to each file. 
+This is likely to be different in your system.
+
+Note that `exp_list` is a data table, so you can easly subset it:
+
+```{r}
+# experiments from machine 033 only
+print(exp_list[machine_name == "ETHOSCOPE_033"])
+```
+
+
+
+Loading data from a query
+----------------------------------------
+
+As [we have already discussed](queries.html), you are expected to generate a query that describe the experimental conditions for each animal.
+
+In order to load ethoscope data (via `loadEthoscopeData`), we need a query that contains:
+
+* The **path** to the result file
+* The **region id** so we can find any given animal within this experiment
+* Optionally, other variables like treatment, genotype,... that you can define yourself.
+
+However, it is not great to write by hand a query with the full path because:
+
+* It is very easy to make mistakes
+* It involves you going through the result files every time
+* The path may be different for say a collaborator with whom you want to share data and queries
+
+The alternative is to write a **primary query** that contains:
+
+* The *machine name* (`machine_name`)
+* The *date* (`date`)
+* The *region id* (`region_id`)
+
+Then you can build a **secondary query** using `buildEthoscopeQuery` that will automatically find your experiment in the result files.
+
+
+Let's play with an example from the `sleep_query.csv` query.
+
+```{r}
+query_file <- paste(TUTO_DATA_DIR,"ethoscope", "queries","query.csv",sep="/")
+# one can use fread to load the query:
+primary_query <- fread(query_file)
+print(primary_query)
+```
+
+Here, we have `r nrow(primary_query)` animals from six experiments.
+
+The next step is generate the secondary (i.e. final) query:
+
+```{r}
+# we need to tell R where to find the files (i.e. in result_dir)
+final_query <- buildEthoscopeQuery(result_dir, primary_query)
+# let us look at the columns in the final query
+print(colnames(final_query))
+```
+
+You can see that the final query now has columns for `path`, `machine_id` and `file`.
+Therefore, we are ready to load data.
+
+The crucial function to load data is `loadEthoscopeData`.
+We will not go into details, but you can type `?loadEthoscopeData` to see all the options.
+
+The most basic way to load data is simply (this could take a while, so go and make a cup of tea):
+
+```{r}
+dt <- loadEthoscopeData(final_query, verbose=F, max_time=days(1))
+# Here, I turned off verbose so that we don't fill the tutorial with progress reports
+# In addition, I have only loaded the first day of available data `max_time=days(1)` to save time
+# Instead, you can simply use:
+# dt <- loadEthoscopeData(final_query)
+```
+
+Now, all the data for this query is in `dt`.
+
+```{r}
+# you can print information about the data:
+colnames(dt)
+nrow(dt)
+key(dt)
+```
+
+Also let's print the first 100 rows to have a look at the structure:
+```{r}
+print(dt[1:100])
+```
+
+
+This tells us which are the variables (columns) and what is the key(orange), which identifies individual animals.
+
+You will notice that there are several behavioural variables that are generated by the tracking algorithm such as `x`,`y`,`w`,`h` and others.
+
+
+The reference time issue
+--------------------------------
+
+**Ethoscope data uses GMT** instead of local time. 
+This means that the time will not change according to timezones or season.
+This may seem a bit conterintuintive at first, but it avoids a lot of bugs (*e.g.* when the clock changes between winter and summer time during an experiment, or when sharing data with collaborators from another time zone).
+
+By default, the time variable, `t` is expressed in second since the start of the experiments.
+This may make sense in many cases (for instance, in short experiments where we want to see what happens after one hour in the arena).
+However, for many long experiments, we want to align time to **a circadian reference** (or ZT0).
+In our case, experiments done on the 2016-03-21th started around 20:54:00 GMT. 
+
+The option `reference_hour` in `loadEthoscopeData` allows you to force t0 to be at a given time of the day.
+By convention, we pick ZT0 for the reference hour. That means that the time will now be expressed relatively to the start of the first biological day of each experiment.
+For example, in our lab, light turns on at 09:00:00 GMT, so we can use `9.00` as a reference hour.
+
+
+```{r, eval=F}
+dt <- loadEthoscopeData(final_query, reference_hour=9.0, verbose=F, max_time = days(1))
+print(dt[1:100])
+```
+
+
+Preprocessing data on the fly
+--------------------------------------
+As you can see, `dt` has a huge number of observations, which take a lot of space in memory.
+In many instances, you already know what type of analysis you are going to perform, and you need
+to summarise/downsample your data so you can manage it.
+
+For example, if you perform movement and sleep analysis in fruit fly, you will score every 10s of behaviour.
+This will result in one observation every ten second instead of around every half seconds.
+
+
+```{r}
+dt <- loadEthoscopeData(final_query,
+                        reference_hour=9.0, 
+                        FUN=sleepAnnotation, 
+                        verbose=F,
+                        max_time = days(2),
+                        masking_duration=0
+                        )
+print(colnames(dt))
+print(dt[1:100])
+```
+
+This means `FUN` is a function (and you can define your own!) that will be applied on the data from each animal immediately after the data is loaded. `masking_duration` is only used when stimulus are delivered. I set it to zero here to hide warning messages that come from the fact the (old) tutorial data does not have stimuli delivered. 
+The bottom line, is *trust me on that one*.
+
+
+Speeding up data import
+---------------------------
+
+There are different way to read data faster.
+The first one is to select only columns that you (or your processing function) will need from the data.
+Here, for instance, we keep the `x` position and the variable used by `sleepAnnotation` to quantify motion, `xy_dist_log10x1000`.
+
+```{r}
+dt <- loadEthoscopeData(final_query,
+                        reference_hour=9.0,
+                        columns=c("xy_dist_log10x1000","x"),
+                        FUN=sleepAnnotation,
+                        verbose=F,
+                        max_time = days(2),
+                        masking_duration=0)
+
+print(dt[1:100])
+```
+
+Another way to speed up data reading is to use several cores in parallel. 
+This can be achieved using `ncores=N`, where N is the number of parallel processes.
+Note that this will result in a *larger memory footprint*, but is it convenient when you have loads of RAM and little time.

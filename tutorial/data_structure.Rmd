@@ -21,7 +21,8 @@ In this tutorial, we will learn how:
 
 Prerequisites
 --------------
-* Familiarity with R and statistical analysis.
+
+* Familiarity with R and statistical analysis
 * Some familiarity with `data.table` package (at least have read the [tutorial](http://user2014.stat.ucla.edu/files/tutorial_Matt.pdf) and [getting started](https://github.com/Rdatatable/data.table/wiki/Getting-started))
 * Having dowloaded the [data samples](sample_data.html) in `TUTO_DATA_DIR`
 
