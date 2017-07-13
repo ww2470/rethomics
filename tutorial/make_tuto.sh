@@ -7,7 +7,6 @@ echo "Setting up..."
 echo "Working on branch $TRAVIS_BRANCH"
 echo "R version: $TRAVIS_R_VERSION"
 
-#echo $GH_TOKEN | md5sum
 mkdir ~/rethomics_tuto
 cd ~/rethomics_tuto
 
@@ -21,7 +20,9 @@ git checkout $TRAVIS_BRANCH
 
 echo "Getting data from $RETHOMICS_TUTO_DATA ..."
 echo "saving as ~/rethomics_tutorial_data.zip"
-wget $RETHOMICS_TUTO_DATA -O ~/rethomics_tutorial_data.zip
+# we resolv the doi to get the last published version of the data
+# todo cash data!!
+wget $(curl -Ls -o /dev/null -w %{url_effective}  $(RETHOMICS_TUTO_DATA))/files/rethomics_tutorial_data.zip -O ~/rethomics_tutorial_data.zip
 echo "Unzipping ..."
 unzip ~/rethomics_tutorial_data.zip
 ls
