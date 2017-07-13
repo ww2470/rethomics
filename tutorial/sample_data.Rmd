@@ -1,0 +1,85 @@
+---
+title: "Getting the sample data"
+author: "Quentin Geissmann"
+date: "2 March 2016"
+output: html_document
+---
+
+
+Aims
+----- 
+
+In this tutorial, we will:
+
+* Download the sample data
+* Understand its structure
+
+
+
+Sample data
+----------------------------------------
+In order to provide real life examples, I have put some data online to play with in the next part of the tutorial.
+Let's download this dataset now and once for all.
+You can find lives at [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.826875.svg)](https://doi.org/10.5281/zenodo.826875). You need to **download and extract the zip file**.
+
+Once you have done so, you will see one folder per aquisition platform (DAM, ethoscope, ...).
+
+Inside each platform, we have tree subfolders:
+
+* `query`: a set of example queries to fecth the data
+* `results`: the raw data files provided by the platform
+* `RData`: data that is already loaded in an R format
+
+
+The `results` folders are organised the same way they are expected to be organised by the acquisition platform.
+For instance, ethoscope results look like:
+
+```
+results/
+├── 007aeeee10184bb39b0754e75cef7900
+│   └── ETHOSCOPE_007
+│       └── 2016-03-21_20-54-27
+│           └── 2016-03-21_20-54-27_007aeeee10184bb39b0754e75cef7900.db
+├── 008aeeee10184bb39b0754e75cef7900
+│   └── ETHOSCOPE_008
+│       └── 2016-03-21_20-54-44
+│           └── 2016-03-21_20-54-44_008aeeee10184bb39b0754e75cef7900.db
+├── 009aeeee10184bb39b0754e75cef7900
+│   └── ETHOSCOPE_009
+│       └── 2016-03-21_20-54-15
+│           └── 2016-03-21_20-54-15_009aeeee10184bb39b0754e75cef7900.db
+├── 019aeeee10184bb39b0754e75cef7900
+│   └── ETHOSCOPE_019
+│       └── 2016-03-21_20-53-30
+│           └── 2016-03-21_20-53-30_019aeeee10184bb39b0754e75cef7900.db
+├── 033aeeee10184bb39b0754e75cef7900
+│   └── ETHOSCOPE_033
+│       └── 2016-03-21_20-55-10
+│           └── 2016-03-21_20-55-10_033aeeee10184bb39b0754e75cef7900.db
+└── 035aeeee10184bb39b0754e75cef7900
+    └── ETHOSCOPE_035
+        └── 2016-03-21_20-55-45
+            └── 2016-03-21_20-55-45_035aeeee10184bb39b0754e75cef7900.db
+```
+
+
+
+
+At this point, regardless of the structure, which is imposed by the ethoscope platform, what matters is that this data looks exactly like data you could have acquired yourself, and is stored in the same manner.
+
+Storing the data in your computer
+-----------------------------------
+For now, you can simply extract the zip archive and store it on your hard drive.
+**We will use the path to the sample result later in the tutorial, so do write it down somewhere**.
+By convention, we will store this path in a variable named `TUTO_DATA_DIR`.
+
+So before starting some tutorials, you will need to define it. For instance, in a windows computer, it could be something like:
+
+```{r, eval=FALSE}
+TUTO_DATA_DIR <- "C:/Users/quentin/Desktop/rethomics_tutorial_data/"
+```
+
+Obviously, *do change that according to where the data is saved on your system*
+
+
+
