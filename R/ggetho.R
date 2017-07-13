@@ -18,7 +18,7 @@
 #' @return A initial plot object that can be further edited.
 #' @examples
 #' # we start by making a to dataset with 20 animals
-#' query<- data.table(experiment_id="toy_experiment",
+#' query <- data.table(experiment_id="toy_experiment",
 #'                    region_id=1:20, 
 #'                    condition=c("A","B"))
 #' dt <- toyActivityData(query,3)
@@ -54,7 +54,7 @@ ggetho <- function(variable,
   
   if(!is.null(time_offset))
     stop("Not implemented") #todo
-    
+  # todo! large memory overhead here!
   dd <- copy(data)
   k <- key(dd)
   
@@ -63,7 +63,6 @@ ggetho <- function(variable,
   dd[, ..t.. := floor(t /summary_time_window) * summary_time_window]
   if(!is.null(time_wrap))
     dd[, ..t.. := ..t.. %% time_wrap]
-  
   
   setnames(dd,y_char, "..y..")
   sdt <- dd[, .(..y.. = summary_FUN(..y..)), by=c(k, "..t..")]
@@ -88,16 +87,3 @@ ggetho <- function(variable,
 #  return(list(sdt,mapping))
   ggplot(sdt, mapping,...)
 }
-
-#ggetho(asleep, dt, aes(t,asleep), time_wrap = hours(24))
-# query<- data.table(experiment_id="toy_experiment",
-#                    region_id=1:20,
-#                    condition=c("A","B"),
-#                    age=c(1, 5, 10, 20))
-# dt <- toyActivityData(query,seed=3)
-# dt <- dt[t> hours(25)]
-# pl <-  ggetho(moving,
-#               dt,
-#               aes(x=t, y=moving, fill=age, colour=age))
-# pl[[2]]
-# ggplot(pl[[1]], aes(t,moving,fill=as.factor(age),colour=as.factor(age))) + stat_pop_etho()

@@ -6,7 +6,7 @@ R_SOURCES := $(shell ls $(R_DIR)/R/*.R )
 N = $(shell cat $(R_DIR)/DESCRIPTION |grep ^Package | cut --fields=2 --delimiter=: |sed s/\ //g)
 V := $(shell cat $(R_DIR)/DESCRIPTION |grep ^Version  | cut --fields=2 --delimiter=: |sed s/\ //g)
 R_TGZ := $(N)_$(V).tar.gz
-R_PDF := $(N).pdf
+R_PDF := $(N)_$(V).pdf
 vpath %.R  $(R_DIR)
 
 
@@ -28,7 +28,7 @@ R : tarball
 #I~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 $(R_PDF) : R $(R_SOURCES)
-	R CMD Rd2pdf --force  $(PACKAGE_NAME)
+	R CMD Rd2pdf --force  -o $(R_PDF) .
 #I~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 $(R_TGZ) : $(R_SOURCES)
 	@echo "Roxygenising:"

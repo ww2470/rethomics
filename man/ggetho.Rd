@@ -41,7 +41,7 @@ For instance,  \code{time_offset= hours(12)} puts the circadian reference (ZT0) 
 }
 \examples{
 # we start by making a to dataset with 20 animals
-query<- data.table(experiment_id="toy_experiment",
+query <- data.table(experiment_id="toy_experiment",
                    region_id=1:20, 
                    condition=c("A","B"))
 dt <- toyActivityData(query,3)
