@@ -22,7 +22,7 @@ echo "Getting data from $RETHOMICS_TUTO_DATA ..."
 echo "saving as ~/rethomics_tutorial_data.zip"
 # we resolv the doi to get the last published version of the data
 # todo cash data!!
-wget $(curl -Ls -o /dev/null -w %{url_effective} $RETHOMICS_TUTO_DATA)/files/rethomics_tutorial_data.zip -O ~/rethomics_tutorial_data.zip
+wget $(curl -Ls -o /dev/null -w %{url_effective} $RETHOMICS_TUTO_DATA)/files/rethomics_tutorial_data.zip -O ~/rethomics_tutorial_data.zip --quiet
 echo "Unzipping ..."
 unzip ~/rethomics_tutorial_data.zip
 ls
