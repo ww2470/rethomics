@@ -105,7 +105,10 @@ ggetho <- function(data,
   }
   
   mapping = do.call(aes_string, mapping_list)
-  ggplot(sdt, mapping,...)
+  out <- ggplot(sdt, mapping,...)
+  if(!is.null(time_wrap))
+    return( out + scale_x_time(limits=c(0, time_wrap)))
+  out
 }
 
 
