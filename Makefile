@@ -41,4 +41,4 @@ tuto: R
 	$(MAKE) -C ./tutorial all
 #I~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 check: R
-	R -e "devtools::check(\"$(PACKAGE_NAME)\")"
+	R -e "devtools::check()"
