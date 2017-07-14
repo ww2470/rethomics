@@ -17,12 +17,15 @@
 #'                    condition=c("A","B"))
 #' dt <- toyActivityData(query,3)
 #' # We build a plot object
-#' pl <-  ggetho(asleep, dt, aes(x=t, y=asleep)) + stat_pop_etho()
+#' pl <-  ggetho(dt, aes(y=asleep)) + stat_pop_etho()
 #' pl + stat_ld_annotations()
 #' # different colours (e.g. DD)
 #' pl + stat_ld_annotations(ld_colour=c("grey", "black"))
 #' # shorter period
 #' pl + stat_ld_annotations(period=hours(22), phase=hours(3))
+#' # on a tile plot:
+#' pl <-  ggetho(dt, aes(z=asleep)) + stat_tile_etho()
+#' pl + stat_ld_annotations()
 #' @seealso  Useful links:
 #' * [ggetho] to generate a plot object
 #' * Tutorial for this function \url{http://gilestrolab.github.io/rethomics/tutorial/todo}

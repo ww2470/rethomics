@@ -17,28 +17,26 @@
 #' print(query)
 #' dt <- toyActivityData(query,seed=3)
 #' # We build a plot object
-#' pl <-  ggetho(asleep, dt, aes(x=t, y=asleep))
+#' pl <-  ggetho(dt, aes(y=asleep))
 #' # A standard plot of the whole population:
 #' pl + stat_pop_etho()              
 #' # We can also split by condition, and display the two population on different facets:
 #' pl + stat_pop_etho() + facet_grid(condition ~ .)
 #' 
 #' # Instead, we can use different colour for separate conditions:
-#' pl <-  ggetho(asleep, dt, aes(x=t, y=asleep, fill=age, colour=age))
+#' pl <-  ggetho(dt, aes(y=asleep, colour=condition))
 #' pl + stat_pop_etho()
 #' 
 #' #sometimes, we also have numeric condition (e.g. age)
-#' pl <-  ggetho(asleep, dt, aes(x=t, y=asleep, fill=age, colour=age))
+#' pl <-  ggetho(dt, aes(y=asleep, colour=age))
 #' pl + stat_pop_etho()              
 #' # sometimes we want to aggreate several days of data to one circadian day (i.e. time wrapping)
-#' pl <-  ggetho(moving, 
-#'               dt,
-#'               aes(x=t, y=moving),
-#'               time_wrap=hours(24)
-#'               )
+#' pl <-  ggetho(dt, aes(y=moving), time_wrap=hours(24))
 #' pl + stat_pop_etho()            
 #' @seealso  
 #' * [ggetho] to generate a plot object
+#' * [stat_tile_etho] To show variable of interest as colour intensity
+#' * [stat_ld_annotations] To show light and dark phases on the plot
 #' * Tutorial for this function \url{http://gilestrolab.github.io/rethomics/tutorial/todo}
 #' @export
 stat_pop_etho <- function(mapping = NULL, data = NULL,

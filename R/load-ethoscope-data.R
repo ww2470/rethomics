@@ -420,9 +420,9 @@ parseOneROI <- function(i, master_table,min_time, max_time, reference_hour,verbo
 loadOneROI <- function( FILE,  region_id, min_time=0, max_time=Inf,  reference_hour=NULL, columns = NULL){
   metadata <- loadEthoscopeMetaData(FILE)
   con <- RSQLite::dbConnect(RSQLite::SQLite(), FILE, flags=RSQLite::SQLITE_RO)
-  var_map <- data.table::as.data.table(dbGetQuery(con, "SELECT * FROM VAR_MAP"))
+  var_map <- data.table::as.data.table(RSQLite::dbGetQuery(con, "SELECT * FROM VAR_MAP"))
   setkey(var_map, var_name)
-  roi_map <- data.table::as.data.table(dbGetQuery(con, "SELECT * FROM ROI_MAP"))
+  roi_map <- data.table::as.data.table(RSQLite::dbGetQuery(con, "SELECT * FROM ROI_MAP"))
   
   roi_row <- roi_map[roi_idx == region_id,]
   if(nrow(roi_row) == 0 ){
@@ -454,7 +454,7 @@ loadOneROI <- function( FILE,  region_id, min_time=0, max_time=Inf,  reference_h
   }
   
   sql_query <- sprintf("SELECT %s FROM ROI_%i WHERE t >= %e %s",selected_cols, region_id,min_time, max_time_condition )
-  roi_dt <- data.table::as.data.table(dbGetQuery(con, sql_query))
+  roi_dt <- data.table::as.data.table(RSQLite::dbGetQuery(con, sql_query))
   RSQLite::dbDisconnect(con)
   if("id" %in% colnames(roi_dt))
     roi_dt$id <- NULL
@@ -580,7 +580,7 @@ cacheEthoscopeData <- function(result_dir, cached_dir, dry_run=F){
 
 
 sqliteTableToDataTable <- function(name,connection, dt, rm_inferred){
-  dt <- dbGetQuery(connection, sprintf("SELECT * FROM %s",name))
+  dt <- RSQLite::dbGetQuery(connection, sprintf("SELECT * FROM %s",name))
   dt <- data.table::as.data.table(dt)
   if(rm_inferred & "is_inferred" %in% colnames(dt)){
     dt <- dt[is_inferred == FALSE]

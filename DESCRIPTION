@@ -31,6 +31,7 @@ Collate:
     'utils-misc.R'
     'utils-path.R'
     'stat-pop-etho.R'
+    'stat-tile-etho.R'
     'stat-ld-annotations.R'
     'toy-data.R'
     'sleep-annotation.R'

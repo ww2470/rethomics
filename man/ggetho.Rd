@@ -4,13 +4,10 @@
 \alias{ggetho}
 \title{Prepare a ggplot object to represent behavioural data}
 \usage{
-ggetho(variable, data, mapping, summary_FUN = mean,
-  summary_time_window = mins(30), time_wrap = NULL, time_offset = NULL,
-  ...)
+ggetho(data, mapping, summary_FUN = mean, summary_time_window = mins(30),
+  time_wrap = NULL, time_offset = NULL, ...)
 }
 \arguments{
-\item{variable}{Variable of interest.}
-
 \item{data}{\code{data.table} containing the data. It must have a column with the same name as \code{variable}.}
 
 \item{mapping}{Default list of aesthetic mappings to use for plot.}
@@ -45,25 +42,28 @@ query <- data.table(experiment_id="toy_experiment",
                    region_id=1:20, 
                    condition=c("A","B"))
 dt <- toyActivityData(query,3)
-# We build a plot object with nothing inside (just the axis)
-pl <-  ggetho(asleep,     # the variable of interest
-         dt,              # our original data
-         aes(
-             x=t,         # we have the time on the x axis
-             y=asleep     # and asleep on the y axis
-             )     
-         ) 
+# We build a plot object with **nothing inside** (just the axis)
+# we want to show proportion of time sleeping  on the y axis:
+pl <-  ggetho(dt, aes(y=asleep))   
 pl
-# Sometimes, the variable of interest in not on the y.
+# Sometimes, the variable of interest in not on the y axis, but on z axis (colour scale).
 # When we do not provide a y axis,
 # ggetho will make a ID fo each animal and display them on separate rows
-pl <-  ggetho(asleep,dt, aes(x=t)) 
+pl <-  ggetho(dt, aes(z=asleep)) 
+pl
+# this one is the same type, but groups the animals by condition 
+pl <-  ggetho(dt, aes(z=asleep,y=condition)) 
+pl 
+# we want to summarise (wrap) data along a circadian day:
+pl <-  ggetho(dt, aes(y=asleep), time_wrap=hours(24))   
 pl
 }
 \seealso{
 \itemize{
-\item \link{stat_pop_etho} To show trend by aggregating individuals over time.
-\item TODO to see each individual on a "tyle-style" plot
+\item \link{stat_pop_etho} To show population trend by aggregating individuals over time
+\item \link{stat_tile_etho} To show variable of interest as colour intensity
+\item \link{stat_ld_annotations} To show light and dark phases on the plot
+\item Tutorial for this function \url{http://gilestrolab.github.io/rethomics/tutorial/todo}
 }
 }
 \author{
