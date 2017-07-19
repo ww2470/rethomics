@@ -27,6 +27,7 @@ script:
     - R CMD build .
     - R CMD check *tar.gz
     - echo the data lives at $RETHOMICS_TUTO_DATA 
+    - R CMD INSTALL --no-multiarch --with-keep.source *tar.gz
     - bash tutorial/make_tuto.sh 2>&1
     
 env:

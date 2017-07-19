@@ -4,6 +4,13 @@ GH_REPO="github.com/gilestrolab/rethomics.git"
 FULL_REPO="https://$GH_TOKEN@$GH_REPO"
 
 echo "Setting up..."
+
+echo "Installing extra dependencies..."
+R -e "install.packages('rmarkdown', repos='http://cran.us.r-project.org')"
+R -e "install.packages('devtools', repos='http://cran.us.r-project.org')"
+R -e "install.packages('DT', repos='http://cran.us.r-project.org')"
+R -e "install.packages('plotly', repos='http://cran.us.r-project.org')"
+
 echo "Working on branch $TRAVIS_BRANCH"
 echo "R version: $TRAVIS_R_VERSION"
 
@@ -28,11 +35,6 @@ unzip ~/rethomics_tutorial_data.zip
 ls
 mv rethomics_tutorial_data ~
 
-R -e "install.packages('rmarkdown', repos='http://cran.us.r-project.org')"
-R -e "install.packages('devtools', repos='http://cran.us.r-project.org')"
-R -e "install.packages('DT', repos='http://cran.us.r-project.org')"
-R -e "install.packages('plotly', repos='http://cran.us.r-project.org')"
-R -e "library(devtools); install_github('gilestrolab/rethomics',subdir='rethomics')"
 
 
 cd tutorial 
@@ -41,7 +43,6 @@ make clean && make TUTO_DATA_DIR=~/rethomics_tutorial_data all
 cd ..
 cp tutorial/ ~/tutorial -r 
 rm -f rethomics.pdf
-
 
 # we try to push only for master and release R version!
 if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_R_VERSION" == "release" ]
